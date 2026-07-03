@@ -2,13 +2,13 @@
 
 {% for media in media_list.items %}
   {% if home_status == Status.IN_PROGRESS.value %}
-    <div class="col-span-full overflow-hidden rounded-xl border border-gray-700/70 bg-[#242a32] shadow-sm transition-all duration-300 hover:border-indigo-400/40 hover:bg-[#29313a]"
+    <div class="col-span-full border-b border-[#303741] bg-transparent transition-colors duration-200 hover:bg-[#252b33]/70"
          x-data="{ trackOpen: false, listsOpen: false, historyOpen: false }">
 
-      <div class="flex items-center gap-4 px-4 py-3">
+      <div class="flex items-center gap-4 px-2 py-4 md:px-3">
         <a href="{{ media.item|media_url }}" class="shrink-0">
           <img alt="{{ media }}"
-               class="lazyload h-24 w-16 rounded-lg bg-[#1b2026] md:h-28 md:w-20 {% if media.item.image != IMG_NONE %}object-cover{% endif %}"
+               class="lazyload h-24 w-20 rounded-md bg-[#1b2026] {% if media.item.image != IMG_NONE %}object-cover{% endif %}"
                data-src="{{ media.item.image }}"
                src="{{ IMG_NONE }}">
         </a>
@@ -16,14 +16,14 @@
         <div class="flex min-w-0 flex-1 flex-col justify-center">
           <div class="mb-2 flex flex-wrap items-center gap-2">
             <a href="{{ media.item|media_url }}"
-               class="inline-flex max-w-full items-center rounded-full border border-white/70 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white transition-colors hover:border-indigo-300 hover:text-indigo-200 md:text-sm"
+               class="inline-flex max-w-full items-center rounded-full border border-gray-400/80 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white transition-colors hover:border-indigo-300 hover:text-indigo-200"
                title="{{ media }}">
               <span class="truncate">{{ media }}</span>
               <span class="ml-2 text-base leading-none">›</span>
             </a>
           </div>
 
-          <p class="line-clamp-1 text-sm font-medium text-gray-200 md:text-base">
+          <p class="line-clamp-1 text-base font-semibold text-white md:text-lg">
             {% if media.progress == media.max_progress %}
               Temporada concluída
             {% else %}
@@ -31,7 +31,7 @@
             {% endif %}
           </p>
 
-          <p class="mt-1 line-clamp-1 text-xs text-gray-400 md:text-sm">
+          <p class="mt-1 line-clamp-1 text-sm text-gray-400">
             {{ media.formatted_progress }}
 
             {% if media.item.media_type != MediaTypes.GAME.value and media.item.media_type != MediaTypes.MOVIE.value %}
@@ -43,14 +43,14 @@
             {% endif %}
           </p>
 
-          <div class="mt-3 max-w-md">
+          <div class="mt-3 max-w-sm md:max-w-md">
             <div id="progress-{{ media.item.media_type }}-{{ media.id }}">
               {% include "app/components/progress_changer.html" with media=media user=user csrf_token=csrf_token MediaTypes=MediaTypes only %}
             </div>
           </div>
         </div>
 
-        <div class="hidden shrink-0 items-center gap-1.5 md:flex">
+        <div class="hidden shrink-0 items-center gap-2 md:flex">
           <button class="flex h-8 w-8 items-center justify-center rounded-md border border-white/10 bg-white/5 text-gray-400 transition-all duration-200 hover:bg-white/10 hover:text-white cursor-pointer"
                   title="Editar acompanhamento"
                   hx-get="{% media_view_url 'track_modal' media.item %}"
