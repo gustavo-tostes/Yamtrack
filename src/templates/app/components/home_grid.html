@@ -19,13 +19,13 @@
            -webkit-backdrop-filter: blur(24px) saturate(155%);
          ">
 
-      <div class="flex items-center gap-4 px-4 py-4 sm:px-5">
+      <div class="flex items-center gap-3 px-3 py-3 sm:gap-4 sm:px-5 sm:py-4">
         <a href="{{ media.item|media_url }}" class="shrink-0">
           <img alt="{{ media.item.title }}"
                class="lazyload object-cover"
                style="
-                 width: 78px;
-                 height: 108px;
+                 width: clamp(64px, 18vw, 78px);
+                 height: clamp(90px, 25vw, 108px);
                  border-radius: 16px;
                  border: 1px solid rgba(255,255,255,0.18);
                  box-shadow: 0 12px 28px rgba(0,0,0,0.30);
@@ -36,7 +36,7 @@
         </a>
 
         <div class="min-w-0 flex-1">
-          <div style="margin-bottom: 10px; transform: translateY(5px);">
+          <div style="margin-bottom: 9px; transform: translateY(4px);">
             <a href="{{ media.item|media_url }}"
                class="inline-flex max-w-full items-center text-white"
                style="
@@ -45,10 +45,10 @@
                  background:
                    linear-gradient(135deg, rgba(255,255,255,0.095), rgba(255,255,255,0.035));
                  padding: 4px 9px;
-                 font-size: 10.5px;
+                 font-size: clamp(10px, 2.6vw, 10.5px);
                  font-weight: 800;
                  line-height: 1;
-                 max-width: 142px;
+                 max-width: min(210px, 100%);
                  box-shadow:
                    inset 0 1px 0 rgba(255,255,255,0.12),
                    0 5px 14px rgba(0,0,0,0.12);
@@ -86,13 +86,13 @@
            -webkit-backdrop-filter: blur(24px) saturate(155%);
          ">
 
-      <div class="flex items-center gap-4 px-4 py-4 sm:px-5">
+      <div class="flex items-center gap-3 px-3 py-3 sm:gap-4 sm:px-5 sm:py-4">
         <a href="{{ media.item|media_url }}" class="shrink-0">
           <img alt="{{ media.item.title }}"
                class="lazyload object-cover"
                style="
-                 width: 78px;
-                 height: 108px;
+                 width: clamp(64px, 18vw, 78px);
+                 height: clamp(90px, 25vw, 108px);
                  border-radius: 16px;
                  border: 1px solid rgba(255,255,255,0.18);
                  box-shadow: 0 12px 28px rgba(0,0,0,0.30);
@@ -103,7 +103,7 @@
         </a>
 
         <div class="min-w-0 flex-1">
-          <div style="margin-bottom: 10px; transform: translateY(5px);">
+          <div style="margin-bottom: 9px; transform: translateY(4px);">
             <a href="{{ media.item|media_url }}"
                class="inline-flex max-w-full items-center text-white"
                style="
@@ -112,10 +112,10 @@
                  background:
                    linear-gradient(135deg, rgba(255,255,255,0.095), rgba(255,255,255,0.035));
                  padding: 4px 9px;
-                 font-size: 10.5px;
+                 font-size: clamp(10px, 2.6vw, 10.5px);
                  font-weight: 800;
                  line-height: 1;
-                 max-width: 142px;
+                 max-width: min(210px, 100%);
                  box-shadow:
                    inset 0 1px 0 rgba(255,255,255,0.12),
                    0 5px 14px rgba(0,0,0,0.12);
@@ -144,7 +144,7 @@
             {% if media.next_event and not media.next_event.is_max_datetime %}
               {{ media.next_event.datetime|natural_day:user }}
             {% else %}
-              Acompanhe os próximos lançamentos aqui
+              Próximo lançamento
             {% endif %}
           </p>
         </div>
