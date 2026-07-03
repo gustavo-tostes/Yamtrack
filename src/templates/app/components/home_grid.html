@@ -2,34 +2,21 @@
 
 {% for media in media_list.items %}
   {% if home_status == Status.IN_PROGRESS.value %}
-    <div class="col-span-full rounded-xl border border-gray-700 bg-[#2a2f35] p-3 shadow-lg transition-all duration-300 hover:border-indigo-500/60 hover:bg-[#303741]"
+    <div class="col-span-full overflow-hidden rounded-xl border border-gray-700/70 bg-[#252b33] shadow-sm transition-all duration-300 hover:border-indigo-500/50 hover:bg-[#2a313a]"
          x-data="{ trackOpen: false, listsOpen: false, historyOpen: false }">
 
-      <div class="flex gap-4">
+      <div class="flex gap-4 p-4">
         <a href="{{ media.item|media_url }}" class="shrink-0">
           <img alt="{{ media }}"
-               class="lazyload h-28 w-20 rounded-lg {% if media.item.image != IMG_NONE %}object-cover{% endif %}"
+               class="lazyload h-28 w-20 rounded-lg bg-[#1b2026] {% if media.item.image != IMG_NONE %}object-cover{% endif %}"
                data-src="{{ media.item.image }}"
                src="{{ IMG_NONE }}">
         </a>
 
         <div class="flex min-w-0 flex-1 flex-col justify-between">
-          <div>
-            <div class="mb-1 flex items-center gap-2">
-              <span class="rounded-full bg-indigo-600/20 px-2 py-0.5 text-xs font-medium text-indigo-300">
-                Assistir a seguir
-              </span>
-
-              {% if media.next_event and not media.next_event.is_max_datetime %}
-                <span class="inline-flex items-center gap-1 text-xs text-gray-400">
-                  {% include "app/icons/clock.svg" with classes="w-3.5 h-3.5 text-indigo-400" %}
-                  {{ media.next_event.datetime|natural_day:user }}
-                </span>
-              {% endif %}
-            </div>
-
+          <div class="min-w-0">
             <a href="{{ media.item|media_url }}"
-               class="line-clamp-1 text-base font-semibold text-white transition hover:text-indigo-400"
+               class="line-clamp-1 text-base font-semibold text-white transition-colors hover:text-indigo-300"
                title="{{ media }}">
               {{ media }}
             </a>
@@ -37,9 +24,9 @@
             <p class="mt-1 line-clamp-1 text-sm text-gray-400">
               {% if media.next_event and not media.next_event.is_max_datetime %}
                 {% if media.next_event.content_number %}
-                  Próximo: {{ media.item.media_type|short_unit }}{{ media.next_event.content_number }}
+                  Próximo: {{ media.item.media_type|short_unit }}{{ media.next_event.content_number }} • {{ media.next_event.datetime|natural_day:user }}
                 {% else %}
-                  Próximo episódio disponível
+                  Próximo episódio • {{ media.next_event.datetime|natural_day:user }}
                 {% endif %}
               {% else %}
                 Continue acompanhando esta série
@@ -47,15 +34,15 @@
             </p>
           </div>
 
-          <div class="mt-3">
+          <div class="mt-4 max-w-2xl">
             <div id="progress-{{ media.item.media_type }}-{{ media.id }}">
               {% include "app/components/progress_changer.html" with media=media user=user csrf_token=csrf_token MediaTypes=MediaTypes only %}
             </div>
           </div>
         </div>
 
-        <div class="flex shrink-0 flex-col justify-center gap-2">
-          <button class="cursor-pointer rounded-full bg-indigo-600 p-2 text-white transition-all duration-200 hover:scale-110 hover:bg-indigo-500"
+        <div class="flex shrink-0 items-center gap-2">
+          <button class="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-700 bg-[#303843] text-gray-300 transition-all duration-200 hover:border-indigo-500 hover:bg-indigo-600 hover:text-white cursor-pointer"
                   title="Editar acompanhamento"
                   hx-get="{% media_view_url 'track_modal' media.item %}"
                   hx-vals='{"return_url": "{{ request.get_full_path|urlencode }}", "instance_id": "{{ media.id }}"}'
@@ -65,7 +52,7 @@
             {% include "app/icons/edit.svg" with classes="w-4 h-4" %}
           </button>
 
-          <button class="cursor-pointer rounded-full bg-emerald-600 p-2 text-white transition-all duration-200 hover:scale-110 hover:bg-emerald-500"
+          <button class="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-700 bg-[#303843] text-gray-300 transition-all duration-200 hover:border-emerald-500 hover:bg-emerald-600 hover:text-white cursor-pointer"
                   title="Adicionar às listas"
                   hx-get="{% media_view_url 'lists_modal' media.item %}"
                   hx-vals='{"return_url": "{{ request.get_full_path|urlencode }}"}'
@@ -75,7 +62,7 @@
             {% include "app/icons/list-add.svg" with classes="w-4 h-4" %}
           </button>
 
-          <button class="cursor-pointer rounded-full bg-amber-600 p-2 text-white transition-all duration-200 hover:scale-110 hover:bg-amber-500"
+          <button class="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-700 bg-[#303843] text-gray-300 transition-all duration-200 hover:border-amber-500 hover:bg-amber-600 hover:text-white cursor-pointer"
                   title="Histórico"
                   hx-get="{% media_view_url 'history_modal' media.item %}"
                   hx-vals='{"return_url": "{{ request.get_full_path|urlencode }}"}'
@@ -152,7 +139,9 @@
                     hx-vals='{"return_url": "{{ request.get_full_path|urlencode }}", "instance_id": "{{ media.id }}"}'
                     hx-target="#{% component_id 'track' media.item media.id %}"
                     hx-trigger="click once"
-                    @click="trackOpen = true">{% include "app/icons/edit.svg" with classes="w-4 h-4" %}</button>
+                    @click="trackOpen = true">
+              {% include "app/icons/edit.svg" with classes="w-4 h-4" %}
+            </button>
 
             <button class="cursor-pointer rounded-full bg-emerald-600 p-2.5 text-white transition-all duration-200 hover:scale-110 hover:bg-emerald-500 hover:shadow-[0_0_15px_rgba(16,185,129,0.5)]"
                     title="Adicionar às listas"
@@ -160,7 +149,9 @@
                     hx-vals='{"return_url": "{{ request.get_full_path|urlencode }}"}'
                     hx-target="#{% component_id 'lists' media.item %}"
                     hx-trigger="click once"
-                    @click="listsOpen = true">{% include "app/icons/list-add.svg" with classes="w-4 h-4" %}</button>
+                    @click="listsOpen = true">
+              {% include "app/icons/list-add.svg" with classes="w-4 h-4" %}
+            </button>
 
             <button class="cursor-pointer rounded-full bg-amber-600 p-2.5 text-white transition-all duration-200 hover:scale-110 hover:bg-amber-500 hover:shadow-[0_0_15px_rgba(245,158,11,0.5)]"
                     title="Histórico"
@@ -168,7 +159,9 @@
                     hx-vals='{"return_url": "{{ request.get_full_path|urlencode }}"}'
                     hx-target="#{% component_id 'history' media.item %}"
                     hx-trigger="click once"
-                    @click="historyOpen = true">{% include "app/icons/history.svg" with classes="w-4 h-4" %}</button>
+                    @click="historyOpen = true">
+              {% include "app/icons/history.svg" with classes="w-4 h-4" %}
+            </button>
           </div>
         </div>
       </div>
@@ -176,11 +169,15 @@
       <div class="p-3">
         <a href="{{ media.item|media_url }}"
            class="line-clamp-1 text-center text-sm font-semibold text-white transition duration-300 {% if home_status == Status.PLANNING.value %}hover:text-sky-400{% else %}hover:text-indigo-400{% endif %}"
-           title="{{ media }}">{{ media }}</a>
+           title="{{ media }}">
+          {{ media }}
+        </a>
       </div>
 
       {% if home_status == Status.PLANNING.value %}
-        {% if user.progress_bar %}<div class="h-[5px] {{ Status.PLANNING.value|status_background_color }}"></div>{% endif %}
+        {% if user.progress_bar %}
+          <div class="h-[5px] {{ Status.PLANNING.value|status_background_color }}"></div>
+        {% endif %}
       {% else %}
         <div id="progress-{{ media.item.media_type }}-{{ media.id }}">
           {% include "app/components/progress_changer.html" with media=media user=user csrf_token=csrf_token MediaTypes=MediaTypes only %}
