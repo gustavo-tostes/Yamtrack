@@ -4,29 +4,33 @@
 
 <div class="flex items-center gap-3">
   <div class="min-w-0 flex-1">
-    <p class="line-clamp-1 text-base font-semibold text-white md:text-lg">
-      {% if media.progress == media.max_progress %}
-        Temporada concluída
-      {% else %}
-        T{{ media.item.season_number|stringformat:"02d" }} | E{{ media.progress|add:"1"|stringformat:"02d" }}
-      {% endif %}
-    </p>
-
-    <p class="mt-1 line-clamp-1 text-sm text-gray-400">
-      {% firstof media.next_event.title media.next_event.name media.next_event.episode_title media.next_event.content_title "Próximo episódio" %}
-    </p>
-
-    <p class="mt-0.5 line-clamp-1 text-xs text-gray-500">
-      {{ media.formatted_progress }}
-
-      {% if media.item.media_type != MediaTypes.GAME.value and media.item.media_type != MediaTypes.MOVIE.value %}
-        {% if media.max_progress %}
-          / {{ media.max_progress }} {{ media.item.media_type|long_unit }}{{ media.max_progress|pluralize }} assistidos
+    {% with episode_title=media.next_episode_title %}
+      <p class="line-clamp-1 text-base font-semibold text-white md:text-lg">
+        {% if media.progress == media.max_progress %}
+          Temporada concluída
         {% else %}
-          {{ media.item.media_type|long_unit }}{{ media.progress|pluralize }} assistidos
+          T{{ media.item.season_number|stringformat:"02d" }} | E{{ media.progress|add:"1"|stringformat:"02d" }}
         {% endif %}
+      </p>
+
+      {% if episode_title %}
+        <p class="mt-1 line-clamp-1 text-sm text-gray-400">
+          {{ episode_title }}
+        </p>
       {% endif %}
-    </p>
+
+      <p class="{% if episode_title %}mt-0.5{% else %}mt-1{% endif %} line-clamp-1 text-xs text-gray-500">
+        {{ media.formatted_progress }}
+
+        {% if media.item.media_type != MediaTypes.GAME.value and media.item.media_type != MediaTypes.MOVIE.value %}
+          {% if media.max_progress %}
+            / {{ media.max_progress }} {{ media.item.media_type|long_unit }}{{ media.max_progress|pluralize }} assistidos
+          {% else %}
+            {{ media.item.media_type|long_unit }}{{ media.progress|pluralize }} assistidos
+          {% endif %}
+        {% endif %}
+      </p>
+    {% endwith %}
 
     <div class="mt-2">
       {% include "app/components/progress_bar.html" with media=media user=user %}

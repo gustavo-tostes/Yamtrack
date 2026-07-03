@@ -1457,6 +1457,46 @@ class Season(Media):
 
         return latest_watched_ep_num or 0
 
+    @property
+    def next_episode_number(self):
+        """Return the next episode number to watch."""
+        return self.progress + 1
+
+    @property
+    def next_episode_title(self):
+        """Return the title of the next episode to watch."""
+        next_episode_number = self.next_episode_number
+
+        if self.item.season_number is None or next_episode_number <= 0:
+            return ""
+
+        try:
+            season_metadata = providers.services.get_media_metadata(
+                MediaTypes.SEASON.value,
+                self.item.media_id,
+                self.item.source,
+                [self.item.season_number],
+            )
+        except Exception as exc:
+            logger.warning(
+                "Could not fetch next episode title for %s: %s",
+                self,
+                exc,
+            )
+            return ""
+
+        for episode in season_metadata.get("episodes", []):
+            if episode.get("episode_number") == next_episode_number:
+                return (
+                    episode.get("name")
+                    or episode.get("title")
+                    or episode.get("episode_title")
+                    or episode.get("original_name")
+                    or ""
+                )
+
+        return ""
+
     def get_completion_status(
         self,
         season_metadata,
