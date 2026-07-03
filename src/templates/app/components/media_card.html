@@ -272,15 +272,29 @@
     {% endwith %}
   </div>
 
-  <div class="px-2.5 pb-4 pt-2.5">
-    <a href="{{ item|media_url }}"
-       class="block text-sm font-semibold text-white transition duration-300 line-clamp-2 hover:text-white/80"
-       title="{{ title }}">{{ title }}</a>
+  <div style="padding: 10px 7px 13px;">
+    <div style="
+         min-height: 36px;
+         display: flex;
+         align-items: flex-start;
+       ">
+      <a href="{{ item|media_url }}"
+         class="block w-full text-sm font-semibold text-white transition duration-300 hover:text-white/80"
+         style="
+           line-height: 1.18;
+           display: -webkit-box;
+           -webkit-line-clamp: 2;
+           -webkit-box-orient: vertical;
+           overflow: hidden;
+           text-align: left;
+         "
+         title="{{ title }}">{{ title }}</a>
+    </div>
 
     {% with user=target_user|default:user %}
       {% if media.status and user.progress_bar %}
         <div style="
-             margin-top: 8px;
+             margin-top: 7px;
              height: 4px;
              width: 100%;
              overflow: hidden;
