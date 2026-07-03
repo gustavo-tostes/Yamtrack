@@ -2,104 +2,344 @@
 {% load app_tags %}
 
 {% block title %}
-  Search - Yamtrack
+  Busca - Yamtrack
 {% endblock title %}
 
+{% block extra_head %}
+  <style>
+    html,
+    body {
+      background:
+        radial-gradient(circle at 50% -10%, rgba(255, 255, 255, 0.08), transparent 28%),
+        radial-gradient(circle at 72% 20%, rgba(110, 124, 255, 0.10), transparent 22%),
+        radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.04), transparent 20%),
+        linear-gradient(180deg, #17181b 0%, #111214 50%, #0d0e10 100%) !important;
+    }
+
+    body > div.flex.min-h-screen {
+      background: transparent !important;
+    }
+
+    main {
+      background: transparent !important;
+    }
+
+    body > div.flex.min-h-screen > aside {
+      background:
+        linear-gradient(180deg, rgba(28, 29, 32, 0.82), rgba(16, 17, 19, 0.90)) !important;
+      border-right: 1px solid rgba(255, 255, 255, 0.10) !important;
+      box-shadow:
+        inset -1px 0 0 rgba(255, 255, 255, 0.04),
+        18px 0 40px rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(26px) saturate(150%);
+      -webkit-backdrop-filter: blur(26px) saturate(150%);
+    }
+
+    body > div.flex.min-h-screen > aside > div:first-child {
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    }
+
+    body > div.flex.min-h-screen > aside nav a,
+    body > div.flex.min-h-screen > aside form button {
+      border: 1px solid transparent;
+      transition:
+        background 180ms ease,
+        border-color 180ms ease,
+        box-shadow 180ms ease;
+    }
+
+    body > div.flex.min-h-screen > aside nav a:hover,
+    body > div.flex.min-h-screen > aside form button:hover {
+      background: rgba(255, 255, 255, 0.06) !important;
+      border-color: rgba(255, 255, 255, 0.08);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 8px 18px rgba(0, 0, 0, 0.15);
+    }
+
+    body > div.flex.min-h-screen > aside a[class*="bg-[#2c3136]"] {
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.05)) !important;
+      border-color: rgba(255, 255, 255, 0.14);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.14),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.03),
+        0 10px 24px rgba(0, 0, 0, 0.18);
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+    }
+
+    body > div.flex.min-h-screen > aside .border-t {
+      border-color: rgba(255, 255, 255, 0.08) !important;
+    }
+
+    div.sticky.top-0.z-10 {
+      background:
+        linear-gradient(180deg, rgba(26, 27, 30, 0.78), rgba(18, 19, 21, 0.64)) !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+      box-shadow:
+        inset 0 -1px 0 rgba(255, 255, 255, 0.035),
+        0 14px 32px rgba(0, 0, 0, 0.18);
+      backdrop-filter: blur(28px) saturate(160%);
+      -webkit-backdrop-filter: blur(28px) saturate(160%);
+    }
+
+    div.sticky.top-0.z-10 input,
+    div.sticky.top-0.z-10 select,
+    div.sticky.top-0.z-10 button {
+      border-color: rgba(255,255,255,0.12) !important;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.14), rgba(255,255,255,0.055) 52%, rgba(255,255,255,0.025) 100%) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.10),
+        inset 0 -1px 0 rgba(255,255,255,0.025),
+        0 8px 18px rgba(0,0,0,0.14);
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+    }
+
+    .yamtrack-search-page {
+      max-width: 1460px;
+      margin: -4px auto 0;
+    }
+
+    .yamtrack-section-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      padding: 9px 26px;
+      color: rgba(255,255,255,0.94);
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.23), rgba(255,255,255,0.09) 44%, rgba(255,255,255,0.04) 100%);
+      border: 1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.16),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 10px 24px rgba(0,0,0,0.16);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+    }
+
+    .yamtrack-glass-panel {
+      border-radius: 28px;
+      border: 1px solid rgba(255,255,255,0.13);
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.12), transparent 38%),
+        radial-gradient(circle at 82% 20%, rgba(115,125,255,0.08), transparent 34%),
+        linear-gradient(135deg, rgba(255,255,255,0.075), rgba(255,255,255,0.028));
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.11),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 18px 42px rgba(0,0,0,0.22);
+      backdrop-filter: blur(24px) saturate(155%);
+      -webkit-backdrop-filter: blur(24px) saturate(155%);
+    }
+
+    .yamtrack-glass-button {
+      border-radius: 9999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.18), rgba(255,255,255,0.075) 48%, rgba(255,255,255,0.035) 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.14),
+        inset 0 -1px 0 rgba(255,255,255,0.025),
+        0 8px 18px rgba(0,0,0,0.15);
+      backdrop-filter: blur(18px) saturate(155%);
+      -webkit-backdrop-filter: blur(18px) saturate(155%);
+      transition:
+        border-color 180ms ease,
+        background 180ms ease,
+        box-shadow 180ms ease,
+        transform 180ms ease;
+    }
+
+    .yamtrack-glass-button:hover {
+      border-color: rgba(255,255,255,0.24);
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.26), rgba(255,255,255,0.10) 48%, rgba(255,255,255,0.04) 100%);
+    }
+
+    .yamtrack-glass-button-active {
+      border-color: rgba(255,255,255,0.24);
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.30), rgba(255,255,255,0.12) 48%, rgba(255,255,255,0.05) 100%);
+      color: #ffffff;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.18),
+        inset 0 -1px 0 rgba(255,255,255,0.035),
+        0 10px 24px rgba(0,0,0,0.18);
+    }
+
+    .yamtrack-source-label {
+      font-size: 13px;
+      color: rgba(209,213,219,0.78);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .yamtrack-results-grid > div,
+    .yamtrack-results-list > div {
+      animation: yamtrackFadeIn 220ms ease both;
+    }
+
+    .yamtrack-empty-state {
+      min-height: 360px;
+    }
+
+    @keyframes yamtrackFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .yamtrack-search-page {
+        margin-top: -10px;
+      }
+
+      .yamtrack-section-pill {
+        font-size: 12px;
+        padding: 7px 18px;
+      }
+    }
+  </style>
+{% endblock extra_head %}
+
 {% block content %}
-  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-y-4">
-    <h2 class="text-2xl font-bold">Search Results</h2>
-    <div class="flex items-center flex-wrap gap-x-4 gap-y-2">
-      <span class="text-sm text-gray-400">Source:</span>
-      <div class="flex gap-x-2">
-        {% with source_options=media_type|sources %}
-          {% for source_option in source_options %}
-            <a href="{% url 'search' %}?q={{ request.GET.q|urlencode }}&media_type={{ media_type }}&source={{ source_option.value }}&layout={{ layout }}"
-               class="px-3 py-1.5 text-sm rounded-md transition-colors duration-200 cursor-pointer flex items-center {% if source == source_option.value %}bg-indigo-600 text-white{% else %}bg-gray-700 text-gray-300 hover:bg-gray-600{% endif %}">
-              {{ source_option.label }}
+  <div class="yamtrack-search-page">
+    <div class="flex justify-center mb-8">
+      <h2 class="yamtrack-section-pill">Resultados da busca</h2>
+    </div>
+
+    <div class="yamtrack-glass-panel px-4 py-4 mb-8">
+      <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+        <div>
+          <div class="text-sm text-gray-400">Buscando por</div>
+          <div class="text-xl font-bold text-white line-clamp-1">
+            “{{ request.GET.q }}”
+          </div>
+        </div>
+
+        <div class="flex items-center flex-wrap gap-3">
+          <span class="yamtrack-source-label">Fonte</span>
+
+          <div class="flex flex-wrap gap-2">
+            {% with source_options=media_type|sources %}
+              {% for source_option in source_options %}
+                <a href="{% url 'search' %}?q={{ request.GET.q|urlencode }}&media_type={{ media_type }}&source={{ source_option.value }}&layout={{ layout }}"
+                   class="yamtrack-glass-button px-4 py-2 text-sm font-bold cursor-pointer flex items-center {% if source == source_option.value %}yamtrack-glass-button-active text-white{% else %}text-gray-300{% endif %}">
+                  {{ source_option.label }}
+                </a>
+              {% endfor %}
+            {% endwith %}
+          </div>
+
+          <div class="yamtrack-glass-button flex overflow-hidden p-1 rounded-full">
+            <a href="?q={{ request.GET.q|urlencode }}&media_type={{ media_type }}{% if source %}&source={{ source }}{% endif %}&layout=grid"
+               class="p-2 cursor-pointer rounded-full flex items-center {% if layout == 'grid' %}yamtrack-glass-button-active text-white{% else %}text-gray-300 hover:text-white{% endif %}"
+               title="Visualização em grade">
+              {% include "app/icons/four-square.svg" with classes="w-5 h-5" %}
             </a>
-          {% endfor %}
-        {% endwith %}
-        <div class="flex rounded-md overflow-hidden border border-gray-700">
-          <a href="?q={{ request.GET.q|urlencode }}&media_type={{ media_type }}{% if source %}&source={{ source }}{% endif %}&layout=grid"
-             {% if layout == 'grid' %} class="p-2 cursor-pointer bg-indigo-600 text-white flex items-center" {% else %} class="p-2 cursor-pointer bg-[#39404b] hover:bg-[#454d5a] flex items-center" {% endif %}
-             title="Grid View">{% include "app/icons/four-square.svg" with classes="w-5 h-5" %}</a>
-          <a href="?q={{ request.GET.q|urlencode }}&media_type={{ media_type }}{% if source %}&source={{ source }}{% endif %}&layout=list"
-             {% if layout == 'list' %} class="p-2 cursor-pointer bg-indigo-600 text-white flex items-center" {% else %} class="p-2 cursor-pointer bg-[#39404b] hover:bg-[#454d5a] flex items-center" {% endif %}
-             title="List View">{% include "app/icons/list.svg" with classes="w-5 h-5" %}</a>
+
+            <a href="?q={{ request.GET.q|urlencode }}&media_type={{ media_type }}{% if source %}&source={{ source }}{% endif %}&layout=list"
+               class="p-2 cursor-pointer rounded-full flex items-center {% if layout == 'list' %}yamtrack-glass-button-active text-white{% else %}text-gray-300 hover:text-white{% endif %}"
+               title="Visualização em lista">
+              {% include "app/icons/list.svg" with classes="w-5 h-5" %}
+            </a>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  {% if data.results %}
-    <div {% if layout == 'grid' %}
-         class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-4">
-      {% for result in data.results %}
-        {% include "app/components/media_card.html" with item=result.item title=result.item.title media=result.media %}
-      {% endfor %}
+    {% if data.results %}
+      {% if layout == 'grid' %}
+        <div class="yamtrack-results-grid grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-4">
+          {% for result in data.results %}
+            {% include "app/components/media_card.html" with item=result.item title=result.item.title media=result.media from_grid=True %}
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="yamtrack-results-list grid grid-cols-1 gap-4">
+          {% for result in data.results %}
+            {% include "app/components/media_card_list.html" with item=result.item title=result.item.title media=result.media %}
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% if data.total_pages > 1 %}
+        <div class="flex flex-wrap justify-center items-center mt-8 gap-x-2 gap-y-3">
+          {# Previous button #}
+          {% if data.page > 1 %}
+            <a href="?q={{ request.GET.q|urlencode }}&media_type={{ media_type }}{% if source %}&source={{ source }}{% endif %}&page={{ data.page|add:'-1' }}&layout={{ layout }}"
+               class="yamtrack-glass-button p-2 text-white">
+              {% include "app/icons/chevron-left.svg" with classes="w-5 h-5" %}
+            </a>
+          {% else %}
+            <button class="yamtrack-glass-button p-2 text-gray-500 cursor-not-allowed opacity-50"
+                    disabled>
+              {% include "app/icons/chevron-left.svg" with classes="w-5 h-5" %}
+            </button>
+          {% endif %}
+
+          {# Page numbers with ellipses #}
+          {% get_pagination_range data.page data.total_pages 2 as pages %}
+          {% for page_num in pages %}
+            {% if page_num %}
+              <a href="?q={{ request.GET.q|urlencode }}&media_type={{ media_type }}{% if source %}&source={{ source }}{% endif %}&page={{ page_num }}&layout={{ layout }}"
+                 class="yamtrack-glass-button w-10 h-10 flex items-center justify-center text-sm font-bold {% if data.page == page_num %}yamtrack-glass-button-active text-white{% else %}text-gray-300 hover:text-white{% endif %}">
+                {{ page_num }}
+              </a>
+            {% else %}
+              <span class="flex items-center justify-center w-10 h-10 text-gray-400">
+                {% include "app/icons/ellipsis.svg" with classes="w-5 h-5" %}
+              </span>
+            {% endif %}
+          {% endfor %}
+
+          {# Next button #}
+          {% if data.page < data.total_pages %}
+            <a href="?q={{ request.GET.q|urlencode }}&media_type={{ media_type }}{% if source %}&source={{ source }}{% endif %}&page={{ data.page|add:'1' }}&layout={{ layout }}"
+               class="yamtrack-glass-button p-2 text-white">
+              {% include "app/icons/chevron-right.svg" with classes="w-5 h-5" %}
+            </a>
+          {% else %}
+            <button class="yamtrack-glass-button p-2 text-gray-500 cursor-not-allowed opacity-50"
+                    disabled>
+              {% include "app/icons/chevron-right.svg" with classes="w-5 h-5" %}
+            </button>
+          {% endif %}
+        </div>
+
+        {# Page info text #}
+        <div class="text-center text-sm text-gray-400 mt-3">
+          Página {{ data.page }} de {{ data.total_pages }} · {{ data.total_results }} resultado{{ data.total_results|pluralize }}
+        </div>
+      {% endif %}
     {% else %}
-      class="grid grid-cols-1 gap-4">
-      {% for result in data.results %}
-        {% include "app/components/media_card_list.html" with item=result.item title=result.item.title media=result.media %}
-      {% endfor %}
+      <div class="yamtrack-empty-state yamtrack-glass-panel flex flex-col items-center justify-center py-24 px-4">
+        <div class="yamtrack-glass-button rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+          {% include "app/icons/magnifying-glass.svg" with classes="w-8 h-8 text-gray-300" %}
+        </div>
+
+        <h3 class="text-xl font-bold mb-2 text-white">Nenhum resultado encontrado</h3>
+
+        <p class="text-gray-400 text-center max-w-md">
+          Não encontramos resultados para “{{ request.GET.q }}”. Tente conferir a escrita ou usar palavras-chave diferentes.
+        </p>
+      </div>
     {% endif %}
   </div>
-
-  {% if data.total_pages > 1 %}
-    <div class="flex flex-wrap justify-center items-center mt-8 gap-x-2 gap-y-3">
-      {# Previous button #}
-      {% if data.page > 1 %}
-        <a href="?q={{ request.GET.q|urlencode }}&media_type={{ media_type }}{% if source %}&source={{ source }}{% endif %}&page={{ data.page|add:'-1' }}&layout={{ layout }}"
-           class="p-2 rounded-md bg-[#2a2f35] text-white hover:bg-[#39404b]">
-          {% include "app/icons/chevron-left.svg" with classes="w-5 h-5" %}
-        </a>
-      {% else %}
-        <button class="p-2 rounded-md bg-gray-700 text-gray-500 cursor-not-allowed"
-                disabled>{% include "app/icons/chevron-left.svg" with classes="w-5 h-5" %}</button>
-      {% endif %}
-
-      {# Page numbers with ellipses #}
-      {% get_pagination_range data.page data.total_pages 2 as pages %}
-      {% for page_num in pages %}
-        {% if page_num %}
-          <a href="?q={{ request.GET.q|urlencode }}&media_type={{ media_type }}{% if source %}&source={{ source }}{% endif %}&page={{ page_num }}&layout={{ layout }}"
-             class="w-10 h-10 rounded-md {% if data.page == page_num %}bg-indigo-600{% else %}bg-[#2a2f35] hover:bg-[#39404b]{% endif %} text-white flex items-center justify-center">
-            {{ page_num }}
-          </a>
-        {% else %}
-          {# Ellipsis #}
-          <span class="flex items-center justify-center w-10 h-10 text-gray-400">
-            {% include "app/icons/ellipsis.svg" with classes="w-5 h-5" %}
-          </span>
-        {% endif %}
-      {% endfor %}
-
-      {# Next button #}
-      {% if data.page < data.total_pages %}
-        <a href="?q={{ request.GET.q|urlencode }}&media_type={{ media_type }}{% if source %}&source={{ source }}{% endif %}&page={{ data.page|add:'1' }}&layout={{ layout }}"
-           class="p-2 rounded-md bg-[#2a2f35] text-white hover:bg-[#39404b]">
-          {% include "app/icons/chevron-right.svg" with classes="w-5 h-5" %}
-        </a>
-      {% else %}
-        <button class="p-2 rounded-md bg-gray-700 text-gray-500 cursor-not-allowed"
-                disabled>{% include "app/icons/chevron-right.svg" with classes="w-5 h-5" %}</button>
-      {% endif %}
-    </div>
-
-    {# Page info text #}
-    <div class="text-center text-sm text-gray-400 mt-3">
-      Page {{ data.page }} of {{ data.total_pages }} ({{ data.total_results }} results)
-    </div>
-  {% endif %}
-{% else %}
-  <div class="flex flex-col items-center justify-center py-32 px-4 bg-[#2a2f35] rounded-lg">
-    <div class="bg-[#39404b] rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-      {% include "app/icons/magnifying-glass.svg" with classes="w-8 h-8 text-gray-400" %}
-    </div>
-    <h3 class="text-xl font-semibold mb-2">No results found</h3>
-    <p class="text-gray-400 text-center max-w-md mb-8">
-      We couldn't find any matches for "{{ request.GET.q }}". Try checking your spelling or using different keywords.
-    </p>
-  </div>
-{% endif %}
 {% endblock content %}
