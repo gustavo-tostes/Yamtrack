@@ -2,13 +2,13 @@
 
 {% for media in media_list.items %}
   {% if home_status == Status.IN_PROGRESS.value %}
-    <div class="col-span-full overflow-hidden rounded-xl bg-black/55 shadow-md ring-1 ring-white/10 transition-all duration-300 hover:bg-black/70 hover:ring-white/20"
+    <div class="col-span-full overflow-hidden rounded-xl border border-gray-700/70 bg-[#242a32] shadow-sm transition-all duration-300 hover:border-indigo-400/40 hover:bg-[#29313a]"
          x-data="{ trackOpen: false, listsOpen: false, historyOpen: false }">
 
-      <div class="flex items-center gap-4 p-3 md:p-4">
+      <div class="flex items-center gap-4 px-4 py-3">
         <a href="{{ media.item|media_url }}" class="shrink-0">
           <img alt="{{ media }}"
-               class="lazyload h-24 w-20 rounded-lg bg-[#1b2026] md:h-28 md:w-24 {% if media.item.image != IMG_NONE %}object-cover{% endif %}"
+               class="lazyload h-24 w-16 rounded-lg bg-[#1b2026] md:h-28 md:w-20 {% if media.item.image != IMG_NONE %}object-cover{% endif %}"
                data-src="{{ media.item.image }}"
                src="{{ IMG_NONE }}">
         </a>
@@ -16,30 +16,30 @@
         <div class="flex min-w-0 flex-1 flex-col justify-center">
           <div class="mb-2 flex flex-wrap items-center gap-2">
             <a href="{{ media.item|media_url }}"
-               class="inline-flex max-w-full items-center rounded-full border border-white/70 px-3 py-1 text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:border-indigo-300 hover:text-indigo-200"
+               class="inline-flex max-w-full items-center rounded-full border border-white/70 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white transition-colors hover:border-indigo-300 hover:text-indigo-200 md:text-sm"
                title="{{ media }}">
               <span class="truncate">{{ media }}</span>
-              <span class="ml-2 text-lg leading-none">›</span>
+              <span class="ml-2 text-base leading-none">›</span>
             </a>
           </div>
 
-          <p class="line-clamp-1 text-lg font-semibold text-white md:text-xl">
-            {% if media.next_event and not media.next_event.is_max_datetime %}
-              {% if media.next_event.content_number %}
-                {{ media.item.media_type|short_unit }}{{ media.next_event.content_number }}
-              {% else %}
-                Próximo episódio
-              {% endif %}
+          <p class="line-clamp-1 text-sm font-medium text-gray-200 md:text-base">
+            {% if media.progress == media.max_progress %}
+              Temporada concluída
             {% else %}
-              {{ media.formatted_progress }}
+              Próximo episódio: {{ media.item.media_type|short_unit }}{{ media.progress|add:"1" }}
             {% endif %}
           </p>
 
-          <p class="mt-1 line-clamp-1 text-sm text-gray-300">
-            {% if media.next_event and not media.next_event.is_max_datetime %}
-              {{ media.next_event.datetime|natural_day:user }}
-            {% else %}
-              Continue acompanhando esta série
+          <p class="mt-1 line-clamp-1 text-xs text-gray-400 md:text-sm">
+            {{ media.formatted_progress }}
+
+            {% if media.item.media_type != MediaTypes.GAME.value and media.item.media_type != MediaTypes.MOVIE.value %}
+              {% if media.max_progress %}
+                / {{ media.max_progress }} {{ media.item.media_type|long_unit }}{{ media.max_progress|pluralize }} assistidos
+              {% else %}
+                {{ media.item.media_type|long_unit }}{{ media.progress|pluralize }} assistidos
+              {% endif %}
             {% endif %}
           </p>
 
@@ -50,7 +50,7 @@
           </div>
         </div>
 
-        <div class="hidden shrink-0 items-center gap-2 md:flex">
+        <div class="hidden shrink-0 items-center gap-1.5 md:flex">
           <button class="flex h-8 w-8 items-center justify-center rounded-md border border-white/10 bg-white/5 text-gray-400 transition-all duration-200 hover:bg-white/10 hover:text-white cursor-pointer"
                   title="Editar acompanhamento"
                   hx-get="{% media_view_url 'track_modal' media.item %}"
