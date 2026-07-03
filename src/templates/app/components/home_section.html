@@ -68,7 +68,7 @@
           {% endif %}
 
           <div id="media-grid-{{ section.id }}-{{ media_type }}"
-               class="{% if section.key == Status.IN_PROGRESS.value %}mx-auto max-w-5xl space-y-3{% else %}media-grid{% endif %}">
+               class="{% if section.key == Status.IN_PROGRESS.value %}mx-auto max-w-4xl space-y-3{% else %}media-grid{% endif %}">
             {% include "app/components/home_grid.html" with media_list=media_list home_status=section.key %}
           </div>
 
