@@ -96,6 +96,11 @@
       -webkit-backdrop-filter: blur(28px) saturate(160%);
     }
 
+    .yamtrack-media-top-search {
+      position: relative;
+      width: min(680px, 100%);
+    }
+
     .yamtrack-media-page {
       max-width: 1180px;
       margin: 0 auto;
@@ -125,6 +130,8 @@
     }
 
     .yamtrack-media-toolbar {
+      display: flex;
+      justify-content: center;
       border-radius: 28px;
       padding: 14px;
       background:
@@ -244,6 +251,31 @@
   </style>
 {% endblock extra_head %}
 
+{% block search_bar %}
+  {% if request.user.is_authenticated %}
+    <div class="yamtrack-media-top-search">
+      <input id="top-media-search"
+             name="search"
+             value="{{ request.GET.search|default:'' }}"
+             placeholder="{% if media_type == MediaTypes.TV.value %}Buscar séries{% elif media_type == MediaTypes.SEASON.value %}Buscar temporadas{% elif media_type == MediaTypes.MOVIE.value %}Buscar filmes{% else %}Buscar itens{% endif %} na sua lista..."
+             class="yamtrack-glass-input w-full py-2 pl-10 pr-4 text-sm appearance-none"
+             type="text"
+             hx-get="{% url 'medialist' target_user.username media_type %}"
+             hx-trigger="keyup changed delay:300ms, search"
+             {% if media_list %} hx-target="{{ layout_class }}" {% else %} hx-target="#empty_list" {% endif %}
+             hx-include="#filter-form,#top-media-search"
+             hx-indicator="#top-search-indicator">
+
+      {% include "app/icons/magnifying-glass.svg" with classes="w-5 h-5 absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" %}
+
+      <div id="top-search-indicator"
+           class="htmx-indicator absolute right-4 top-1/2 transform -translate-y-1/2">
+        <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-400"></div>
+      </div>
+    </div>
+  {% endif %}
+{% endblock search_bar %}
+
 {% block content %}
   <div class="yamtrack-media-page space-y-7">
     <div class="flex justify-center">
@@ -261,123 +293,106 @@
       </h1>
     </div>
 
-    <div x-data="{ sort: '{{ current_sort }}', status: '{{ current_status }}', layout: '{{ current_layout }}', search: '{{ request.GET.search|default:'' }}', statusLabels: {
+    <div x-data="{ sort: '{{ current_sort }}', status: '{{ current_status }}', layout: '{{ current_layout }}', statusLabels: {
       {% for value, label in status_choices %}
-        '{{ value }}': '{{ label }}'
+        '{{ value }}': '{% if label == "All" %}Todos{% else %}{{ label }}{% endif %}'
         {% if not forloop.last %},{% endif %}
-
       {% endfor %}
       }, sortLabels: {
       {% for value, label in sort_choices %}
-        '{{ value }}': '{{ label }}'
+        '{{ value }}': '{% if label == "Rating" %}Nota{% elif label == "Title" %}Título{% else %}{{ label }}{% endif %}'
         {% if not forloop.last %},{% endif %}
-
       {% endfor %}
       } }">
 
       <form id="filter-form" class="hidden">
         <input type="hidden" name="sort" x-model="sort">
         <input type="hidden" name="status" x-model="status">
-        <input type="hidden" name="search" x-model="search">
         <input type="hidden" name="layout" x-model="layout">
       </form>
 
       <div class="yamtrack-media-toolbar mb-7">
-        <div class="flex flex-col gap-3 md:flex-row md:items-center">
-          <div class="relative grow">
-            <input placeholder="{% if media_type == MediaTypes.TV.value %}Buscar séries{% elif media_type == MediaTypes.SEASON.value %}Buscar temporadas{% elif media_type == MediaTypes.MOVIE.value %}Buscar filmes{% else %}Buscar itens{% endif %} {% if target_user != request.user %}na lista de {{ target_user.username }}{% else %}na sua lista{% endif %}..."
-                   class="yamtrack-glass-input w-full py-2 pl-10 pr-4 text-sm appearance-none"
-                   type="text"
-                   x-model="search"
-                   hx-get="{% url 'medialist' target_user.username media_type %}"
-                   hx-trigger="keyup changed delay:300ms, search"
-                   {% if media_list %} hx-target="{{ layout_class }}" {% else %} hx-target="#empty_list" {% endif %}
-                   hx-include="#filter-form"
-                   hx-indicator="#search-indicator">
-            {% include "app/icons/magnifying-glass.svg" with classes="w-5 h-5 absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" %}
-            <div id="search-indicator"
-                 class="htmx-indicator absolute right-4 top-1/2 transform -translate-y-1/2">
-              <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-400"></div>
+        <div class="flex flex-wrap justify-center gap-2">
+          <div class="relative" x-data="{ open: false }">
+            <button class="yamtrack-glass-button flex items-center px-4 py-2 text-sm font-semibold transition-colors cursor-pointer"
+                    @click="open = !open"
+                    type="button">
+              {% include "app/icons/funnel.svg" with classes="w-4 h-4 mr-2" %}
+              <span x-text="statusLabels[status] || status"></span>
+              {% include "app/icons/chevron-down.svg" with classes="w-4 h-4 ml-2" %}
+            </button>
+
+            <div class="yamtrack-glass-menu absolute z-20 mt-2 py-1 w-48 overflow-hidden"
+                 x-cloak
+                 x-show="open"
+                 @click.outside="open = false"
+                 x-transition:enter="transition ease-out duration-100"
+                 x-transition:enter-start="transform opacity-0 scale-95"
+                 x-transition:enter-end="transform opacity-100 scale-100"
+                 x-transition:leave="transition ease-in duration-75"
+                 x-transition:leave-start="transform opacity-100 scale-100"
+                 x-transition:leave-end="transform opacity-0 scale-95">
+              {% for value, label in status_choices %}
+                <button hx-get="{% url 'medialist' target_user.username media_type %}"
+                        {% if media_list %} hx-target="{{ layout_class }}" {% else %} hx-target="#empty_list" {% endif %}
+                        hx-include="#filter-form,#top-media-search"
+                        hx-indicator="#loading-indicator"
+                        class="block w-full px-4 py-2 text-left text-sm transition-colors cursor-pointer"
+                        :class="status === '{{ value }}' ? 'bg-white/15 text-white font-semibold' : 'text-gray-300 hover:bg-white/10 hover:text-white'"
+                        @click="status = '{{ value }}'; open = false"
+                        type="button">
+                  {% if label == "All" %}Todos{% else %}{{ label }}{% endif %}
+                </button>
+              {% endfor %}
             </div>
           </div>
 
-          <div class="flex flex-wrap gap-2">
-            <div class="relative" x-data="{ open: false }">
-              <button class="yamtrack-glass-button flex items-center px-4 py-2 text-sm font-semibold transition-colors cursor-pointer"
-                      @click="open = !open"
-                      type="button">
-                {% include "app/icons/funnel.svg" with classes="w-4 h-4 mr-2" %}
-                <span x-text="statusLabels[status] || status"></span>
-                {% include "app/icons/chevron-down.svg" with classes="w-4 h-4 ml-2" %}
-              </button>
+          <div class="relative" x-data="{ open: false }">
+            <button class="yamtrack-glass-button flex items-center px-4 py-2 text-sm font-semibold transition-colors cursor-pointer"
+                    @click="open = !open"
+                    type="button">
+              {% include "app/icons/arrows-up-down.svg" with classes="w-4 h-4 mr-2" %}
+              <span x-text="sortLabels[sort] || sort"></span>
+              {% include "app/icons/chevron-down.svg" with classes="w-4 h-4 ml-2" %}
+            </button>
 
-              <div class="yamtrack-glass-menu absolute z-20 mt-2 py-1 w-48 overflow-hidden"
-                   x-cloak
-                   x-show="open"
-                   @click.outside="open = false"
-                   x-transition:enter="transition ease-out duration-100"
-                   x-transition:enter-start="transform opacity-0 scale-95"
-                   x-transition:enter-end="transform opacity-100 scale-100"
-                   x-transition:leave="transition ease-in duration-75"
-                   x-transition:leave-start="transform opacity-100 scale-100"
-                   x-transition:leave-end="transform opacity-0 scale-95">
-                {% for value, label in status_choices %}
-                  <button hx-get="{% url 'medialist' target_user.username media_type %}"
-                          {% if media_list %} hx-target="{{ layout_class }}" {% else %} hx-target="#empty_list" {% endif %}
-                          hx-include="#filter-form"
-                          hx-indicator="#loading-indicator"
-                          class="block w-full px-4 py-2 text-left text-sm transition-colors cursor-pointer"
-                          :class="status === '{{ value }}' ? 'bg-white/15 text-white font-semibold' : 'text-gray-300 hover:bg-white/10 hover:text-white'"
-                          @click="status = '{{ value }}'; open = false"
-                          type="button">{{ label }}</button>
-                {% endfor %}
-              </div>
+            <div class="yamtrack-glass-menu absolute z-20 mt-2 py-1 w-48 overflow-hidden"
+                 x-cloak
+                 x-show="open"
+                 @click.outside="open = false"
+                 x-transition:enter="transition ease-out duration-100"
+                 x-transition:enter-start="transform opacity-0 scale-95"
+                 x-transition:enter-end="transform opacity-100 scale-100"
+                 x-transition:leave="transition ease-in duration-75"
+                 x-transition:leave-start="transform opacity-100 scale-100"
+                 x-transition:leave-end="transform opacity-0 scale-95">
+              {% for value, label in sort_choices %}
+                <button hx-get="{% url 'medialist' target_user.username media_type %}"
+                        {% if media_list %} hx-target="{{ layout_class }}" {% else %} hx-target="#empty_list" {% endif %}
+                        hx-include="#filter-form,#top-media-search"
+                        hx-indicator="#loading-indicator"
+                        class="block w-full px-4 py-2 text-left text-sm transition-colors cursor-pointer"
+                        :class="sort === '{{ value }}' ? 'bg-white/15 text-white font-semibold' : 'text-gray-300 hover:bg-white/10 hover:text-white'"
+                        @click="sort = '{{ value }}'; open = false"
+                        type="button">
+                  {% if label == "Rating" %}Nota{% elif label == "Title" %}Título{% else %}{{ label }}{% endif %}
+                </button>
+              {% endfor %}
             </div>
+          </div>
 
-            <div class="relative" x-data="{ open: false }">
-              <button class="yamtrack-glass-button flex items-center px-4 py-2 text-sm font-semibold transition-colors cursor-pointer"
-                      @click="open = !open"
-                      type="button">
-                {% include "app/icons/arrows-up-down.svg" with classes="w-4 h-4 mr-2" %}
-                <span x-text="sortLabels[sort] || sort"></span>
-                {% include "app/icons/chevron-down.svg" with classes="w-4 h-4 ml-2" %}
-              </button>
+          <div class="yamtrack-layout-toggle flex">
+            <a :href="`{% url 'medialist' target_user.username media_type %}?${document.getElementById('top-media-search')?.value ? 'search=' + encodeURIComponent(document.getElementById('top-media-search').value) + '&' : ''}${status !== 'all' ? 'status=' + status + '&' : ''}${sort !== 'score' ? 'sort=' + sort + '&' : ''}layout=grid`"
+               class="p-3 cursor-pointer transition-colors"
+               :class="layout === 'grid' ? 'bg-white/18 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white'"
+               title="Visualização em grade"
+               @click="layout = 'grid'">{% include "app/icons/four-square.svg" with classes="w-5 h-5" %}</a>
 
-              <div class="yamtrack-glass-menu absolute z-20 mt-2 py-1 w-48 overflow-hidden"
-                   x-cloak
-                   x-show="open"
-                   @click.outside="open = false"
-                   x-transition:enter="transition ease-out duration-100"
-                   x-transition:enter-start="transform opacity-0 scale-95"
-                   x-transition:enter-end="transform opacity-100 scale-100"
-                   x-transition:leave="transition ease-in duration-75"
-                   x-transition:leave-start="transform opacity-100 scale-100"
-                   x-transition:leave-end="transform opacity-0 scale-95">
-                {% for value, label in sort_choices %}
-                  <button hx-get="{% url 'medialist' target_user.username media_type %}"
-                          {% if media_list %} hx-target="{{ layout_class }}" {% else %} hx-target="#empty_list" {% endif %}
-                          hx-include="#filter-form"
-                          hx-indicator="#loading-indicator"
-                          class="block w-full px-4 py-2 text-left text-sm transition-colors cursor-pointer"
-                          :class="sort === '{{ value }}' ? 'bg-white/15 text-white font-semibold' : 'text-gray-300 hover:bg-white/10 hover:text-white'"
-                          @click="sort = '{{ value }}'; open = false"
-                          type="button">{{ label }}</button>
-                {% endfor %}
-              </div>
-            </div>
-
-            <div class="yamtrack-layout-toggle flex">
-              <a :href="`{% url 'medialist' target_user.username media_type %}?${search ? 'search=' + search + '&' : ''}${status !== 'all' ? 'status=' + status + '&' : ''}${sort !== 'score' ? 'sort=' + sort + '&' : ''}layout=grid`"
-                 class="p-3 cursor-pointer transition-colors"
-                 :class="layout === 'grid' ? 'bg-white/18 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white'"
-                 title="Visualização em grade"
-                 @click="layout = 'grid'">{% include "app/icons/four-square.svg" with classes="w-5 h-5" %}</a>
-              <a :href="`{% url 'medialist' target_user.username media_type %}?${search ? 'search=' + search + '&' : ''}${status !== 'all' ? 'status=' + status + '&' : ''}${sort !== 'score' ? 'sort=' + sort + '&' : ''}layout=table`"
-                 class="p-3 cursor-pointer transition-colors"
-                 :class="layout === 'table' ? 'bg-white/18 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white'"
-                 title="Visualização em tabela"
-                 @click="layout = 'table'">{% include "app/icons/table.svg" with classes="w-5 h-5" %}</a>
-            </div>
+            <a :href="`{% url 'medialist' target_user.username media_type %}?${document.getElementById('top-media-search')?.value ? 'search=' + encodeURIComponent(document.getElementById('top-media-search').value) + '&' : ''}${status !== 'all' ? 'status=' + status + '&' : ''}${sort !== 'score' ? 'sort=' + sort + '&' : ''}layout=table`"
+               class="p-3 cursor-pointer transition-colors"
+               :class="layout === 'table' ? 'bg-white/18 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white'"
+               title="Visualização em tabela"
+               @click="layout = 'table'">{% include "app/icons/table.svg" with classes="w-5 h-5" %}</a>
           </div>
         </div>
       </div>
@@ -515,7 +530,3 @@
     </div>
   {% endif %}
 {% endblock anonymous_login %}
-
-{% block search_bar %}
-  {% if request.user.is_authenticated %}{{ block.super }}{% endif %}
-{% endblock search_bar %}

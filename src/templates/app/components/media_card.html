@@ -276,9 +276,9 @@
     {% endwith %}
   </div>
 
-  <div class="px-3 pb-3 pt-3">
+  <div class="px-3 pb-4 pt-3">
     <a href="{{ item|media_url }}"
-       class="block text-sm font-semibold text-white transition duration-300 line-clamp-1 hover:text-white/80"
+       class="block text-sm font-semibold text-white transition duration-300 line-clamp-2 hover:text-white/80"
        title="{{ title }}">{{ title }}</a>
   </div>
 
@@ -314,8 +314,24 @@
   </div>
 
   {% with user=target_user|default:user %}
-    <div style="opacity: 0.55;">
-      {% include "app/components/progress_bar.html" with media=media user=user only %}
-    </div>
+    {% if media.status and user.progress_bar %}
+      <div style="
+           position: absolute;
+           left: 0;
+           right: 0;
+           bottom: 0;
+           height: 5px;
+           background: rgba(255,255,255,0.06);
+         ">
+        {% if media.status == Status.IN_PROGRESS.value and media.max_progress and media.max_progress > 0 %}
+          {% widthratio media.progress media.max_progress 100 as progress_width %}
+          <div class="{{ media.status|status_background_color }}"
+               style="height: 100%; width: {{ progress_width }}%;"></div>
+        {% else %}
+          <div class="{{ media.status|status_background_color }}"
+               style="height: 100%; width: 100%;"></div>
+        {% endif %}
+      </div>
+    {% endif %}
   {% endwith %}
 </div>
