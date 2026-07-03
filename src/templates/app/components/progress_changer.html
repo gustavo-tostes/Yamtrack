@@ -8,11 +8,15 @@
       {% if media.progress == media.max_progress %}
         Temporada concluída
       {% else %}
-        Próximo episódio: {{ media.item.media_type|short_unit }}{{ media.progress|add:"1"|stringformat:"02d" }}
+        T{{ media.item.season_number|stringformat:"02d" }} | E{{ media.progress|add:"1"|stringformat:"02d" }}
       {% endif %}
     </p>
 
     <p class="mt-1 line-clamp-1 text-sm text-gray-400">
+      {% firstof media.next_event.title media.next_event.name media.next_event.episode_title media.next_event.content_title "Próximo episódio" %}
+    </p>
+
+    <p class="mt-0.5 line-clamp-1 text-xs text-gray-500">
       {{ media.formatted_progress }}
 
       {% if media.item.media_type != MediaTypes.GAME.value and media.item.media_type != MediaTypes.MOVIE.value %}

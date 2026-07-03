@@ -7,7 +7,7 @@
 
       <div class="flex items-center gap-3 p-3 md:gap-4 md:p-4">
         <a href="{{ media.item|media_url }}" class="shrink-0">
-          <img alt="{{ media }}"
+          <img alt="{{ media.item.title }}"
                class="lazyload rounded-lg bg-[#1b2026] shadow-sm {% if media.item.image != IMG_NONE %}object-cover{% endif %}"
                style="width: 82px; height: 112px;"
                data-src="{{ media.item.image }}"
@@ -18,8 +18,8 @@
           <div class="mb-2">
             <a href="{{ media.item|media_url }}"
                class="inline-flex max-w-full items-center rounded-full border border-white/75 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white transition-colors hover:border-indigo-300 hover:text-indigo-200"
-               title="{{ media }}">
-              <span class="truncate">{{ media }}</span>
+               title="{{ media.item.title }}">
+              <span class="truncate">{{ media.item.title }}</span>
               <span class="ml-2 text-base leading-none">›</span>
             </a>
           </div>
