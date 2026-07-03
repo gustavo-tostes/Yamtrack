@@ -18,7 +18,8 @@
      x-data="{ trackOpen: false, listsOpen: false, historyOpen: false }">
 
   <div class="relative p-2 pb-0">
-    <a href="{{ item|media_url }}" class="block overflow-hidden"
+    <a href="{{ item|media_url }}"
+       class="block overflow-hidden"
        style="border-radius: 18px;">
       <img alt="{{ title }}"
            class="lazyload w-full {% if from_grid %}aspect-2/3{% else %}h-48{% endif %} {% if item.image != IMG_NONE %}object-cover{% endif %}"
@@ -36,81 +37,18 @@
 
     {% with user=target_user|default:user %}
       {% if media.status %}
-        <div class="absolute top-4 left-4 flex items-center"
-             style="
-               max-width: calc(100% - 32px);
-               border-radius: 9999px;
-               padding: 4px 8px;
-               background:
-                 radial-gradient(circle at 34% 24%, rgba(255,255,255,0.22), rgba(255,255,255,0.10) 44%, rgba(255,255,255,0.04) 100%);
-               border: 1px solid rgba(255,255,255,0.18);
-               box-shadow:
-                 inset 0 1px 0 rgba(255,255,255,0.18),
-                 0 8px 18px rgba(0,0,0,0.24);
-               backdrop-filter: blur(18px) saturate(155%);
-               -webkit-backdrop-filter: blur(18px) saturate(155%);
-             ">
-          {% if media.status == Status.COMPLETED.value %}
-            <div class="w-4 h-4 {{ Status.COMPLETED.value|status_color }} {% if media.start_date or media.end_date %}mr-1.5{% endif %}">
-              {% include "app/icons/states/completed.svg" %}
-            </div>
-
-          {% elif media.status == Status.IN_PROGRESS.value %}
-            <div class="w-4 h-4 {{ Status.IN_PROGRESS.value|status_color }} {% if media.start_date or media.end_date %}mr-1.5{% endif %}">
-              {% include "app/icons/states/in-progress.svg" %}
-            </div>
-
-          {% elif media.status == Status.PAUSED.value %}
-            <div class="w-4 h-4 {{ Status.PAUSED.value|status_color }} {% if media.start_date or media.end_date %}mr-1.5{% endif %}">
-              {% include "app/icons/states/paused.svg" %}
-            </div>
-
-          {% elif media.status == Status.PLANNING.value %}
-            <div class="w-4 h-4 {{ Status.PLANNING.value|status_color }} {% if media.start_date or media.end_date %}mr-1.5{% endif %}">
-              {% include "app/icons/states/planning.svg" %}
-            </div>
-
-          {% elif media.status == Status.DROPPED.value %}
-            <div class="w-4 h-4 {{ Status.DROPPED.value|status_color }} {% if media.start_date or media.end_date %}mr-1.5{% endif %}">
-              {% include "app/icons/states/dropped.svg" %}
-            </div>
-          {% endif %}
-
-          {% if media.end_date is not None %}
-            <span class="truncate text-xs font-semibold text-white">{{ media.end_date|date_format:user }}</span>
-          {% elif media.start_date is not None %}
-            <span class="truncate text-xs font-semibold text-white">{{ media.start_date|date_format:user }}</span>
-          {% endif %}
-        </div>
-      {% endif %}
-
-      {% if media.score|show_media_score:user %}
-        <div class="absolute {% if from_grid %}top-4 right-4 left-auto{% else %}top-12 left-4{% endif %} flex items-center"
-             style="
-               border-radius: 9999px;
-               padding: 4px 8px;
-               background:
-                 radial-gradient(circle at 34% 24%, rgba(255,255,255,0.22), rgba(255,255,255,0.10) 44%, rgba(255,255,255,0.04) 100%);
-               border: 1px solid rgba(255,255,255,0.18);
-               box-shadow:
-                 inset 0 1px 0 rgba(255,255,255,0.18),
-                 0 8px 18px rgba(0,0,0,0.24);
-               backdrop-filter: blur(18px) saturate(155%);
-               -webkit-backdrop-filter: blur(18px) saturate(155%);
-             ">
-          {% include "app/icons/star.svg" with classes="w-4 h-4 text-yellow-300 mr-1 fill-current" %}
-          <span class="text-xs font-semibold text-white">{{ media.formatted_score }}</span>
-        </div>
-      {% endif %}
-    {% endwith %}
-
-    {% if media.progress and media_type != MediaTypes.MOVIE.value %}
-      <div class="absolute bottom-3 left-4 flex items-center"
-           style="
+        <div style="
+             position: absolute;
+             top: 16px;
+             left: 16px;
+             width: 26px;
+             height: 26px;
              border-radius: 9999px;
-             padding: 4px 8px;
+             display: flex;
+             align-items: center;
+             justify-content: center;
              background:
-               radial-gradient(circle at 34% 24%, rgba(255,255,255,0.22), rgba(255,255,255,0.10) 44%, rgba(255,255,255,0.04) 100%);
+               radial-gradient(circle at 34% 24%, rgba(255,255,255,0.26), rgba(255,255,255,0.10) 44%, rgba(255,255,255,0.04) 100%);
              border: 1px solid rgba(255,255,255,0.18);
              box-shadow:
                inset 0 1px 0 rgba(255,255,255,0.18),
@@ -118,6 +56,76 @@
              backdrop-filter: blur(18px) saturate(155%);
              -webkit-backdrop-filter: blur(18px) saturate(155%);
            ">
+          {% if media.status == Status.COMPLETED.value %}
+            <div class="w-4 h-4 {{ Status.COMPLETED.value|status_color }}">
+              {% include "app/icons/states/completed.svg" %}
+            </div>
+
+          {% elif media.status == Status.IN_PROGRESS.value %}
+            <div class="w-4 h-4 {{ Status.IN_PROGRESS.value|status_color }}">
+              {% include "app/icons/states/in-progress.svg" %}
+            </div>
+
+          {% elif media.status == Status.PAUSED.value %}
+            <div class="w-4 h-4 {{ Status.PAUSED.value|status_color }}">
+              {% include "app/icons/states/paused.svg" %}
+            </div>
+
+          {% elif media.status == Status.PLANNING.value %}
+            <div class="w-4 h-4 {{ Status.PLANNING.value|status_color }}">
+              {% include "app/icons/states/planning.svg" %}
+            </div>
+
+          {% elif media.status == Status.DROPPED.value %}
+            <div class="w-4 h-4 {{ Status.DROPPED.value|status_color }}">
+              {% include "app/icons/states/dropped.svg" %}
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if media.score|show_media_score:user %}
+        <div style="
+             position: absolute;
+             top: 16px;
+             right: 16px;
+             border-radius: 9999px;
+             padding: 4px 8px;
+             display: flex;
+             align-items: center;
+             background:
+               radial-gradient(circle at 34% 24%, rgba(255,255,255,0.24), rgba(255,255,255,0.10) 44%, rgba(255,255,255,0.04) 100%);
+             border: 1px solid rgba(255,255,255,0.18);
+             box-shadow:
+               inset 0 1px 0 rgba(255,255,255,0.18),
+               0 8px 18px rgba(0,0,0,0.24);
+             backdrop-filter: blur(18px) saturate(155%);
+             -webkit-backdrop-filter: blur(18px) saturate(155%);
+           ">
+          {% include "app/icons/star.svg" with classes="w-4 h-4 text-yellow-300 mr-1 fill-current" %}
+          <span class="text-xs font-semibold text-white">{{ media.formatted_score }}</span>
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% if media.progress and media_type != MediaTypes.MOVIE.value %}
+      <div style="
+           position: absolute;
+           bottom: 14px;
+           left: 16px;
+           border-radius: 9999px;
+           padding: 4px 9px;
+           display: flex;
+           align-items: center;
+           background:
+             radial-gradient(circle at 34% 24%, rgba(255,255,255,0.25), rgba(255,255,255,0.10) 44%, rgba(255,255,255,0.04) 100%);
+           border: 1px solid rgba(255,255,255,0.18);
+           box-shadow:
+             inset 0 1px 0 rgba(255,255,255,0.18),
+             0 8px 18px rgba(0,0,0,0.24);
+           backdrop-filter: blur(18px) saturate(155%);
+           -webkit-backdrop-filter: blur(18px) saturate(155%);
+         ">
         <span class="text-xs font-semibold text-white">
           {{ media.formatted_progress }}
           {% if media.max_progress %}/ {{ media.max_progress }}{% endif %}
@@ -126,19 +134,23 @@
     {% endif %}
 
     {% if media.repeats > 1 %}
-      <div class="absolute sm:bottom-3 sm:right-4 sm:left-auto bottom-12 left-4 flex items-center"
-           style="
-             border-radius: 9999px;
-             padding: 4px 8px;
-             background:
-               radial-gradient(circle at 34% 24%, rgba(255,255,255,0.22), rgba(255,255,255,0.10) 44%, rgba(255,255,255,0.04) 100%);
-             border: 1px solid rgba(255,255,255,0.18);
-             box-shadow:
-               inset 0 1px 0 rgba(255,255,255,0.18),
-               0 8px 18px rgba(0,0,0,0.24);
-             backdrop-filter: blur(18px) saturate(155%);
-             -webkit-backdrop-filter: blur(18px) saturate(155%);
-           ">
+      <div style="
+           position: absolute;
+           bottom: 14px;
+           right: 16px;
+           border-radius: 9999px;
+           padding: 4px 8px;
+           display: flex;
+           align-items: center;
+           background:
+             radial-gradient(circle at 34% 24%, rgba(255,255,255,0.24), rgba(255,255,255,0.10) 44%, rgba(255,255,255,0.04) 100%);
+           border: 1px solid rgba(255,255,255,0.18);
+           box-shadow:
+             inset 0 1px 0 rgba(255,255,255,0.18),
+             0 8px 18px rgba(0,0,0,0.24);
+           backdrop-filter: blur(18px) saturate(155%);
+           -webkit-backdrop-filter: blur(18px) saturate(155%);
+         ">
         {% include "app/icons/repeat.svg" with classes="w-4 h-4 text-slate-200 mr-1" %}
         <span class="text-xs font-semibold text-white">{{ media.repeats }}</span>
       </div>
@@ -302,7 +314,7 @@
   </div>
 
   {% with user=target_user|default:user %}
-    <div style="opacity: 0.68;">
+    <div style="opacity: 0.55;">
       {% include "app/components/progress_bar.html" with media=media user=user only %}
     </div>
   {% endwith %}
