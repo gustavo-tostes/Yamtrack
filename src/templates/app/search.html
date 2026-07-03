@@ -86,9 +86,11 @@
     }
 
     div.sticky.top-0.z-10 form {
+      position: relative;
+      z-index: 20;
       border-radius: 9999px !important;
       border: 1px solid rgba(255, 255, 255, 0.14) !important;
-      overflow: hidden;
+      overflow: visible !important;
       background:
         radial-gradient(circle at 34% 24%, rgba(255,255,255,0.18), rgba(255,255,255,0.075) 48%, rgba(255,255,255,0.035) 100%) !important;
       box-shadow:
@@ -102,15 +104,15 @@
     div.sticky.top-0.z-10 input,
     div.sticky.top-0.z-10 select,
     div.sticky.top-0.z-10 button {
+      pointer-events: auto !important;
       border: none !important;
-      background: transparent !important;
       box-shadow: none !important;
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
     }
 
     div.sticky.top-0.z-10 input {
       color: rgba(255,255,255,0.92) !important;
+      background: transparent !important;
+      border-radius: 9999px 0 0 9999px !important;
     }
 
     div.sticky.top-0.z-10 input::placeholder {
@@ -119,9 +121,25 @@
 
     div.sticky.top-0.z-10 select,
     div.sticky.top-0.z-10 button {
+      color: rgba(255,255,255,0.88) !important;
       background:
-        linear-gradient(135deg, rgba(255,255,255,0.045), rgba(255,255,255,0.018)) !important;
+        linear-gradient(135deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018)) !important;
       border-left: 1px solid rgba(255,255,255,0.08) !important;
+      border-radius: 0 9999px 9999px 0 !important;
+      cursor: pointer !important;
+    }
+
+    div.sticky.top-0.z-10 select:focus,
+    div.sticky.top-0.z-10 button:focus,
+    div.sticky.top-0.z-10 input:focus {
+      outline: none !important;
+      box-shadow: none !important;
+    }
+
+    div.sticky.top-0.z-10 [x-show],
+    div.sticky.top-0.z-10 .absolute {
+      z-index: 9999 !important;
+      overflow: visible !important;
     }
 
     .yamtrack-search-page {
