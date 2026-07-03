@@ -5,23 +5,56 @@
     {% if section.key == Status.IN_PROGRESS.value %}
       <div class="flex justify-center">
         <div style="
-          background: linear-gradient(135deg, rgba(255,255,255,0.24), rgba(255,255,255,0.11));
-          color: #ffffff;
+          position: relative;
+          overflow: hidden;
+          background:
+            radial-gradient(circle at 28% 18%, rgba(255,255,255,0.34), rgba(255,255,255,0.10) 42%, rgba(255,255,255,0.045) 100%),
+            linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.055));
+          color: rgba(255,255,255,0.96);
           border-radius: 9999px;
           padding: 10px 34px;
           font-size: 15px;
           font-weight: 900;
           text-transform: uppercase;
-          letter-spacing: 0.08em;
+          letter-spacing: 0.09em;
           border: 1px solid rgba(255,255,255,0.22);
           box-shadow:
-            inset 0 1px 0 rgba(255,255,255,0.18),
-            inset 0 -1px 0 rgba(255,255,255,0.04),
-            0 12px 28px rgba(0,0,0,0.22);
-          backdrop-filter: blur(18px) saturate(155%);
-          -webkit-backdrop-filter: blur(18px) saturate(155%);
+            inset 0 1px 0 rgba(255,255,255,0.26),
+            inset 0 -1px 0 rgba(255,255,255,0.045),
+            0 12px 28px rgba(0,0,0,0.22),
+            0 0 22px rgba(130,140,255,0.08);
+          text-shadow: 0 1px 2px rgba(0,0,0,0.28);
+          backdrop-filter: blur(22px) saturate(165%);
+          -webkit-backdrop-filter: blur(22px) saturate(165%);
         ">
-          ASSISTIR A SEGUIR
+          <span style="
+            pointer-events: none;
+            position: absolute;
+            top: 2px;
+            left: 18px;
+            right: 18px;
+            height: 1px;
+            border-radius: 9999px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.48), transparent);
+            opacity: 0.75;
+          "></span>
+
+          <span style="
+            pointer-events: none;
+            position: absolute;
+            top: -18px;
+            left: 12%;
+            width: 42%;
+            height: 44px;
+            border-radius: 9999px;
+            background: rgba(255,255,255,0.10);
+            filter: blur(14px);
+            opacity: 0.62;
+          "></span>
+
+          <span style="position: relative; z-index: 1;">
+            ASSISTIR A SEGUIR
+          </span>
         </div>
       </div>
     {% elif section.key == Status.PLANNING.value %}
