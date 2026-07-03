@@ -20,60 +20,43 @@
       {% endif %}
 
       <p class="{% if episode_title %}mt-0.5{% else %}mt-1{% endif %} line-clamp-1 text-xs text-gray-400">
-        {{ media.formatted_progress }}
-
         {% if media.item.media_type == MediaTypes.SEASON.value %}
-          {% if media.max_progress %}
-            / {{ media.max_progress }}
-            {% if media.max_progress == 1 %}
-              Episódio assistido
-            {% else %}
-              Episódios assistidos
-            {% endif %}
+          {{ media.progress }} / {{ media.max_progress }}
+          {% if media.max_progress == 1 %}
+            Episódio assistido
           {% else %}
-            {% if media.progress == 1 %}
-              Episódio assistido
-            {% else %}
-              Episódios assistidos
-            {% endif %}
+            Episódios assistidos
           {% endif %}
         {% elif media.item.media_type != MediaTypes.GAME.value and media.item.media_type != MediaTypes.MOVIE.value %}
-          {% if media.max_progress %}
-            / {{ media.max_progress }} {{ media.item.media_type|long_unit }}{{ media.max_progress|pluralize }} assistidos
-          {% else %}
-            {{ media.item.media_type|long_unit }}{{ media.progress|pluralize }} assistidos
-          {% endif %}
+          {{ media.formatted_progress }} assistidos
         {% endif %}
       </p>
     {% endwith %}
-
-    <div class="mt-2">
-      {% include "app/components/progress_bar.html" with media=media user=user %}
-    </div>
   </div>
 
   <button class="shrink-0 cursor-pointer disabled:opacity-35 disabled:cursor-not-allowed"
           style="
-            width: 46px;
-            height: 46px;
-            margin-right: 18px;
+            width: 48px;
+            height: 48px;
+            margin-right: 26px;
             border-radius: 9999px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid rgba(255,255,255,0.28);
+            border: 1px solid rgba(255,255,255,0.24);
             background:
-              radial-gradient(circle at 35% 25%, rgba(255,255,255,0.80), rgba(255,255,255,0.42) 42%, rgba(255,255,255,0.24) 100%);
-            color: #4b5563;
+              radial-gradient(circle at 34% 24%, rgba(255,255,255,0.42), rgba(255,255,255,0.16) 42%, rgba(255,255,255,0.055) 100%);
+            color: rgba(235,238,245,0.80);
             font-size: 24px;
             line-height: 1;
             font-weight: 900;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.32);
             box-shadow:
-              inset 0 1px 0 rgba(255,255,255,0.50),
-              inset 0 -1px 0 rgba(255,255,255,0.10),
-              0 12px 26px rgba(0,0,0,0.24);
-            backdrop-filter: blur(18px) saturate(160%);
-            -webkit-backdrop-filter: blur(18px) saturate(160%);
+              inset 0 1px 0 rgba(255,255,255,0.26),
+              inset 0 -1px 0 rgba(255,255,255,0.05),
+              0 10px 24px rgba(0,0,0,0.20);
+            backdrop-filter: blur(20px) saturate(165%);
+            -webkit-backdrop-filter: blur(20px) saturate(165%);
             transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
           "
           {% if media.progress == media.max_progress %}disabled{% endif %}

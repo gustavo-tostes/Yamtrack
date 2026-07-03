@@ -96,63 +96,91 @@
       max-width: 980px;
       display: flex;
       justify-content: center;
+      padding: 8px 0 0;
     }
 
     .yamtrack-home-tabs-track {
       position: relative;
       width: 100%;
+      height: 46px;
       display: grid;
       grid-template-columns: 1fr 1fr;
       align-items: center;
-      min-height: 60px;
+      overflow: hidden;
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      background:
+        radial-gradient(circle at top, rgba(255,255,255,0.11), transparent 48%),
+        linear-gradient(135deg, rgba(255,255,255,0.075), rgba(255,255,255,0.025));
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.10),
+        inset 0 -1px 0 rgba(255,255,255,0.025),
+        0 12px 28px rgba(0,0,0,0.18);
+      backdrop-filter: blur(22px) saturate(155%);
+      -webkit-backdrop-filter: blur(22px) saturate(155%);
     }
 
-    .yamtrack-home-tabs-track::after {
+    .yamtrack-home-tabs-track::before {
       content: "";
       position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      height: 1px;
-      background: rgba(255, 255, 255, 0.18);
+      top: 6px;
+      bottom: 6px;
+      left: 50%;
+      width: 1px;
+      background: rgba(255,255,255,0.10);
+      transform: translateX(-50%);
     }
 
     .yamtrack-home-tab {
       position: relative;
+      height: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 60px;
       text-decoration: none;
       text-transform: uppercase;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.16em;
       font-weight: 900;
-      font-size: 17px;
-      color: rgba(255, 255, 255, 0.55);
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.54);
       transition: color 180ms ease;
+      z-index: 1;
     }
 
     .yamtrack-home-tab:hover {
-      color: rgba(255, 255, 255, 0.82);
+      color: rgba(255, 255, 255, 0.86);
     }
 
     .yamtrack-home-tab.is-active {
       color: #ffffff;
+      text-shadow: 0 0 14px rgba(255,255,255,0.16);
+    }
+
+    .yamtrack-home-tab.is-active::before {
+      content: "";
+      position: absolute;
+      inset: 5px 8px;
+      border-radius: 9999px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.055));
+      border: 1px solid rgba(255,255,255,0.13);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.18),
+        inset 0 -1px 0 rgba(255,255,255,0.035),
+        0 8px 18px rgba(0,0,0,0.15);
+      z-index: -1;
     }
 
     .yamtrack-home-tab.is-active::after {
       content: "";
       position: absolute;
-      left: 50%;
-      bottom: 0;
-      transform: translateX(-50%);
-      width: 72%;
-      max-width: 260px;
-      height: 3px;
+      left: 22%;
+      right: 22%;
+      bottom: 5px;
+      height: 2px;
       border-radius: 9999px;
-      background: #ffffff;
+      background: rgba(255,255,255,0.82);
       box-shadow: 0 0 12px rgba(255,255,255,0.18);
-      z-index: 1;
     }
   </style>
 {% endblock extra_head %}
