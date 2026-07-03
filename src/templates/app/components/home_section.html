@@ -46,26 +46,28 @@
     <div class="space-y-8">
       {% for media_type, media_list in section.media_types.items %}
         <div class="space-y-4">
-          <div class="mb-4 flex items-center justify-between gap-4">
-            <div>
-              <h3 class="text-lg font-semibold text-white">
-                {% with readable=media_type|media_type_readable_plural %}
-                  {% if readable == "TV Shows" %}
-                    Séries
-                  {% elif readable == "TV Seasons" %}
-                    Temporadas
-                  {% elif readable == "Movies" %}
-                    Filmes
-                  {% else %}
-                    {{ readable }}
-                  {% endif %}
-                {% endwith %}
-              </h3>
+          {% if section.key != Status.IN_PROGRESS.value %}
+            <div class="mb-4 flex items-center justify-between gap-4">
+              <div>
+                <h3 class="text-lg font-semibold text-white">
+                  {% with readable=media_type|media_type_readable_plural %}
+                    {% if readable == "TV Shows" %}
+                      Séries
+                    {% elif readable == "TV Seasons" %}
+                      Temporadas
+                    {% elif readable == "Movies" %}
+                      Filmes
+                    {% else %}
+                      {{ readable }}
+                    {% endif %}
+                  {% endwith %}
+                </h3>
+              </div>
             </div>
-          </div>
+          {% endif %}
 
           <div id="media-grid-{{ section.id }}-{{ media_type }}"
-               class="{% if section.key == Status.IN_PROGRESS.value %}space-y-3{% else %}media-grid{% endif %}">
+               class="{% if section.key == Status.IN_PROGRESS.value %}space-y-2{% else %}media-grid{% endif %}">
             {% include "app/components/home_grid.html" with media_list=media_list home_status=section.key %}
           </div>
 
