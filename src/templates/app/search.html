@@ -100,8 +100,14 @@
     }
 
     .yamtrack-search-page {
-      max-width: 1460px;
+      width: 100%;
+      max-width: 1320px;
       margin: -4px auto 0;
+    }
+
+    .yamtrack-search-panel {
+      width: min(100%, 1180px);
+      margin-inline: auto;
     }
 
     .yamtrack-section-pill {
@@ -238,13 +244,27 @@
       flex-wrap: wrap;
     }
 
+    .yamtrack-results-grid {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 170px)) !important;
+      justify-content: center;
+      max-width: 1280px;
+      margin-inline: auto;
+    }
+
+    .yamtrack-results-list {
+      max-width: 960px;
+      margin-inline: auto;
+    }
+
     .yamtrack-results-grid > div,
     .yamtrack-results-list > div {
       animation: yamtrackFadeIn 220ms ease both;
     }
 
     .yamtrack-empty-state {
+      width: min(100%, 960px);
       min-height: 360px;
+      margin-inline: auto;
     }
 
     @keyframes yamtrackFadeIn {
@@ -256,6 +276,20 @@
       to {
         opacity: 1;
         transform: translateY(0);
+      }
+    }
+
+    @media (min-width: 1500px) {
+      .yamtrack-search-page {
+        max-width: 1240px;
+      }
+
+      .yamtrack-search-panel {
+        width: min(100%, 1120px);
+      }
+
+      .yamtrack-results-grid {
+        max-width: 1180px;
       }
     }
 
@@ -299,7 +333,7 @@
       <h2 class="yamtrack-section-pill">Resultados da busca</h2>
     </div>
 
-    <div class="yamtrack-glass-panel px-5 py-5 mb-8">
+    <div class="yamtrack-search-panel yamtrack-glass-panel px-5 py-5 mb-8">
       <div class="yamtrack-toolbar">
         <div class="yamtrack-toolbar-left">
           <div class="yamtrack-query-summary">
