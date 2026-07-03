@@ -6,26 +6,25 @@
 {% endblock title %}
 
 {% block search_bar %}
-  <div class="flex h-16 w-full items-stretch justify-center"
-       style="max-width: 980px;">
-    <div class="relative flex h-full w-full items-stretch justify-center">
-      <div class="absolute right-0 bottom-0 left-0 h-px bg-white/25"></div>
+  <div style="height: 64px; width: 100%; max-width: 1080px; display: flex; align-items: stretch; justify-content: center;">
+    <div style="position: relative; width: 100%; display: flex; align-items: stretch;">
+      <div style="position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: rgba(255,255,255,0.28);"></div>
 
       <a href="{% url 'home' %}?tab=minha-lista"
-         class="relative flex flex-1 items-center justify-center text-xl font-black uppercase tracking-[0.22em] transition-colors duration-200 {% if request.GET.tab != 'em-breve' %}text-white{% else %}text-gray-400 hover:text-white{% endif %}">
+         style="position: relative; flex: 1; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 20px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.16em; color: {% if request.GET.tab != 'em-breve' %}#ffffff{% else %}#9ca3af{% endif %};">
         MINHA LISTA
 
         {% if request.GET.tab != 'em-breve' %}
-          <span class="absolute right-0 bottom-0 left-0 h-[4px] bg-white"></span>
+          <span style="position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: #ffffff; display: block;"></span>
         {% endif %}
       </a>
 
       <a href="{% url 'home' %}?tab=em-breve"
-         class="relative flex flex-1 items-center justify-center text-xl font-black uppercase tracking-[0.22em] transition-colors duration-200 {% if request.GET.tab == 'em-breve' %}text-white{% else %}text-gray-400 hover:text-white{% endif %}">
+         style="position: relative; flex: 1; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 20px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.16em; color: {% if request.GET.tab == 'em-breve' %}#ffffff{% else %}#9ca3af{% endif %};">
         EM BREVE
 
         {% if request.GET.tab == 'em-breve' %}
-          <span class="absolute right-0 bottom-0 left-0 h-[4px] bg-white"></span>
+          <span style="position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: #ffffff; display: block;"></span>
         {% endif %}
       </a>
     </div>
