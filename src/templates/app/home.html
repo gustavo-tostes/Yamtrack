@@ -6,23 +6,26 @@
 {% endblock title %}
 
 {% block search_bar %}
-  <div class="flex h-16 w-full max-w-xl items-end justify-center">
-    <div class="flex w-full items-end justify-center border-b border-white/35">
+  <div class="flex h-16 w-full items-stretch justify-center"
+       style="max-width: 980px;">
+    <div class="relative flex h-full w-full items-stretch justify-center">
+      <div class="absolute right-0 bottom-0 left-0 h-px bg-white/25"></div>
+
       <a href="{% url 'home' %}?tab=minha-lista"
-         class="relative flex-1 pb-3 text-center text-base font-extrabold uppercase tracking-[0.16em] transition-colors duration-200 {% if request.GET.tab != 'em-breve' %}text-white{% else %}text-gray-400 hover:text-white{% endif %}">
-        Minha Lista
+         class="relative flex flex-1 items-center justify-center text-xl font-black uppercase tracking-[0.22em] transition-colors duration-200 {% if request.GET.tab != 'em-breve' %}text-white{% else %}text-gray-400 hover:text-white{% endif %}">
+        MINHA LISTA
 
         {% if request.GET.tab != 'em-breve' %}
-          <span class="absolute right-0 bottom-0 left-0 h-1 bg-white"></span>
+          <span class="absolute right-0 bottom-0 left-0 h-[4px] bg-white"></span>
         {% endif %}
       </a>
 
       <a href="{% url 'home' %}?tab=em-breve"
-         class="relative flex-1 pb-3 text-center text-base font-extrabold uppercase tracking-[0.16em] transition-colors duration-200 {% if request.GET.tab == 'em-breve' %}text-white{% else %}text-gray-400 hover:text-white{% endif %}">
-        Em Breve
+         class="relative flex flex-1 items-center justify-center text-xl font-black uppercase tracking-[0.22em] transition-colors duration-200 {% if request.GET.tab == 'em-breve' %}text-white{% else %}text-gray-400 hover:text-white{% endif %}">
+        EM BREVE
 
         {% if request.GET.tab == 'em-breve' %}
-          <span class="absolute right-0 bottom-0 left-0 h-1 bg-white"></span>
+          <span class="absolute right-0 bottom-0 left-0 h-[4px] bg-white"></span>
         {% endif %}
       </a>
     </div>

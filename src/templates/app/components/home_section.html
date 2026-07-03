@@ -4,10 +4,12 @@
   <div class="space-y-4">
     {% if section.key == Status.IN_PROGRESS.value %}
       <div class="flex justify-center">
-        <div style="background: #8a8a8a; color: #ffffff; border-radius: 9999px; padding: 7px 24px; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; box-shadow: 0 6px 14px rgba(0,0,0,0.20);">
-          Assistir a seguir
+        <div style="background: #8f8f8f; color: #ffffff; border-radius: 9999px; padding: 9px 34px; font-size: 15px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; box-shadow: 0 8px 18px rgba(0,0,0,0.24);">
+          ASSISTIR A SEGUIR
         </div>
       </div>
+    {% elif section.key == Status.PLANNING.value %}
+      <div class="h-1"></div>
     {% else %}
       <div class="flex items-center justify-between gap-4">
         <div class="flex items-center gap-3">
@@ -17,11 +19,7 @@
 
           <div>
             <h2 class="text-2xl font-semibold text-white">
-              {% if section.key == Status.PLANNING.value %}
-                Planejadas
-              {% else %}
-                {{ section.key|media_status_readable|title }}
-              {% endif %}
+              {{ section.key|media_status_readable|title }}
             </h2>
           </div>
         </div>
@@ -40,7 +38,7 @@
     <div class="space-y-8">
       {% for media_type, media_list in section.media_types.items %}
         <div class="space-y-4">
-          {% if section.key != Status.IN_PROGRESS.value %}
+          {% if section.key != Status.IN_PROGRESS.value and section.key != Status.PLANNING.value %}
             <div class="mb-4 flex items-center justify-between gap-4">
               <div>
                 <h3 class="text-lg font-semibold text-white">
@@ -61,7 +59,7 @@
           {% endif %}
 
           <div id="media-grid-{{ section.id }}-{{ media_type }}"
-               class="{% if section.key == Status.IN_PROGRESS.value %}mx-auto max-w-4xl space-y-3{% else %}media-grid{% endif %}">
+               class="{% if section.key == Status.IN_PROGRESS.value or section.key == Status.PLANNING.value %}mx-auto max-w-4xl space-y-3{% else %}media-grid{% endif %}">
             {% include "app/components/home_grid.html" with media_list=media_list home_status=section.key %}
           </div>
 
