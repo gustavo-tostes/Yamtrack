@@ -64,7 +64,8 @@
             </div>
           </div>
 
-          <div id="media-grid-{{ section.id }}-{{ media_type }}" class="media-grid">
+          <div id="media-grid-{{ section.id }}-{{ media_type }}"
+               class="{% if section.key == Status.IN_PROGRESS.value %}space-y-3{% else %}media-grid{% endif %}">
             {% include "app/components/home_grid.html" with media_list=media_list home_status=section.key %}
           </div>
 
