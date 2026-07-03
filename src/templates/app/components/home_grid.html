@@ -3,7 +3,7 @@
 {% for media in media_list.items %}
   {% if home_status == Status.IN_PROGRESS.value %}
     <div class="col-span-full overflow-hidden rounded-2xl bg-black/45 shadow-md ring-1 ring-white/10 transition-all duration-200 hover:bg-black/60 hover:ring-white/20"
-         x-data="{ trackOpen: false, listsOpen: false, historyOpen: false }">
+         x-data="{ trackOpen: false, historyOpen: false }">
 
       <div class="flex items-center gap-4 p-3 md:p-4">
         <a href="{{ media.item|media_url }}" class="shrink-0">
@@ -16,37 +16,15 @@
         <div class="flex min-w-0 flex-1 flex-col justify-center">
           <div class="mb-2">
             <a href="{{ media.item|media_url }}"
-               class="inline-flex max-w-full items-center rounded-full border border-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white transition-colors hover:border-indigo-300 hover:text-indigo-200"
+               class="inline-flex max-w-full items-center rounded-full border border-white/75 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white transition-colors hover:border-indigo-300 hover:text-indigo-200"
                title="{{ media }}">
               <span class="truncate">{{ media }}</span>
               <span class="ml-2 text-base leading-none">›</span>
             </a>
           </div>
 
-          <p class="line-clamp-1 text-lg font-semibold text-white">
-            {% if media.progress == media.max_progress %}
-              Temporada concluída
-            {% else %}
-              Próximo episódio: {{ media.item.media_type|short_unit }}{{ media.progress|add:"1" }}
-            {% endif %}
-          </p>
-
-          <p class="mt-1 line-clamp-1 text-sm text-gray-400">
-            {{ media.formatted_progress }}
-
-            {% if media.item.media_type != MediaTypes.GAME.value and media.item.media_type != MediaTypes.MOVIE.value %}
-              {% if media.max_progress %}
-                / {{ media.max_progress }} {{ media.item.media_type|long_unit }}{{ media.max_progress|pluralize }} assistidos
-              {% else %}
-                {{ media.item.media_type|long_unit }}{{ media.progress|pluralize }} assistidos
-              {% endif %}
-            {% endif %}
-          </p>
-
-          <div class="mt-3">
-            <div id="progress-{{ media.item.media_type }}-{{ media.id }}">
-              {% include "app/components/progress_changer.html" with media=media user=user csrf_token=csrf_token MediaTypes=MediaTypes only %}
-            </div>
+          <div id="progress-{{ media.item.media_type }}-{{ media.id }}">
+            {% include "app/components/progress_changer.html" with media=media user=user csrf_token=csrf_token MediaTypes=MediaTypes only %}
           </div>
         </div>
 

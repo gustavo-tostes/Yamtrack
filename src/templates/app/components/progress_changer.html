@@ -2,12 +2,34 @@
 
 {% include "app/components/messages/messages_oob.html" %}
 
-<div class="flex items-center gap-3">
-  <div class="min-w-0">
-    {% include "app/components/progress_bar.html" with media=media user=user %}
+<div class="flex items-center justify-between gap-4">
+  <div class="min-w-0 flex-1">
+    <p class="line-clamp-1 text-lg font-semibold text-white">
+      {% if media.progress == media.max_progress %}
+        Temporada concluída
+      {% else %}
+        Próximo episódio: {{ media.item.media_type|short_unit }}{{ media.progress|add:"1" }}
+      {% endif %}
+    </p>
+
+    <p class="mt-1 line-clamp-1 text-sm text-gray-400">
+      {{ media.formatted_progress }}
+
+      {% if media.item.media_type != MediaTypes.GAME.value and media.item.media_type != MediaTypes.MOVIE.value %}
+        {% if media.max_progress %}
+          / {{ media.max_progress }} {{ media.item.media_type|long_unit }}{{ media.max_progress|pluralize }} assistidos
+        {% else %}
+          {{ media.item.media_type|long_unit }}{{ media.progress|pluralize }} assistidos
+        {% endif %}
+      {% endif %}
+    </p>
+
+    <div class="mt-2">
+      {% include "app/components/progress_bar.html" with media=media user=user %}
+    </div>
   </div>
 
-  <button class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-gray-700 shadow-sm transition-all duration-200 hover:scale-105 hover:bg-gray-100 cursor-pointer disabled:opacity-35 disabled:hover:scale-100 disabled:cursor-not-allowed"
+  <button class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-xl font-semibold text-gray-700 shadow-sm transition-all duration-200 hover:scale-105 hover:bg-gray-100 cursor-pointer disabled:opacity-35 disabled:hover:scale-100 disabled:cursor-not-allowed"
           {% if media.progress == media.max_progress %}disabled{% endif %}
           title="Marcar próximo episódio"
           hx-post="{% url 'progress_edit' media.item.media_type media.id %}"
