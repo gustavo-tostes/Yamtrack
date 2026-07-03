@@ -2,7 +2,7 @@
 
 {% include "app/components/messages/messages_oob.html" %}
 
-<div class="flex items-center justify-between gap-4">
+<div class="flex items-center gap-4">
   <div class="min-w-0 flex-1">
     <p class="line-clamp-1 text-lg font-semibold text-white">
       {% if media.progress == media.max_progress %}
@@ -29,7 +29,7 @@
     </div>
   </div>
 
-  <button class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-xl font-semibold text-gray-700 shadow-sm transition-all duration-200 hover:scale-105 hover:bg-gray-100 cursor-pointer disabled:opacity-35 disabled:hover:scale-100 disabled:cursor-not-allowed"
+  <button class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white text-2xl font-semibold text-gray-700 shadow-sm transition-all duration-200 hover:scale-105 hover:bg-gray-100 cursor-pointer disabled:opacity-35 disabled:hover:scale-100 disabled:cursor-not-allowed"
           {% if media.progress == media.max_progress %}disabled{% endif %}
           title="Marcar próximo episódio"
           hx-post="{% url 'progress_edit' media.item.media_type media.id %}"

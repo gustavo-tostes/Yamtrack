@@ -2,7 +2,7 @@
 
 {% if media.status and user.progress_bar %}
   <div class="h-1.5 overflow-hidden rounded-full bg-white/10"
-       style="width: 190px; max-width: 100%;">
+       style="width: 170px; max-width: 100%;">
     {% if media.status == 'In progress' %}
       {% if media.max_progress and media.max_progress > 0 %}
         {% widthratio media.progress media.max_progress 100 as progress_width %}
