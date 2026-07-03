@@ -164,7 +164,7 @@
           <p class="mt-0.5 line-clamp-1 text-gray-400"
              style="font-size: clamp(11px, 3.2vw, 12px);">
             {% if media.next_event and not media.next_event.is_max_datetime %}
-              {{ media.next_event.datetime|date:"d/m/Y" }} · {{ media.next_event.datetime|natural_day:user }}
+              {{ media.next_event.datetime|date:"d/m/Y" }} · faltam {{ media.next_event.datetime|timeuntil }}
             {% else %}
               Aguardando data de estreia
             {% endif %}
