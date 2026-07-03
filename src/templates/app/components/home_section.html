@@ -11,6 +11,7 @@
             {% include "app/icons/states/planning.svg" with classes="h-5 w-5" %}
           {% endif %}
         </div>
+
         <div>
           <h2 class="text-2xl font-semibold text-white">
             {% if section.key == Status.IN_PROGRESS.value %}
@@ -67,7 +68,7 @@
           {% endif %}
 
           <div id="media-grid-{{ section.id }}-{{ media_type }}"
-               class="{% if section.key == Status.IN_PROGRESS.value %}space-y-2{% else %}media-grid{% endif %}">
+               class="{% if section.key == Status.IN_PROGRESS.value %}mx-auto max-w-5xl space-y-3{% else %}media-grid{% endif %}">
             {% include "app/components/home_grid.html" with media_list=media_list home_status=section.key %}
           </div>
 
@@ -81,6 +82,7 @@
                       type="button"
                       class="rounded-md border border-gray-700 bg-[#2a2f35] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#313842] cursor-pointer"
                       hx-on:click="this.remove()">Carregar todos ({{ media_list.total }})</button>
+
               <div id="loading-indicator-{{ section.id }}-{{ media_type }}"
                    class="htmx-indicator hidden text-center">
                 <div class="inline-flex items-center justify-center">
