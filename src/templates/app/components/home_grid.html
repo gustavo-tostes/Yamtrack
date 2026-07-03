@@ -3,13 +3,13 @@
 {% for media in media_list.items %}
   {% if home_status == Status.IN_PROGRESS.value %}
     <div class="col-span-full mx-auto w-full overflow-hidden rounded-2xl bg-black/60 shadow-md ring-1 ring-white/10 transition-all duration-200 hover:bg-black/75 hover:ring-white/20"
-         style="max-width: 620px;">
+         style="max-width: 560px;">
 
-      <div class="flex items-center gap-4 p-3 md:p-4">
+      <div class="flex items-center gap-3 p-3 md:gap-4 md:p-4">
         <a href="{{ media.item|media_url }}" class="shrink-0">
           <img alt="{{ media }}"
                class="lazyload rounded-lg bg-[#1b2026] shadow-sm {% if media.item.image != IMG_NONE %}object-cover{% endif %}"
-               style="width: 88px; height: 118px;"
+               style="width: 82px; height: 112px;"
                data-src="{{ media.item.image }}"
                src="{{ IMG_NONE }}">
         </a>
