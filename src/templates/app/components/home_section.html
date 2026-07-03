@@ -2,45 +2,38 @@
 
 <section class="space-y-5">
   <div class="space-y-4">
-    <div class="flex items-center justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#39404b] {% if section.key == Status.IN_PROGRESS.value %}{{ Status.IN_PROGRESS.value|status_color }}{% else %}{{ Status.PLANNING.value|status_color }}{% endif %}">
-          {% if section.key == Status.IN_PROGRESS.value %}
-            {% include "app/icons/states/in-progress.svg" with classes="h-5 w-5" %}
-          {% else %}
+    {% if section.key == Status.IN_PROGRESS.value %}
+      <div class="flex justify-center">
+        <div class="inline-flex items-center justify-center rounded-full bg-white/15 px-6 py-2 text-sm font-bold uppercase tracking-wide text-white shadow-sm ring-1 ring-white/15">
+          Assistir a seguir
+        </div>
+      </div>
+    {% else %}
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#39404b] {{ Status.PLANNING.value|status_color }}">
             {% include "app/icons/states/planning.svg" with classes="h-5 w-5" %}
-          {% endif %}
-        </div>
+          </div>
 
-        <div>
-          <h2 class="text-2xl font-semibold text-white">
-            {% if section.key == Status.IN_PROGRESS.value %}
-              Assistir a seguir
-            {% elif section.key == Status.PLANNING.value %}
-              Planejadas
-            {% else %}
-              {{ section.key|media_status_readable|title }}
-            {% endif %}
-          </h2>
+          <div>
+            <h2 class="text-2xl font-semibold text-white">
+              {% if section.key == Status.PLANNING.value %}
+                Planejadas
+              {% else %}
+                {{ section.key|media_status_readable|title }}
+              {% endif %}
+            </h2>
+          </div>
         </div>
       </div>
 
-      <span class="inline-flex items-center gap-2 rounded-full border border-gray-700 bg-[#39404b] px-3 py-1 text-sm text-gray-300">
-        {% if section.key == Status.IN_PROGRESS.value %}
-          {% include "app/icons/pulse.svg" with classes="h-4 w-4 text-indigo-400" %}
-        {% else %}
-          {% include "app/icons/leaf.svg" with classes="h-4 w-4 text-sky-400" %}
-        {% endif %}
-        {{ section.count }} {% if section.count == 1 %}item{% else %}itens{% endif %}
-      </span>
-    </div>
-
-    <div class="relative h-px overflow-hidden rounded-full bg-gray-700/80">
-      <div class="absolute inset-y-0 left-0 w-full bg-linear-to-r {% if section.key == Status.IN_PROGRESS.value %}from-indigo-400 via-indigo-400/45 to-indigo-400/8{% else %}from-sky-400 via-sky-400/45 to-sky-400/8{% endif %}">
+      <div class="relative h-px overflow-hidden rounded-full bg-gray-700/80">
+        <div class="absolute inset-y-0 left-0 w-full bg-linear-to-r from-sky-400 via-sky-400/45 to-sky-400/8">
+        </div>
+        <div class="absolute top-1/2 left-0 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-sky-400">
+        </div>
       </div>
-      <div class="absolute top-1/2 left-0 h-1.5 w-1.5 -translate-y-1/2 rounded-full {% if section.key == Status.IN_PROGRESS.value %}bg-indigo-400{% else %}bg-sky-400{% endif %}">
-      </div>
-    </div>
+    {% endif %}
   </div>
 
   {% if section.media_types %}
