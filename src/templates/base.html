@@ -2,13 +2,13 @@
 {% load app_tags %}
 
 <!DOCTYPE html>
-<html lang="en" class="scheme-dark bg-[#212529]">
+<html lang="pt-BR" class="scheme-dark bg-[#212529]">
   <head>
     {# Required meta tags #}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="keywords" content="Yamtrack, Media Tracker">
-    <meta name="description" content="Search and track media on Yamtrack.">
+    <meta name="description" content="Pesquise e acompanhe séries, temporadas e filmes no Yamtrack.">
 
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-status-bar-style" content="black-translucent">
@@ -83,7 +83,7 @@
                       {% include "app/icons/house.svg" with classes="w-5 h-5" %}
 
                     {% endif %}
-                    <span>Home</span>
+                    <span>Início</span>
                   </a>
                 </li>
 
@@ -94,13 +94,33 @@
                       <a href="{% url 'medialist' username=user.username media_type=item.media_type %}"
                          class="flex items-center space-x-3 px-4 py-2 rounded-md transition-colors duration-200 text-sm {% if media_type == item.media_type %}text-white bg-[#2c3136]{% else %}text-gray-400 hover:text-white hover:bg-[#23272b]{% endif %}">
                         {% icon item.media_type is_active=media_type|str_equals:item.media_type %}
-                        <span>{{ item.display_name }}</span>
+                        <span>
+                          {% if item.display_name == "TV Shows" %}
+                            Séries
+                          {% elif item.display_name == "TV Seasons" %}
+                            Temporadas
+                          {% elif item.display_name == "Movies" %}
+                            Filmes
+                          {% else %}
+                            {{ item.display_name }}
+                          {% endif %}
+                        </span>
                       </a>
                     {% else %}
                       <a href="{% url 'medialist' username=user.username media_type=item.media_type %}"
                          class="flex items-center space-x-3 px-4 py-2 rounded-md transition-colors duration-200 text-sm text-gray-400 hover:text-white hover:bg-[#23272b]">
                         {% icon item.media_type is_active=False %}
-                        <span>{{ item.display_name }}</span>
+                        <span>
+                          {% if item.display_name == "TV Shows" %}
+                            Séries
+                          {% elif item.display_name == "TV Seasons" %}
+                            Temporadas
+                          {% elif item.display_name == "Movies" %}
+                            Filmes
+                          {% else %}
+                            {{ item.display_name }}
+                          {% endif %}
+                        </span>
                       </a>
                     {% endif %}
                   </li>
@@ -125,7 +145,7 @@
                         {% include "app/icons/circle-plus.svg" with classes="w-5 h-5" %}
 
                       {% endif %}
-                      <span>Create Custom</span>
+                      <span>Criar personalizado</span>
                     </a>
                   </li>
 
@@ -140,7 +160,7 @@
                         {% include "app/icons/bars-pyramid.svg" with classes="w-5 h-5" %}
 
                       {% endif %}
-                      <span>Statistics</span>
+                      <span>Estatísticas</span>
                     </a>
                   </li>
 
@@ -155,7 +175,7 @@
                         {% include "app/icons/folder-plus.svg" with classes="w-5 h-5" %}
 
                       {% endif %}
-                      <span>Lists</span>
+                      <span>Listas</span>
                     </a>
                   </li>
 
@@ -170,7 +190,7 @@
                         {% include "app/icons/calendar.svg" with classes="w-5 h-5" %}
 
                       {% endif %}
-                      <span>Calendar</span>
+                      <span>Calendário</span>
                     </a>
                   </li>
                 </ul>
@@ -196,7 +216,7 @@
                     {% include "app/icons/settings.svg" with classes="w-5 h-5" %}
 
                   {% endif %}
-                  <span>Settings</span>
+                  <span>Configurações</span>
                 </a>
 
                 <form method="post" action="{% url 'account_logout' %}" class="w-full">
@@ -205,7 +225,7 @@
                           class="w-full flex items-center space-x-3 px-4 py-2 rounded-md text-gray-400 hover:bg-[#23272b] hover:text-white transition-colors duration-200 text-sm cursor-pointer">
                     {% include "app/icons/logout.svg" with classes="w-5 h-5" %}
 
-                    <span>Logout</span>
+                    <span>Sair</span>
                   </button>
                 </form>
               </div>
@@ -241,7 +261,26 @@
                   <div class="relative w-full max-w-2xl">
                     <form method="get"
                           action="{% url 'search' %}"
-                          x-data=" { isOpen: false, selectedType: { display: '{{ search_type|media_type_readable_plural }}', value: '{{ search_type }}' }, mediaTypes: {% get_search_media_types user as search_types %}{{ search_types }}, getPlaceholder() { return `Search ${this.selectedType.display.toLowerCase()}...` } }">
+                          x-data="{ 
+                            isOpen: false, 
+                            selectedType: { display: '{{ search_type|media_type_readable_plural }}', value: '{{ search_type }}' }, 
+                            mediaTypes: {% get_search_media_types user as search_types %}{{ search_types }},
+                            translateMediaDisplay(display) {
+                              const translations = {
+                                'TV Shows': 'Séries',
+                                'TV Seasons': 'Temporadas',
+                                'Movies': 'Filmes',
+                                'Games': 'Jogos',
+                                'Books': 'Livros',
+                                'Anime': 'Animes',
+                                'Manga': 'Mangás'
+                              };
+                              return translations[display] || display;
+                            },
+                            getPlaceholder() {
+                              return `Buscar ${this.translateMediaDisplay(this.selectedType.display).toLowerCase()}...`;
+                            }
+                          }">
                       <div class="flex">
                         <div class="relative grow">
                           {# Search input #}
@@ -265,7 +304,7 @@
                                 @click="isOpen = !isOpen"
                                 @click.away="isOpen = false"
                                 class="flex items-center justify-between max-w-[110px] sm:max-w-none sm:w-32 px-2 sm:px-4 py-2 text-sm text-gray-300 bg-[#272c31] rounded-r-md focus:outline-none focus:ring-2 focus:ring-[#4a9eff] focus:ring-inset hover:bg-[#2a2e33] transition-colors duration-200 cursor-pointer">
-                          <span class="truncate sm:whitespace-normal" x-text="selectedType.display"></span>
+                          <span class="truncate sm:whitespace-normal" x-text="translateMediaDisplay(selectedType.display)"></span>
                           {% include "app/icons/chevron-down.svg" with classes="w-4 h-4 ml-2" %}
 
                         </button>
@@ -282,7 +321,7 @@
                           <template x-for="type in mediaTypes" :key="type.value">
                             <li @click="selectedType = type; isOpen = false"
                                 class="px-4 py-2 cursor-pointer hover:bg-[#343a40] transition duration-150 ease-in-out"
-                                x-text="type.display"></li>
+                                x-text="translateMediaDisplay(type.display)"></li>
                           </template>
                         </ul>
                       </div>
