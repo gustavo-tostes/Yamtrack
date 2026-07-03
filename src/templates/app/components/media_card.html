@@ -1,17 +1,55 @@
 {% load app_tags %}
 
-<div class="{% if secondary_color %}bg-[#39404b]{% else %}bg-[#2a2f35]{% endif %} rounded-lg overflow-hidden shadow-lg relative {% if active %}ring-[1.5px] ring-slate-400{% endif %}"
+<div class="relative overflow-hidden transition-all duration-300 {% if active %}ring-[1.5px] ring-white/45{% endif %}"
+     style="
+       border-radius: 24px;
+       background:
+         radial-gradient(circle at top left, rgba(255,255,255,0.13), transparent 36%),
+         radial-gradient(circle at 82% 18%, rgba(125,135,255,0.09), transparent 30%),
+         linear-gradient(135deg, rgba(255,255,255,0.115), rgba(255,255,255,0.035));
+       border: 1px solid rgba(255,255,255,0.13);
+       box-shadow:
+         inset 0 1px 0 rgba(255,255,255,0.13),
+         inset 0 -1px 0 rgba(255,255,255,0.03),
+         0 16px 34px rgba(0,0,0,0.24);
+       backdrop-filter: blur(22px) saturate(155%);
+       -webkit-backdrop-filter: blur(22px) saturate(155%);
+     "
      x-data="{ trackOpen: false, listsOpen: false, historyOpen: false }">
-  <div class="relative">
-    <a href="{{ item|media_url }}">
+
+  <div class="relative p-2 pb-0">
+    <a href="{{ item|media_url }}" class="block overflow-hidden"
+       style="border-radius: 18px;">
       <img alt="{{ title }}"
-           class="lazyload w-full {% if from_grid %}aspect-2/3{% else %}h-48{% endif %} bg-[#3e454d] {% if item.image != IMG_NONE %}object-cover{% endif %}"
+           class="lazyload w-full {% if from_grid %}aspect-2/3{% else %}h-48{% endif %} {% if item.image != IMG_NONE %}object-cover{% endif %}"
+           style="
+             background: rgba(255,255,255,0.06);
+             border-radius: 18px;
+             border: 1px solid rgba(255,255,255,0.12);
+             box-shadow:
+               inset 0 1px 0 rgba(255,255,255,0.08),
+               0 10px 24px rgba(0,0,0,0.24);
+           "
            data-src="{{ item.image }}"
            src="{{ IMG_NONE }}">
     </a>
+
     {% with user=target_user|default:user %}
       {% if media.status %}
-        <div class="absolute top-2 left-2 bg-gray-900/90 text-white text-xs px-2 py-1 rounded-md flex items-center shadow-md">
+        <div class="absolute top-4 left-4 flex items-center"
+             style="
+               max-width: calc(100% - 32px);
+               border-radius: 9999px;
+               padding: 4px 8px;
+               background:
+                 radial-gradient(circle at 34% 24%, rgba(255,255,255,0.22), rgba(255,255,255,0.10) 44%, rgba(255,255,255,0.04) 100%);
+               border: 1px solid rgba(255,255,255,0.18);
+               box-shadow:
+                 inset 0 1px 0 rgba(255,255,255,0.18),
+                 0 8px 18px rgba(0,0,0,0.24);
+               backdrop-filter: blur(18px) saturate(155%);
+               -webkit-backdrop-filter: blur(18px) saturate(155%);
+             ">
           {% if media.status == Status.COMPLETED.value %}
             <div class="w-4 h-4 {{ Status.COMPLETED.value|status_color }} {% if media.start_date or media.end_date %}mr-1.5{% endif %}">
               {% include "app/icons/states/completed.svg" %}
@@ -39,25 +77,48 @@
           {% endif %}
 
           {% if media.end_date is not None %}
-            <span class="text-sm text-white">{{ media.end_date|date_format:user }}</span>
+            <span class="truncate text-xs font-semibold text-white">{{ media.end_date|date_format:user }}</span>
           {% elif media.start_date is not None %}
-            <span class="text-sm text-white">{{ media.start_date|date_format:user }}</span>
+            <span class="truncate text-xs font-semibold text-white">{{ media.start_date|date_format:user }}</span>
           {% endif %}
-
         </div>
       {% endif %}
 
       {% if media.score|show_media_score:user %}
-        <div class="absolute {% if from_grid %}sm:top-2 sm:right-2 sm:left-auto{% endif %} top-10 left-2 bg-gray-900/90 text-white text-xs px-2 py-1 rounded-md flex items-center shadow-md">
-          {% include "app/icons/star.svg" with classes="w-4 h-4 text-yellow-400 mr-1 fill-current" %}
-          <span class="text-sm text-white">{{ media.formatted_score }}</span>
+        <div class="absolute {% if from_grid %}top-4 right-4 left-auto{% else %}top-12 left-4{% endif %} flex items-center"
+             style="
+               border-radius: 9999px;
+               padding: 4px 8px;
+               background:
+                 radial-gradient(circle at 34% 24%, rgba(255,255,255,0.22), rgba(255,255,255,0.10) 44%, rgba(255,255,255,0.04) 100%);
+               border: 1px solid rgba(255,255,255,0.18);
+               box-shadow:
+                 inset 0 1px 0 rgba(255,255,255,0.18),
+                 0 8px 18px rgba(0,0,0,0.24);
+               backdrop-filter: blur(18px) saturate(155%);
+               -webkit-backdrop-filter: blur(18px) saturate(155%);
+             ">
+          {% include "app/icons/star.svg" with classes="w-4 h-4 text-yellow-300 mr-1 fill-current" %}
+          <span class="text-xs font-semibold text-white">{{ media.formatted_score }}</span>
         </div>
       {% endif %}
     {% endwith %}
 
     {% if media.progress and media_type != MediaTypes.MOVIE.value %}
-      <div class="absolute bottom-2 left-2 bg-gray-900/90 text-white text-xs px-2 py-1 rounded-md flex items-center shadow-md">
-        <span class="text-sm text-white">
+      <div class="absolute bottom-3 left-4 flex items-center"
+           style="
+             border-radius: 9999px;
+             padding: 4px 8px;
+             background:
+               radial-gradient(circle at 34% 24%, rgba(255,255,255,0.22), rgba(255,255,255,0.10) 44%, rgba(255,255,255,0.04) 100%);
+             border: 1px solid rgba(255,255,255,0.18);
+             box-shadow:
+               inset 0 1px 0 rgba(255,255,255,0.18),
+               0 8px 18px rgba(0,0,0,0.24);
+             backdrop-filter: blur(18px) saturate(155%);
+             -webkit-backdrop-filter: blur(18px) saturate(155%);
+           ">
+        <span class="text-xs font-semibold text-white">
           {{ media.formatted_progress }}
           {% if media.max_progress %}/ {{ media.max_progress }}{% endif %}
         </span>
@@ -65,20 +126,56 @@
     {% endif %}
 
     {% if media.repeats > 1 %}
-      <div class="absolute sm:bottom-2 sm:right-2 sm:left-auto bottom-10 left-2 bg-gray-900/90 text-white text-xs px-2 py-1 rounded-md flex items-center shadow-md">
+      <div class="absolute sm:bottom-3 sm:right-4 sm:left-auto bottom-12 left-4 flex items-center"
+           style="
+             border-radius: 9999px;
+             padding: 4px 8px;
+             background:
+               radial-gradient(circle at 34% 24%, rgba(255,255,255,0.22), rgba(255,255,255,0.10) 44%, rgba(255,255,255,0.04) 100%);
+             border: 1px solid rgba(255,255,255,0.18);
+             box-shadow:
+               inset 0 1px 0 rgba(255,255,255,0.18),
+               0 8px 18px rgba(0,0,0,0.24);
+             backdrop-filter: blur(18px) saturate(155%);
+             -webkit-backdrop-filter: blur(18px) saturate(155%);
+           ">
         {% include "app/icons/repeat.svg" with classes="w-4 h-4 text-slate-200 mr-1" %}
-        <span class="text-sm text-white">{{ media.repeats }}</span>
+        <span class="text-xs font-semibold text-white">{{ media.repeats }}</span>
       </div>
     {% endif %}
 
     {% with user=target_user|default:user %}
-      <div class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 hover-tap:opacity-100{% if user.clickable_media_cards %} pointer-coarse:hidden{% endif %}">
+      <div class="absolute inset-2 flex items-center justify-center opacity-0 transition-opacity duration-200 hover-tap:opacity-100 {% if user.clickable_media_cards %}pointer-coarse:hidden{% endif %}"
+           style="
+             border-radius: 18px;
+             background:
+               radial-gradient(circle at center, rgba(255,255,255,0.10), rgba(0,0,0,0.50));
+             backdrop-filter: blur(8px) saturate(130%);
+             -webkit-backdrop-filter: blur(8px) saturate(130%);
+           ">
         <a href="{{ item|media_url }}" class="absolute inset-0"></a>
+
         {% if request.user == user %}
           <div class="relative flex items-center justify-center space-x-2.5">
             {% if item.media_type == MediaTypes.EPISODE.value %}
               <button @click="trackOpen = true"
-                      class="p-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full hover:scale-110 hover:shadow-[0_0_15px_rgba(99,102,241,0.5)] transition-all duration-200 cursor-pointer">
+                      class="cursor-pointer rounded-full text-white transition-all duration-200 hover:scale-110"
+                      style="
+                        width: 42px;
+                        height: 42px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        border: 1px solid rgba(255,255,255,0.20);
+                        background:
+                          radial-gradient(circle at 34% 24%, rgba(255,255,255,0.30), rgba(255,255,255,0.12) 44%, rgba(255,255,255,0.045) 100%);
+                        box-shadow:
+                          inset 0 1px 0 rgba(255,255,255,0.22),
+                          0 10px 22px rgba(0,0,0,0.24);
+                        backdrop-filter: blur(18px) saturate(160%);
+                        -webkit-backdrop-filter: blur(18px) saturate(160%);
+                      "
+                      title="Marcar episódio">
                 {% if media %}
                   {% include "app/icons/eye.svg" with classes="w-4 h-4" %}
                 {% else %}
@@ -86,49 +183,96 @@
                 {% endif %}
               </button>
             {% else %}
-              {# Track Button #}
-              <button class="p-2.5 bg-indigo-600 text-white rounded-full hover:bg-indigo-500 hover:scale-110 hover:shadow-[0_0_15px_rgba(99,102,241,0.5)] transition-all duration-200 cursor-pointer"
-                      title="Add to tracker"
+              <button class="cursor-pointer rounded-full text-white transition-all duration-200 hover:scale-110"
+                      style="
+                        width: 42px;
+                        height: 42px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        border: 1px solid rgba(255,255,255,0.20);
+                        background:
+                          radial-gradient(circle at 34% 24%, rgba(255,255,255,0.30), rgba(255,255,255,0.12) 44%, rgba(255,255,255,0.045) 100%);
+                        box-shadow:
+                          inset 0 1px 0 rgba(255,255,255,0.22),
+                          0 10px 22px rgba(0,0,0,0.24);
+                        backdrop-filter: blur(18px) saturate(160%);
+                        -webkit-backdrop-filter: blur(18px) saturate(160%);
+                      "
+                      title="Editar acompanhamento"
                       hx-get="{% media_view_url 'track_modal' item %}"
                       hx-vals='{"return_url": "{{ request.get_full_path|urlencode }}", "instance_id": "{{ media.id }}"}'
                       hx-target="#{% component_id 'track' item media.id %}"
                       hx-trigger="click once"
-                      @click="trackOpen = true">{% include "app/icons/edit.svg" with classes="w-4 h-4" %}</button>
+                      @click="trackOpen = true">
+                {% include "app/icons/edit.svg" with classes="w-4 h-4" %}
+              </button>
             {% endif %}
 
-            {# Lists Button #}
-            <button class="p-2.5 bg-emerald-600 text-white rounded-full hover:bg-emerald-500 hover:scale-110 hover:shadow-[0_0_15px_rgba(16,185,129,0.5)] transition-all duration-200 cursor-pointer"
-                    title="Add to custom lists"
+            <button class="cursor-pointer rounded-full text-white transition-all duration-200 hover:scale-110"
+                    style="
+                      width: 42px;
+                      height: 42px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      border: 1px solid rgba(255,255,255,0.20);
+                      background:
+                        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.30), rgba(255,255,255,0.12) 44%, rgba(255,255,255,0.045) 100%);
+                      box-shadow:
+                        inset 0 1px 0 rgba(255,255,255,0.22),
+                        0 10px 22px rgba(0,0,0,0.24);
+                      backdrop-filter: blur(18px) saturate(160%);
+                      -webkit-backdrop-filter: blur(18px) saturate(160%);
+                    "
+                    title="Adicionar a listas"
                     hx-get="{% media_view_url 'lists_modal' item %}"
                     hx-vals='{"return_url": "{{ request.get_full_path|urlencode }}"}'
                     hx-target="#{% component_id 'lists' item %}"
                     hx-trigger="click once"
-                    @click="listsOpen = true">{% include "app/icons/list-add.svg" with classes="w-4 h-4" %}</button>
+                    @click="listsOpen = true">
+              {% include "app/icons/list-add.svg" with classes="w-4 h-4" %}
+            </button>
 
-            {# History Button #}
-            <button class="p-2.5 bg-amber-600 text-white rounded-full hover:bg-amber-500 hover:scale-110 hover:shadow-[0_0_15px_rgba(245,158,11,0.5)] transition-all duration-200 cursor-pointer"
-                    title="View your activity history"
+            <button class="cursor-pointer rounded-full text-white transition-all duration-200 hover:scale-110"
+                    style="
+                      width: 42px;
+                      height: 42px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      border: 1px solid rgba(255,255,255,0.20);
+                      background:
+                        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.30), rgba(255,255,255,0.12) 44%, rgba(255,255,255,0.045) 100%);
+                      box-shadow:
+                        inset 0 1px 0 rgba(255,255,255,0.22),
+                        0 10px 22px rgba(0,0,0,0.24);
+                      backdrop-filter: blur(18px) saturate(160%);
+                      -webkit-backdrop-filter: blur(18px) saturate(160%);
+                    "
+                    title="Ver histórico"
                     hx-get="{% media_view_url 'history_modal' item %}"
                     hx-vals='{"return_url": "{{ request.get_full_path|urlencode }}"}'
                     hx-target="#{% component_id 'history' item %}"
                     hx-trigger="click once"
-                    @click="historyOpen = true">{% include "app/icons/history.svg" with classes="w-4 h-4" %}</button>
+                    @click="historyOpen = true">
+              {% include "app/icons/history.svg" with classes="w-4 h-4" %}
+            </button>
           </div>
         {% endif %}
       </div>
     {% endwith %}
   </div>
 
-  <div class="p-3">
+  <div class="px-3 pb-3 pt-3">
     <a href="{{ item|media_url }}"
-       class="text-sm font-semibold text-white hover:text-indigo-400 transition duration-300 line-clamp-1"
+       class="block text-sm font-semibold text-white transition duration-300 line-clamp-1 hover:text-white/80"
        title="{{ title }}">{{ title }}</a>
   </div>
 
   {% if item.media_type == MediaTypes.EPISODE.value %}
     {% include "app/components/fill_track_episode.html" with request=request media=item episode=item episode_title=title csrf_token=csrf_token TRACK_TIME=TRACK_TIME only %}
   {% else %}
-    {# Track Modal #}
     <div x-show="trackOpen"
          @keydown.escape.window="trackOpen = false"
          class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -139,7 +283,6 @@
     </div>
   {% endif %}
 
-  {# Lists Modal #}
   <div x-show="listsOpen"
        @keydown.escape.window="listsOpen = false"
        class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -149,7 +292,6 @@
     </div>
   </div>
 
-  {# History Modal #}
   <div x-show="historyOpen"
        @keydown.escape.window="historyOpen = false"
        class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -158,7 +300,10 @@
       <div id="{% component_id 'history' item %}"></div>
     </div>
   </div>
+
   {% with user=target_user|default:user %}
-    {% include "app/components/progress_bar.html" with media=media user=user only %}
+    <div style="opacity: 0.68;">
+      {% include "app/components/progress_bar.html" with media=media user=user only %}
+    </div>
   {% endwith %}
 </div>
