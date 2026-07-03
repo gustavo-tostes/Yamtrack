@@ -6,56 +6,47 @@
 {% endblock title %}
 
 {% block search_bar %}
+  <div class="flex h-16 w-full max-w-xl items-end justify-center">
+    <div class="flex w-full items-end justify-center border-b border-white/35">
+      <a href="{% url 'home' %}?tab=minha-lista"
+         class="relative flex-1 pb-3 text-center text-base font-extrabold uppercase tracking-[0.16em] transition-colors duration-200 {% if request.GET.tab != 'em-breve' %}text-white{% else %}text-gray-400 hover:text-white{% endif %}">
+        Minha Lista
+
+        {% if request.GET.tab != 'em-breve' %}
+          <span class="absolute right-0 bottom-0 left-0 h-1 bg-white"></span>
+        {% endif %}
+      </a>
+
+      <a href="{% url 'home' %}?tab=em-breve"
+         class="relative flex-1 pb-3 text-center text-base font-extrabold uppercase tracking-[0.16em] transition-colors duration-200 {% if request.GET.tab == 'em-breve' %}text-white{% else %}text-gray-400 hover:text-white{% endif %}">
+        Em Breve
+
+        {% if request.GET.tab == 'em-breve' %}
+          <span class="absolute right-0 bottom-0 left-0 h-1 bg-white"></span>
+        {% endif %}
+      </a>
+    </div>
+  </div>
 {% endblock search_bar %}
 
 {% block content %}
-  <div x-data="{ activeTab: 'minha-lista' }" class="space-y-8">
-
-    <div class="mx-auto flex max-w-xl items-center justify-center gap-12 border-b border-white/20 pt-2">
-      <button type="button"
-              @click="activeTab = 'minha-lista'"
-              class="relative px-2 pb-4 text-lg font-extrabold uppercase tracking-[0.16em] transition-colors duration-200 cursor-pointer"
-              :class="activeTab === 'minha-lista' ? 'text-white' : 'text-gray-400 hover:text-white'">
-        Minha Lista
-
-        <span x-show="activeTab === 'minha-lista'"
-              class="absolute right-0 bottom-0 left-0 h-1 rounded-full bg-white"></span>
-      </button>
-
-      <button type="button"
-              @click="activeTab = 'em-breve'"
-              class="relative px-2 pb-4 text-lg font-extrabold uppercase tracking-[0.16em] transition-colors duration-200 cursor-pointer"
-              :class="activeTab === 'em-breve' ? 'text-white' : 'text-gray-400 hover:text-white'">
-        Em Breve
-
-        <span x-show="activeTab === 'em-breve'"
-              class="absolute right-0 bottom-0 left-0 h-1 rounded-full bg-white"></span>
-      </button>
-    </div>
-
-    <div x-show="activeTab === 'minha-lista'"
-         x-transition:enter="transition ease-out duration-150"
-         x-transition:enter-start="opacity-0 translate-y-2"
-         x-transition:enter-end="opacity-100 translate-y-0"
-         class="space-y-15">
-      {% for section in home_sections %}
-        {% if section.key == Status.IN_PROGRESS.value %}
-          {% include "app/components/home_section.html" with section=section %}
-        {% endif %}
-      {% endfor %}
-    </div>
-
-    <div x-show="activeTab === 'em-breve'"
-         x-transition:enter="transition ease-out duration-150"
-         x-transition:enter-start="opacity-0 translate-y-2"
-         x-transition:enter-end="opacity-100 translate-y-0"
-         class="space-y-15">
-      {% for section in home_sections %}
-        {% if section.key == Status.PLANNING.value %}
-          {% include "app/components/home_section.html" with section=section %}
-        {% endif %}
-      {% endfor %}
-    </div>
-
+  <div class="space-y-8">
+    {% if request.GET.tab == 'em-breve' %}
+      <div class="space-y-15">
+        {% for section in home_sections %}
+          {% if section.key == Status.PLANNING.value %}
+            {% include "app/components/home_section.html" with section=section %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="space-y-15">
+        {% for section in home_sections %}
+          {% if section.key == Status.IN_PROGRESS.value %}
+            {% include "app/components/home_section.html" with section=section %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
   </div>
 {% endblock content %}
