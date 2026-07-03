@@ -554,7 +554,7 @@
             </h3>
 
             {% if request.user == target_user %}
-              <p class="text-gray-400 mb-6">
+              <p class="text-gray-400">
                 Comece adicionando
                 {% if media_type == MediaTypes.TV.value %}
                   séries
@@ -567,20 +567,6 @@
                 {% endif %}
                 para acompanhar sua lista.
               </p>
-
-              <a href="{{ media_type|sample_search }}"
-                 class="yamtrack-glass-button inline-flex items-center justify-center px-5 py-2 text-sm font-semibold text-white transition-colors">
-                Buscar
-                {% if media_type == MediaTypes.TV.value %}
-                  séries
-                {% elif media_type == MediaTypes.SEASON.value %}
-                  temporadas
-                {% elif media_type == MediaTypes.MOVIE.value %}
-                  filmes
-                {% else %}
-                  itens
-                {% endif %}
-              </a>
             {% endif %}
           </div>
         </div>
