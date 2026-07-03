@@ -98,7 +98,80 @@
 
     .yamtrack-media-top-search {
       position: relative;
-      width: min(680px, 100%);
+      width: min(780px, 100%);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px;
+      border-radius: 9999px;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.16), rgba(255,255,255,0.055) 52%, rgba(255,255,255,0.025) 100%);
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 8px 18px rgba(0,0,0,0.14);
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+    }
+
+    .yamtrack-media-search-field {
+      position: relative;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .yamtrack-media-top-search .yamtrack-glass-input {
+      min-height: 38px;
+      border: none !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    .yamtrack-media-top-search .yamtrack-glass-input:focus {
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    .yamtrack-search-mode-toggle {
+      display: flex;
+      gap: 3px;
+      padding: 3px;
+      border-radius: 9999px;
+      background: rgba(255,255,255,0.055);
+      border: 1px solid rgba(255,255,255,0.10);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.10),
+        0 6px 14px rgba(0,0,0,0.14);
+    }
+
+    .yamtrack-search-mode-button {
+      height: 32px;
+      border-radius: 9999px;
+      padding: 0 13px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      color: rgba(255,255,255,0.62);
+      transition:
+        background 180ms ease,
+        color 180ms ease,
+        box-shadow 180ms ease;
+    }
+
+    .yamtrack-search-mode-button.is-active {
+      color: rgba(255,255,255,0.96);
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.24), rgba(255,255,255,0.10) 46%, rgba(255,255,255,0.04) 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.16),
+        0 7px 16px rgba(0,0,0,0.18);
+    }
+
+    .yamtrack-search-mode-button:hover {
+      color: #ffffff;
     }
 
     .yamtrack-media-page {
@@ -261,30 +334,98 @@
       .yamtrack-glass-button {
         min-height: 36px;
       }
+
+      .yamtrack-media-top-search {
+        gap: 4px;
+        width: 100%;
+      }
+
+      .yamtrack-search-mode-button {
+        height: 30px;
+        padding: 0 9px;
+        font-size: 11px;
+      }
+
+      .yamtrack-search-mode-label-full {
+        display: none;
+      }
     }
   </style>
 {% endblock extra_head %}
 
 {% block search_bar %}
   {% if request.user.is_authenticated %}
-    <div class="yamtrack-media-top-search">
-      <input id="top-media-search"
-             name="search"
-             value="{{ request.GET.search|default:'' }}"
-             placeholder="{% if media_type == MediaTypes.TV.value %}Buscar séries{% elif media_type == MediaTypes.SEASON.value %}Buscar temporadas{% elif media_type == MediaTypes.MOVIE.value %}Buscar filmes{% else %}Buscar itens{% endif %} na sua lista..."
-             class="yamtrack-glass-input w-full py-2 pl-10 pr-4 text-sm appearance-none"
-             type="text"
-             hx-get="{% url 'medialist' target_user.username media_type %}"
-             hx-trigger="keyup changed delay:300ms, search"
-             {% if media_list %} hx-target="{{ layout_class }}" {% else %} hx-target="#empty_list" {% endif %}
-             hx-include="#filter-form,#top-media-search"
-             hx-indicator="#top-search-indicator">
+    <div class="yamtrack-media-top-search"
+         x-data="{ mode: 'library', query: '{{ request.GET.search|default:''|escapejs }}' }">
 
-      {% include "app/icons/magnifying-glass.svg" with classes="w-5 h-5 absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" %}
+      <div x-show="mode === 'library'" class="yamtrack-media-search-field">
+        <input id="top-media-search"
+               name="search"
+               x-model="query"
+               value="{{ request.GET.search|default:'' }}"
+               placeholder="{% if media_type == MediaTypes.TV.value %}Buscar séries na sua lista...{% elif media_type == MediaTypes.SEASON.value %}Buscar temporadas na sua lista...{% elif media_type == MediaTypes.MOVIE.value %}Buscar filmes na sua lista...{% else %}Buscar itens na sua lista...{% endif %}"
+               class="yamtrack-glass-input w-full py-2 pl-10 pr-4 text-sm appearance-none"
+               type="text"
+               hx-get="{% url 'medialist' target_user.username media_type %}"
+               hx-trigger="keyup changed delay:300ms, search"
+               {% if media_list %} hx-target="{{ layout_class }}" {% else %} hx-target="#empty_list" {% endif %}
+               hx-include="#filter-form,#top-media-search"
+               hx-indicator="#top-search-indicator">
 
-      <div id="top-search-indicator"
-           class="htmx-indicator absolute right-4 top-1/2 transform -translate-y-1/2">
-        <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-400"></div>
+        {% include "app/icons/magnifying-glass.svg" with classes="w-5 h-5 absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" %}
+
+        <div id="top-search-indicator"
+             class="htmx-indicator absolute right-4 top-1/2 transform -translate-y-1/2">
+          <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-400"></div>
+        </div>
+      </div>
+
+      <form x-show="mode === 'discover'"
+            method="get"
+            action="{% url 'search' %}"
+            class="yamtrack-media-search-field">
+        <input type="search"
+               name="q"
+               x-model="query"
+               placeholder="{% if media_type == MediaTypes.MOVIE.value %}Buscar novos filmes...{% else %}Buscar novas séries...{% endif %}"
+               class="yamtrack-glass-input w-full py-2 pl-10 pr-4 text-sm appearance-none">
+
+        {% if media_type == MediaTypes.SEASON.value %}
+          <input type="hidden" name="media_type" value="{{ MediaTypes.TV.value }}">
+        {% else %}
+          <input type="hidden" name="media_type" value="{{ media_type }}">
+        {% endif %}
+
+        <button type="submit"
+                class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200">
+          {% include "app/icons/magnifying-glass.svg" with classes="w-5 h-5" %}
+        </button>
+      </form>
+
+      <div class="yamtrack-search-mode-toggle">
+        <button type="button"
+                class="yamtrack-search-mode-button cursor-pointer"
+                :class="mode === 'library' ? 'is-active' : ''"
+                @click="mode = 'library'"
+                title="Buscar na minha lista">
+          <span class="yamtrack-search-mode-label-full">Minha lista</span>
+          <span class="sm:hidden">Lista</span>
+        </button>
+
+        <button type="button"
+                class="yamtrack-search-mode-button cursor-pointer"
+                :class="mode === 'discover' ? 'is-active' : ''"
+                @click="mode = 'discover'"
+                title="{% if media_type == MediaTypes.MOVIE.value %}Buscar novos filmes{% else %}Buscar novas séries{% endif %}">
+          <span class="yamtrack-search-mode-label-full">
+            {% if media_type == MediaTypes.MOVIE.value %}
+              Novos filmes
+            {% else %}
+              Novas séries
+            {% endif %}
+          </span>
+          <span class="sm:hidden">Novas</span>
+        </button>
       </div>
     </div>
   {% endif %}
