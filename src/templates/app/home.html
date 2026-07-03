@@ -10,9 +10,10 @@
     html,
     body {
       background:
-        radial-gradient(circle at top center, rgba(255, 255, 255, 0.06), transparent 34%),
-        radial-gradient(circle at 72% 18%, rgba(140, 150, 255, 0.06), transparent 26%),
-        linear-gradient(180deg, #18191b 0%, #121315 48%, #0f1011 100%) !important;
+        radial-gradient(circle at 50% -10%, rgba(255, 255, 255, 0.08), transparent 28%),
+        radial-gradient(circle at 72% 20%, rgba(110, 124, 255, 0.10), transparent 22%),
+        radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.04), transparent 20%),
+        linear-gradient(180deg, #17181b 0%, #111214 50%, #0d0e10 100%) !important;
     }
 
     body > div.flex.min-h-screen {
@@ -28,87 +29,173 @@
       background: transparent;
     }
 
+    /* Sidebar */
     body > div.flex.min-h-screen > aside {
       background:
-        linear-gradient(180deg, rgba(32, 33, 36, 0.72), rgba(15, 16, 18, 0.88)) !important;
-      border-right: 1px solid rgba(255, 255, 255, 0.12) !important;
+        linear-gradient(180deg, rgba(28, 29, 32, 0.82), rgba(16, 17, 19, 0.90)) !important;
+      border-right: 1px solid rgba(255, 255, 255, 0.10) !important;
       box-shadow:
-        inset -1px 0 0 rgba(255, 255, 255, 0.045),
-        18px 0 42px rgba(0, 0, 0, 0.28);
-      backdrop-filter: blur(24px) saturate(145%);
-      -webkit-backdrop-filter: blur(24px) saturate(145%);
+        inset -1px 0 0 rgba(255, 255, 255, 0.04),
+        18px 0 40px rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(26px) saturate(150%);
+      -webkit-backdrop-filter: blur(26px) saturate(150%);
     }
 
     body > div.flex.min-h-screen > aside > div:first-child {
-      background: rgba(255, 255, 255, 0.035);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.10) !important;
-      box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.035);
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
     }
 
     body > div.flex.min-h-screen > aside nav a,
     body > div.flex.min-h-screen > aside form button {
       border: 1px solid transparent;
-      background-clip: padding-box;
+      transition:
+        background 180ms ease,
+        border-color 180ms ease,
+        box-shadow 180ms ease,
+        transform 180ms ease;
     }
 
     body > div.flex.min-h-screen > aside nav a:hover,
     body > div.flex.min-h-screen > aside form button:hover {
-      background: rgba(255, 255, 255, 0.075) !important;
-      border-color: rgba(255, 255, 255, 0.10);
+      background: rgba(255, 255, 255, 0.06) !important;
+      border-color: rgba(255, 255, 255, 0.08);
       box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.08),
-        0 8px 18px rgba(0, 0, 0, 0.14);
+        0 8px 18px rgba(0, 0, 0, 0.15);
     }
 
     body > div.flex.min-h-screen > aside a[class*="bg-[#2c3136]"] {
       background:
-        linear-gradient(135deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.055)) !important;
+        linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.05)) !important;
       border-color: rgba(255, 255, 255, 0.14);
       box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.14),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.03),
         0 10px 24px rgba(0, 0, 0, 0.18);
-      backdrop-filter: blur(16px) saturate(140%);
-      -webkit-backdrop-filter: blur(16px) saturate(140%);
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
     }
 
     body > div.flex.min-h-screen > aside .border-t {
-      border-color: rgba(255, 255, 255, 0.10) !important;
+      border-color: rgba(255, 255, 255, 0.08) !important;
     }
 
+    /* Top bar */
     div.sticky.top-0.z-10 {
       background:
-        linear-gradient(180deg, rgba(27, 28, 31, 0.78), rgba(19, 20, 22, 0.66)) !important;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+        linear-gradient(180deg, rgba(26, 27, 30, 0.78), rgba(18, 19, 21, 0.64)) !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
       box-shadow:
         inset 0 -1px 0 rgba(255, 255, 255, 0.035),
-        0 14px 32px rgba(0, 0, 0, 0.22);
-      backdrop-filter: blur(26px) saturate(150%);
-      -webkit-backdrop-filter: blur(26px) saturate(150%);
+        0 14px 32px rgba(0, 0, 0, 0.18);
+      backdrop-filter: blur(28px) saturate(160%);
+      -webkit-backdrop-filter: blur(28px) saturate(160%);
+    }
+
+    /* Tabs */
+    .yamtrack-home-tabs {
+      width: 100%;
+      max-width: 980px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .yamtrack-home-tabs-track {
+      position: relative;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      min-height: 60px;
+    }
+
+    .yamtrack-home-tabs-track::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .yamtrack-home-tab {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 60px;
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-weight: 900;
+      font-size: 17px;
+      color: rgba(255, 255, 255, 0.52);
+      transition: color 180ms ease, transform 180ms ease;
+    }
+
+    .yamtrack-home-tab:hover {
+      color: rgba(255, 255, 255, 0.82);
+    }
+
+    .yamtrack-home-tab.is-active {
+      color: #ffffff;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.08);
+    }
+
+    .yamtrack-home-tab.is-active::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 10px;
+      transform: translateX(-50%);
+      width: 150px;
+      height: 28px;
+      border-radius: 9999px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03));
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.08),
+        0 10px 22px rgba(0,0,0,0.14);
+      backdrop-filter: blur(12px) saturate(145%);
+      -webkit-backdrop-filter: blur(12px) saturate(145%);
+      z-index: 0;
+      opacity: 0.9;
+    }
+
+    .yamtrack-home-tab.is-active span {
+      position: relative;
+      z-index: 1;
+    }
+
+    .yamtrack-home-tab.is-active::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: 72%;
+      max-width: 260px;
+      height: 3px;
+      border-radius: 9999px;
+      background: #ffffff;
+      box-shadow: 0 0 12px rgba(255,255,255,0.18);
     }
   </style>
 {% endblock extra_head %}
 
 {% block search_bar %}
-  <div style="height: 60px; width: 100%; max-width: 980px; display: flex; align-items: stretch; justify-content: center;">
-    <div style="position: relative; width: 100%; display: flex; align-items: stretch;">
-      <div style="position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: rgba(255,255,255,0.25);"></div>
-
+  <div class="yamtrack-home-tabs">
+    <div class="yamtrack-home-tabs-track">
       <a href="{% url 'home' %}?tab=minha-lista"
-         style="position: relative; flex: 1; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 17px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.14em; color: {% if request.GET.tab != 'em-breve' %}#ffffff{% else %}#9ca3af{% endif %};">
-        MINHA LISTA
-
-        {% if request.GET.tab != 'em-breve' %}
-          <span style="position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: #ffffff; display: block;"></span>
-        {% endif %}
+         class="yamtrack-home-tab {% if request.GET.tab != 'em-breve' %}is-active{% endif %}">
+        <span>MINHA LISTA</span>
       </a>
 
       <a href="{% url 'home' %}?tab=em-breve"
-         style="position: relative; flex: 1; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 17px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.14em; color: {% if request.GET.tab == 'em-breve' %}#ffffff{% else %}#9ca3af{% endif %};">
-        EM BREVE
-
-        {% if request.GET.tab == 'em-breve' %}
-          <span style="position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: #ffffff; display: block;"></span>
-        {% endif %}
+         class="yamtrack-home-tab {% if request.GET.tab == 'em-breve' %}is-active{% endif %}">
+        <span>EM BREVE</span>
       </a>
     </div>
   </div>

@@ -4,7 +4,23 @@
   <div class="space-y-4">
     {% if section.key == Status.IN_PROGRESS.value %}
       <div class="flex justify-center">
-        <div style="background: linear-gradient(135deg, rgba(255,255,255,0.30), rgba(255,255,255,0.15)); color: #ffffff; border-radius: 9999px; padding: 9px 34px; font-size: 15px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; border: 1px solid rgba(255,255,255,0.24); box-shadow: inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(255,255,255,0.06), 0 12px 28px rgba(0,0,0,0.28); backdrop-filter: blur(18px) saturate(150%); -webkit-backdrop-filter: blur(18px) saturate(150%);">
+        <div style="
+          background: linear-gradient(135deg, rgba(255,255,255,0.24), rgba(255,255,255,0.11));
+          color: #ffffff;
+          border-radius: 9999px;
+          padding: 10px 34px;
+          font-size: 15px;
+          font-weight: 900;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          border: 1px solid rgba(255,255,255,0.22);
+          box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.18),
+            inset 0 -1px 0 rgba(255,255,255,0.04),
+            0 12px 28px rgba(0,0,0,0.22);
+          backdrop-filter: blur(18px) saturate(155%);
+          -webkit-backdrop-filter: blur(18px) saturate(155%);
+        ">
           ASSISTIR A SEGUIR
         </div>
       </div>
@@ -26,10 +42,8 @@
       </div>
 
       <div class="relative h-px overflow-hidden rounded-full bg-gray-700/80">
-        <div class="absolute inset-y-0 left-0 w-full bg-linear-to-r from-sky-400 via-sky-400/45 to-sky-400/8">
-        </div>
-        <div class="absolute top-1/2 left-0 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-sky-400">
-        </div>
+        <div class="absolute inset-y-0 left-0 w-full bg-linear-to-r from-sky-400 via-sky-400/45 to-sky-400/8"></div>
+        <div class="absolute top-1/2 left-0 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-sky-400"></div>
       </div>
     {% endif %}
   </div>
@@ -59,7 +73,7 @@
           {% endif %}
 
           <div id="media-grid-{{ section.id }}-{{ media_type }}"
-               class="{% if section.key == Status.IN_PROGRESS.value or section.key == Status.PLANNING.value %}mx-auto max-w-4xl space-y-3{% else %}media-grid{% endif %}">
+               class="{% if section.key == Status.IN_PROGRESS.value or section.key == Status.PLANNING.value %}mx-auto max-w-4xl space-y-4{% else %}media-grid{% endif %}">
             {% include "app/components/home_grid.html" with media_list=media_list home_status=section.key %}
           </div>
 
@@ -77,8 +91,7 @@
               <div id="loading-indicator-{{ section.id }}-{{ media_type }}"
                    class="htmx-indicator hidden text-center">
                 <div class="inline-flex items-center justify-center">
-                  <div class="h-8 w-8 animate-spin rounded-full border-b-2 {% if section.key == Status.IN_PROGRESS.value %}border-indigo-400{% else %}border-sky-400{% endif %}">
-                  </div>
+                  <div class="h-8 w-8 animate-spin rounded-full border-b-2 {% if section.key == Status.IN_PROGRESS.value %}border-indigo-400{% else %}border-sky-400{% endif %}"></div>
                 </div>
               </div>
             </div>
@@ -87,15 +100,7 @@
       {% endfor %}
     </div>
   {% else %}
-    <div class="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-700 bg-[#2a2f35] px-6 py-16 text-center">
-      <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#39404b]">
-        {% if section.key == Status.IN_PROGRESS.value %}
-          {% include "app/icons/pulse.svg" with classes="h-8 w-8 text-indigo-300" %}
-        {% else %}
-          {% include "app/icons/leaf.svg" with classes="h-8 w-8 text-sky-400" %}
-        {% endif %}
-      </div>
-
+    <div class="mx-auto max-w-4xl rounded-[28px] border border-white/10 bg-white/5 px-6 py-16 text-center text-white shadow-[0_16px_40px_rgba(0,0,0,0.20)] backdrop-blur-xl">
       <h3 class="text-xl font-semibold text-white">
         {% if section.key == Status.IN_PROGRESS.value %}
           Nada para assistir agora
@@ -104,21 +109,13 @@
         {% endif %}
       </h3>
 
-      <p class="mt-2 max-w-md text-sm text-gray-400">
+      <p class="mt-2 text-sm text-gray-300">
         {% if section.key == Status.IN_PROGRESS.value %}
-          Adicione uma série em andamento para acompanhar seus próximos episódios aqui.
+          Adicione uma série em andamento para acompanhar os próximos episódios aqui.
         {% else %}
           Adicione algumas séries à sua lista para vê-las nesta seção.
         {% endif %}
       </p>
-
-      <div class="mt-6">
-        <a href="{{ MediaTypes.TV.value|sample_search }}"
-           class="inline-flex items-center gap-2 rounded-md {% if section.key == Status.IN_PROGRESS.value %}bg-indigo-600 hover:bg-indigo-700{% else %}bg-sky-600 hover:bg-sky-700{% endif %} px-4 py-2 text-sm font-medium text-white transition-colors">
-          {% include "app/icons/magnifying-glass.svg" with classes="h-4 w-4" %}
-          Buscar séries
-        </a>
-      </div>
     </div>
   {% endif %}
 </section>
