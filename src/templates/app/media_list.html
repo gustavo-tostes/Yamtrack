@@ -159,6 +159,7 @@
         background 180ms ease,
         color 180ms ease,
         box-shadow 180ms ease;
+      white-space: nowrap;
     }
 
     .yamtrack-search-mode-button.is-active {
@@ -342,12 +343,8 @@
 
       .yamtrack-search-mode-button {
         height: 30px;
-        padding: 0 9px;
+        padding: 0 10px;
         font-size: 11px;
-      }
-
-      .yamtrack-search-mode-label-full {
-        display: none;
       }
     }
   </style>
@@ -408,23 +405,15 @@
                 :class="mode === 'library' ? 'is-active' : ''"
                 @click="mode = 'library'"
                 title="Buscar na minha lista">
-          <span class="yamtrack-search-mode-label-full">Minha lista</span>
-          <span class="sm:hidden">Lista</span>
+          Minha Lista
         </button>
 
         <button type="button"
                 class="yamtrack-search-mode-button cursor-pointer"
                 :class="mode === 'discover' ? 'is-active' : ''"
                 @click="mode = 'discover'"
-                title="{% if media_type == MediaTypes.MOVIE.value %}Buscar novos filmes{% else %}Buscar novas séries{% endif %}">
-          <span class="yamtrack-search-mode-label-full">
-            {% if media_type == MediaTypes.MOVIE.value %}
-              Novos filmes
-            {% else %}
-              Novas séries
-            {% endif %}
-          </span>
-          <span class="sm:hidden">Novas</span>
+                title="{% if media_type == MediaTypes.MOVIE.value %}Descobrir novos filmes{% else %}Descobrir novas séries{% endif %}">
+          Descobrir
         </button>
       </div>
     </div>
