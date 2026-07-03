@@ -7,17 +7,83 @@
 
 {% block extra_head %}
   <style>
-    body,
-    main {
+    html,
+    body {
       background:
-        radial-gradient(circle at top center, rgba(255, 255, 255, 0.055), transparent 34%),
-        radial-gradient(circle at 70% 20%, rgba(120, 130, 255, 0.055), transparent 28%),
-        linear-gradient(180deg, #18191b 0%, #121315 46%, #0f1011 100%) !important;
+        radial-gradient(circle at top center, rgba(255, 255, 255, 0.06), transparent 34%),
+        radial-gradient(circle at 72% 18%, rgba(140, 150, 255, 0.06), transparent 26%),
+        linear-gradient(180deg, #18191b 0%, #121315 48%, #0f1011 100%) !important;
+    }
+
+    body > div.flex.min-h-screen {
+      background: transparent !important;
+    }
+
+    main {
+      background: transparent !important;
     }
 
     .yamtrack-home-surface {
       min-height: calc(100vh - 64px);
       background: transparent;
+    }
+
+    body > div.flex.min-h-screen > aside {
+      background:
+        linear-gradient(180deg, rgba(32, 33, 36, 0.72), rgba(15, 16, 18, 0.88)) !important;
+      border-right: 1px solid rgba(255, 255, 255, 0.12) !important;
+      box-shadow:
+        inset -1px 0 0 rgba(255, 255, 255, 0.045),
+        18px 0 42px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(24px) saturate(145%);
+      -webkit-backdrop-filter: blur(24px) saturate(145%);
+    }
+
+    body > div.flex.min-h-screen > aside > div:first-child {
+      background: rgba(255, 255, 255, 0.035);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.10) !important;
+      box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.035);
+    }
+
+    body > div.flex.min-h-screen > aside nav a,
+    body > div.flex.min-h-screen > aside form button {
+      border: 1px solid transparent;
+      background-clip: padding-box;
+    }
+
+    body > div.flex.min-h-screen > aside nav a:hover,
+    body > div.flex.min-h-screen > aside form button:hover {
+      background: rgba(255, 255, 255, 0.075) !important;
+      border-color: rgba(255, 255, 255, 0.10);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 8px 18px rgba(0, 0, 0, 0.14);
+    }
+
+    body > div.flex.min-h-screen > aside a[class*="bg-[#2c3136]"] {
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.055)) !important;
+      border-color: rgba(255, 255, 255, 0.14);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.14),
+        0 10px 24px rgba(0, 0, 0, 0.18);
+      backdrop-filter: blur(16px) saturate(140%);
+      -webkit-backdrop-filter: blur(16px) saturate(140%);
+    }
+
+    body > div.flex.min-h-screen > aside .border-t {
+      border-color: rgba(255, 255, 255, 0.10) !important;
+    }
+
+    div.sticky.top-0.z-10 {
+      background:
+        linear-gradient(180deg, rgba(27, 28, 31, 0.78), rgba(19, 20, 22, 0.66)) !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+      box-shadow:
+        inset 0 -1px 0 rgba(255, 255, 255, 0.035),
+        0 14px 32px rgba(0, 0, 0, 0.22);
+      backdrop-filter: blur(26px) saturate(150%);
+      -webkit-backdrop-filter: blur(26px) saturate(150%);
     }
   </style>
 {% endblock extra_head %}
