@@ -43,7 +43,7 @@
             {% endif %}
           </p>
 
-          <div class="mt-3 max-w-sm md:max-w-md">
+          <div class="mt-3 w-full max-w-[260px]">
             <div id="progress-{{ media.item.media_type }}-{{ media.id }}">
               {% include "app/components/progress_changer.html" with media=media user=user csrf_token=csrf_token MediaTypes=MediaTypes only %}
             </div>

@@ -1,18 +1,17 @@
 {% load app_tags %}
 
 {% if media.status and user.progress_bar %}
-  <div>
+  <div class="mt-2 h-1.5 w-full max-w-[260px] overflow-hidden rounded-full bg-white/10">
     {% if media.status == 'In progress' %}
       {% if media.max_progress and media.max_progress > 0 %}
         {% widthratio media.progress media.max_progress 100 as progress_width %}
-        <div class="{{ media.status|status_background_color }} h-[5px]"
+        <div class="{{ media.status|status_background_color }} h-full rounded-full transition-all duration-300"
              style="width: {{ progress_width }}%"></div>
       {% else %}
-        <div class="{{ media.status|status_background_color }} h-[5px] w-full"></div>
+        <div class="{{ media.status|status_background_color }} h-full w-full rounded-full transition-all duration-300"></div>
       {% endif %}
     {% else %}
-      <div class="{{ media.status|status_background_color }} h-[5px] w-full"></div>
+      <div class="{{ media.status|status_background_color }} h-full w-full rounded-full transition-all duration-300"></div>
     {% endif %}
-
   </div>
 {% endif %}
