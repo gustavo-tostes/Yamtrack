@@ -141,6 +141,42 @@
       -webkit-backdrop-filter: blur(24px) saturate(155%);
     }
 
+    .yamtrack-query-summary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 38px;
+      padding: 7px 16px;
+      border-radius: 9999px;
+      border: 1px solid rgba(255,255,255,0.13);
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.18), rgba(255,255,255,0.07) 48%, rgba(255,255,255,0.035) 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.13),
+        inset 0 -1px 0 rgba(255,255,255,0.025),
+        0 8px 18px rgba(0,0,0,0.15);
+      backdrop-filter: blur(18px) saturate(155%);
+      -webkit-backdrop-filter: blur(18px) saturate(155%);
+    }
+
+    .yamtrack-query-label {
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(209,213,219,0.70);
+    }
+
+    .yamtrack-query-value {
+      font-size: 15px;
+      font-weight: 900;
+      color: rgba(255,255,255,0.96);
+      max-width: 460px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
     .yamtrack-glass-button {
       border-radius: 9999px;
       border: 1px solid rgba(255,255,255,0.14);
@@ -179,8 +215,8 @@
     .yamtrack-source-label {
       font-size: 13px;
       color: rgba(209,213,219,0.78);
-      font-weight: 700;
-      letter-spacing: 0.04em;
+      font-weight: 900;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
     }
 
@@ -214,6 +250,15 @@
         font-size: 12px;
         padding: 7px 18px;
       }
+
+      .yamtrack-query-summary {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .yamtrack-query-value {
+        max-width: 210px;
+      }
     }
   </style>
 {% endblock extra_head %}
@@ -225,18 +270,16 @@
     </div>
 
     <div class="yamtrack-glass-panel px-4 py-4 mb-8">
-      <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-        <div>
-          <div class="text-sm text-gray-400">Buscando por</div>
-          <div class="text-xl font-bold text-white line-clamp-1">
-            “{{ request.GET.q }}”
-          </div>
+      <div class="flex flex-col lg:flex-row items-center justify-between gap-4">
+        <div class="yamtrack-query-summary">
+          <span class="yamtrack-query-label">Buscando por</span>
+          <span class="yamtrack-query-value">“{{ request.GET.q }}”</span>
         </div>
 
-        <div class="flex items-center flex-wrap gap-3">
+        <div class="flex items-center flex-wrap justify-center gap-3">
           <span class="yamtrack-source-label">Fonte</span>
 
-          <div class="flex flex-wrap gap-2">
+          <div class="flex flex-wrap justify-center gap-2">
             {% with source_options=media_type|sources %}
               {% for source_option in source_options %}
                 <a href="{% url 'search' %}?q={{ request.GET.q|urlencode }}&media_type={{ media_type }}&source={{ source_option.value }}&layout={{ layout }}"
@@ -281,7 +324,6 @@
 
       {% if data.total_pages > 1 %}
         <div class="flex flex-wrap justify-center items-center mt-8 gap-x-2 gap-y-3">
-          {# Previous button #}
           {% if data.page > 1 %}
             <a href="?q={{ request.GET.q|urlencode }}&media_type={{ media_type }}{% if source %}&source={{ source }}{% endif %}&page={{ data.page|add:'-1' }}&layout={{ layout }}"
                class="yamtrack-glass-button p-2 text-white">
@@ -294,7 +336,6 @@
             </button>
           {% endif %}
 
-          {# Page numbers with ellipses #}
           {% get_pagination_range data.page data.total_pages 2 as pages %}
           {% for page_num in pages %}
             {% if page_num %}
@@ -309,7 +350,6 @@
             {% endif %}
           {% endfor %}
 
-          {# Next button #}
           {% if data.page < data.total_pages %}
             <a href="?q={{ request.GET.q|urlencode }}&media_type={{ media_type }}{% if source %}&source={{ source }}{% endif %}&page={{ data.page|add:'1' }}&layout={{ layout }}"
                class="yamtrack-glass-button p-2 text-white">
@@ -323,7 +363,6 @@
           {% endif %}
         </div>
 
-        {# Page info text #}
         <div class="text-center text-sm text-gray-400 mt-3">
           Página {{ data.page }} de {{ data.total_pages }} · {{ data.total_results }} resultado{{ data.total_results|pluralize }}
         </div>
