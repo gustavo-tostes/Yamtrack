@@ -440,7 +440,7 @@
         {% endif %}
 
         {# Genres #}
-        <div class="flex flex-wrap gap-2 mb-4 justify-center md:justify-start">
+        <div class="flex flex-wrap gap-2 mb-4 justify-start">
           {% for genre in media.genres %}
             <span class="yamtrack-genre-pill px-3 py-1 text-white rounded-full text-sm font-semibold">{{ genre }}</span>
           {% endfor %}
@@ -483,7 +483,7 @@
         </div>
 
         {# Source score #}
-        <div class="yamtrack-score-row flex flex-wrap gap-4 justify-center md:justify-start">
+        <div class="yamtrack-score-row flex flex-wrap gap-4 justify-start">
           {% if media.score_count is not None %}
             <div class="yamtrack-score-card p-3 w-[120px]">
               <h3 class="text-xs font-bold text-gray-400 mb-1 text-center">NOTA {{ media.source|upper }}</h3>
