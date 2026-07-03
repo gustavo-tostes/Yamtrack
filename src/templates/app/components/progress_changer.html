@@ -14,15 +14,30 @@
       </p>
 
       {% if episode_title %}
-        <p class="mt-1 line-clamp-1 text-sm text-gray-400">
+        <p class="mt-1 line-clamp-1 text-sm text-gray-300">
           {{ episode_title }}
         </p>
       {% endif %}
 
-      <p class="{% if episode_title %}mt-0.5{% else %}mt-1{% endif %} line-clamp-1 text-xs text-gray-500">
+      <p class="{% if episode_title %}mt-0.5{% else %}mt-1{% endif %} line-clamp-1 text-xs text-gray-400">
         {{ media.formatted_progress }}
 
-        {% if media.item.media_type != MediaTypes.GAME.value and media.item.media_type != MediaTypes.MOVIE.value %}
+        {% if media.item.media_type == MediaTypes.SEASON.value %}
+          {% if media.max_progress %}
+            / {{ media.max_progress }}
+            {% if media.max_progress == 1 %}
+              Episódio assistido
+            {% else %}
+              Episódios assistidos
+            {% endif %}
+          {% else %}
+            {% if media.progress == 1 %}
+              Episódio assistido
+            {% else %}
+              Episódios assistidos
+            {% endif %}
+          {% endif %}
+        {% elif media.item.media_type != MediaTypes.GAME.value and media.item.media_type != MediaTypes.MOVIE.value %}
           {% if media.max_progress %}
             / {{ media.max_progress }} {{ media.item.media_type|long_unit }}{{ media.max_progress|pluralize }} assistidos
           {% else %}
@@ -38,7 +53,7 @@
   </div>
 
   <button class="shrink-0 shadow-sm transition-all duration-200 hover:scale-105 hover:bg-gray-100 cursor-pointer disabled:opacity-35 disabled:hover:scale-100 disabled:cursor-not-allowed"
-          style="width: 38px; height: 38px; border-radius: 9999px; display: flex; align-items: center; justify-content: center; background: #f5f5f5; color: #4b5563; font-size: 20px; line-height: 1; font-weight: 900;"
+          style="width: 38px; height: 38px; border-radius: 9999px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.92); color: #4b5563; font-size: 20px; line-height: 1; font-weight: 900; box-shadow: 0 10px 24px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.60);"
           {% if media.progress == media.max_progress %}disabled{% endif %}
           title="Marcar próximo episódio"
           hx-post="{% url 'progress_edit' media.item.media_type media.id %}"

@@ -2,14 +2,14 @@
 
 {% for media in media_list.items %}
   {% if home_status == Status.IN_PROGRESS.value %}
-    <div class="col-span-full mx-auto w-full overflow-hidden rounded-2xl bg-black/60 shadow-md ring-1 ring-white/10 transition-all duration-200 hover:bg-black/75 hover:ring-white/20"
-         style="max-width: 560px;">
+    <div class="col-span-full mx-auto w-full overflow-hidden transition-all duration-200"
+         style="max-width: 560px; border-radius: 24px; background: linear-gradient(135deg, rgba(255,255,255,0.11), rgba(255,255,255,0.045)); border: 1px solid rgba(255,255,255,0.22); box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), inset 0 -1px 0 rgba(255,255,255,0.035), 0 18px 48px rgba(0,0,0,0.34); backdrop-filter: blur(22px) saturate(140%); -webkit-backdrop-filter: blur(22px) saturate(140%);">
 
       <div class="flex items-center gap-3 p-3 md:gap-4 md:p-4">
         <a href="{{ media.item|media_url }}" class="shrink-0">
           <img alt="{{ media.item.title }}"
-               class="lazyload rounded-lg bg-[#1b2026] shadow-sm {% if media.item.image != IMG_NONE %}object-cover{% endif %}"
-               style="width: 82px; height: 112px;"
+               class="lazyload rounded-lg bg-[#17181a] shadow-sm {% if media.item.image != IMG_NONE %}object-cover{% endif %}"
+               style="width: 82px; height: 112px; border: 1px solid rgba(255,255,255,0.20); box-shadow: 0 12px 28px rgba(0,0,0,0.34);"
                data-src="{{ media.item.image }}"
                src="{{ IMG_NONE }}">
         </a>
@@ -17,7 +17,8 @@
         <div class="min-w-0 flex-1">
           <div class="mb-2">
             <a href="{{ media.item|media_url }}"
-               class="inline-flex max-w-full items-center rounded-full border border-white/75 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white transition-colors hover:border-indigo-300 hover:text-indigo-200"
+               class="inline-flex max-w-full items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white transition-colors hover:text-white"
+               style="border: 1px solid rgba(255,255,255,0.82); background: rgba(255,255,255,0.055); box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 6px 16px rgba(0,0,0,0.16);"
                title="{{ media.item.title }}">
               <span class="truncate">{{ media.item.title }}</span>
               <span class="ml-2 text-base leading-none">›</span>
