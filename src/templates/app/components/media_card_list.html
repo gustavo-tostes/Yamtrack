@@ -1,153 +1,91 @@
 {% load app_tags %}
 
-<div class="relative overflow-hidden rounded-2xl transition-all duration-200"
-     style="
-       border: 1px solid rgba(255,255,255,0.13);
-       background:
-         radial-gradient(circle at 18% 18%, rgba(255,255,255,0.12), transparent 34%),
-         radial-gradient(circle at 82% 24%, rgba(115,125,255,0.10), transparent 36%),
-         linear-gradient(135deg, rgba(255,255,255,0.075), rgba(255,255,255,0.028));
-       box-shadow:
-         inset 0 1px 0 rgba(255,255,255,0.10),
-         inset 0 -1px 0 rgba(255,255,255,0.025),
-         0 14px 30px rgba(0,0,0,0.18);
-       backdrop-filter: blur(22px) saturate(155%);
-       -webkit-backdrop-filter: blur(22px) saturate(155%);
-     "
+<div class="group rounded-[28px] border border-white/12 bg-white/[0.06] backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.28)] hover:bg-white/[0.08] hover:border-white/18 transition-all duration-300 overflow-hidden"
      x-data="{ trackOpen: false, listsOpen: false, historyOpen: false }">
-  <div class="flex items-center gap-4 p-4">
+
+  <div class="flex items-center gap-5 px-5 py-4">
+
+    <!-- Poster -->
     <div class="shrink-0">
       <a href="{{ item|media_url }}"
-         class="block overflow-hidden rounded-xl"
-         style="
-           width: 64px;
-           height: 96px;
-           border: 1px solid rgba(255,255,255,0.13);
-           background: rgba(255,255,255,0.04);
-           box-shadow:
-             inset 0 1px 0 rgba(255,255,255,0.08),
-             0 10px 22px rgba(0,0,0,0.22);
-         ">
+         class="block rounded-[18px] overflow-hidden border border-white/10 bg-white/[0.04] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
         <img alt="{{ title }}"
-             class="lazyload object-cover bg-[#3e454d]"
+             class="lazyload object-cover block"
              style="width: 64px; height: 96px; display: block;"
              data-src="{{ item.image }}"
              src="{{ IMG_NONE }}">
       </a>
     </div>
 
-    <div class="flex-1 min-w-0">
-      <h3 class="text-lg font-bold text-white mb-2 line-clamp-2 leading-tight">
-        <a href="{{ item|media_url }}"
-           class="hover:text-white transition-colors">{{ title }}</a>
-      </h3>
+    <!-- Conteúdo -->
+    <div class="min-w-0 flex-1">
+      <div class="flex items-center justify-between gap-6">
 
-      <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-400">
-        <span class="flex items-center gap-1.5">
-          {% icon item.media_type is_active=False extra_classes="w-4 h-4 text-gray-300" %}
-          {% if item.media_type == MediaTypes.TV.value %}
-            Série
-          {% elif item.media_type == MediaTypes.SEASON.value %}
-            Temporada
-          {% elif item.media_type == MediaTypes.EPISODE.value %}
-            Episódio
-          {% elif item.media_type == MediaTypes.MOVIE.value %}
-            Filme
-          {% elif item.media_type == MediaTypes.GAME.value %}
-            Jogo
-          {% else %}
-            {{ item.media_type|media_type_readable }}
-          {% endif %}
-        </span>
+        <div class="min-w-0 flex-1">
+          <h3 class="text-[20px] font-semibold text-white leading-tight truncate">
+            <a href="{{ item|media_url }}"
+               class="hover:text-white/90 transition-colors duration-200">
+              {{ title }}
+            </a>
+          </h3>
 
-        <span class="w-1 h-1 rounded-full bg-white/25"></span>
+          <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-white/65">
+            <span class="inline-flex items-center gap-1.5">
+              {% icon item.media_type is_active=False extra_classes="w-4 h-4 opacity-80" %}
+              {{ item.media_type|media_type_readable }}
+            </span>
 
-        <span class="flex items-center gap-1.5">
-          {% include "app/icons/cube.svg" with classes="w-4 h-4 text-gray-300" %}
-          {{ item.media_type|default_source }}
-        </span>
+            <span class="inline-flex items-center gap-1.5">
+              {% include "app/icons/cube.svg" with classes="w-4 h-4 opacity-80" %}
+              {{ item.media_type|default_source }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Ações -->
+        <div class="shrink-0 flex items-center gap-3">
+
+          <!-- Track -->
+          <button class="w-11 h-11 rounded-full border border-white/14 bg-white/[0.08] backdrop-blur-md text-white/90 flex items-center justify-center shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_4px_14px_rgba(0,0,0,0.18)] hover:bg-indigo-500/20 hover:border-indigo-300/30 transition-all duration-200 cursor-pointer"
+                  title="Add to tracker"
+                  hx-get="{% media_view_url 'track_modal' item %}"
+                  hx-vals='{"return_url": "{{ request.get_full_path|urlencode }}", "instance_id": "{{ media.id }}"}'
+                  hx-target="#{% component_id 'track' item media.id %}"
+                  hx-trigger="click once"
+                  @click="trackOpen = true">
+            {% include "app/icons/edit.svg" with classes="w-4 h-4" %}
+          </button>
+
+          <!-- Lists -->
+          <button class="w-11 h-11 rounded-full border border-white/14 bg-white/[0.08] backdrop-blur-md text-white/90 flex items-center justify-center shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_4px_14px_rgba(0,0,0,0.18)] hover:bg-emerald-500/20 hover:border-emerald-300/30 transition-all duration-200 cursor-pointer"
+                  title="Add to custom lists"
+                  hx-get="{% media_view_url 'lists_modal' item %}"
+                  hx-vals='{"return_url": "{{ request.get_full_path|urlencode }}"}'
+                  hx-target="#{% component_id 'lists' item %}"
+                  hx-trigger="click once"
+                  @click="listsOpen = true">
+            {% include "app/icons/list-add.svg" with classes="w-4 h-4" %}
+          </button>
+
+          <!-- History -->
+          <button class="w-11 h-11 rounded-full border border-white/14 bg-white/[0.08] backdrop-blur-md text-white/90 flex items-center justify-center shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_4px_14px_rgba(0,0,0,0.18)] hover:bg-amber-500/20 hover:border-amber-300/30 transition-all duration-200 cursor-pointer"
+                  title="View your activity history"
+                  hx-get="{% media_view_url 'history_modal' item %}"
+                  hx-vals='{"return_url": "{{ request.get_full_path|urlencode }}"}'
+                  hx-target="#{% component_id 'history' item %}"
+                  hx-trigger="click once"
+                  @click="historyOpen = true">
+            {% include "app/icons/history.svg" with classes="w-4 h-4" %}
+          </button>
+        </div>
       </div>
-    </div>
-
-    <div class="shrink-0 flex items-center gap-2">
-      {# Track Button #}
-      <button class="flex items-center justify-center rounded-full text-white transition-all duration-200 hover:scale-105 cursor-pointer"
-              style="
-                width: 36px;
-                height: 36px;
-                border: 1px solid rgba(255,255,255,0.16);
-                background:
-                  radial-gradient(circle at 34% 24%, rgba(255,255,255,0.24), rgba(255,255,255,0.10) 46%, rgba(255,255,255,0.045) 100%);
-                box-shadow:
-                  inset 0 1px 0 rgba(255,255,255,0.15),
-                  inset 0 -1px 0 rgba(255,255,255,0.03),
-                  0 8px 18px rgba(0,0,0,0.18);
-                backdrop-filter: blur(18px) saturate(155%);
-                -webkit-backdrop-filter: blur(18px) saturate(155%);
-              "
-              title="Adicionar ou editar acompanhamento"
-              hx-get="{% media_view_url 'track_modal' item %}"
-              hx-vals='{"return_url": "{{ request.get_full_path|urlencode }}", "instance_id": "{{ media.id }}"}'
-              hx-target="#{% component_id 'track' item media.id %}"
-              hx-trigger="click once"
-              @click="trackOpen = true">
-        {% include "app/icons/edit.svg" with classes="w-4 h-4" %}
-      </button>
-
-      {# Lists Button #}
-      <button class="flex items-center justify-center rounded-full text-white transition-all duration-200 hover:scale-105 cursor-pointer"
-              style="
-                width: 36px;
-                height: 36px;
-                border: 1px solid rgba(255,255,255,0.16);
-                background:
-                  radial-gradient(circle at 34% 24%, rgba(255,255,255,0.24), rgba(255,255,255,0.10) 46%, rgba(255,255,255,0.045) 100%);
-                box-shadow:
-                  inset 0 1px 0 rgba(255,255,255,0.15),
-                  inset 0 -1px 0 rgba(255,255,255,0.03),
-                  0 8px 18px rgba(0,0,0,0.18);
-                backdrop-filter: blur(18px) saturate(155%);
-                -webkit-backdrop-filter: blur(18px) saturate(155%);
-              "
-              title="Adicionar a listas"
-              hx-get="{% media_view_url 'lists_modal' item %}"
-              hx-vals='{"return_url": "{{ request.get_full_path|urlencode }}"}'
-              hx-target="#{% component_id 'lists' item %}"
-              hx-trigger="click once"
-              @click="listsOpen = true">
-        {% include "app/icons/list-add.svg" with classes="w-4 h-4" %}
-      </button>
-
-      {# History Button #}
-      <button class="flex items-center justify-center rounded-full text-white transition-all duration-200 hover:scale-105 cursor-pointer"
-              style="
-                width: 36px;
-                height: 36px;
-                border: 1px solid rgba(255,255,255,0.16);
-                background:
-                  radial-gradient(circle at 34% 24%, rgba(255,255,255,0.24), rgba(255,255,255,0.10) 46%, rgba(255,255,255,0.045) 100%);
-                box-shadow:
-                  inset 0 1px 0 rgba(255,255,255,0.15),
-                  inset 0 -1px 0 rgba(255,255,255,0.03),
-                  0 8px 18px rgba(0,0,0,0.18);
-                backdrop-filter: blur(18px) saturate(155%);
-                -webkit-backdrop-filter: blur(18px) saturate(155%);
-              "
-              title="Ver histórico de atividade"
-              hx-get="{% media_view_url 'history_modal' item %}"
-              hx-vals='{"return_url": "{{ request.get_full_path|urlencode }}"}'
-              hx-target="#{% component_id 'history' item %}"
-              hx-trigger="click once"
-              @click="historyOpen = true">
-        {% include "app/icons/history.svg" with classes="w-4 h-4" %}
-      </button>
     </div>
   </div>
 
   {% if item.media_type == MediaTypes.EPISODE.value %}
     {% include "app/components/fill_track_episode.html" with request=request media=item episode=item episode_title=title csrf_token=csrf_token TRACK_TIME=TRACK_TIME only %}
   {% else %}
-    {# Track Modal #}
+    <!-- Track Modal -->
     <div x-show="trackOpen"
          @keydown.escape.window="trackOpen = false"
          class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -158,7 +96,7 @@
     </div>
   {% endif %}
 
-  {# Lists Modal #}
+  <!-- Lists Modal -->
   <div x-show="listsOpen"
        @keydown.escape.window="listsOpen = false"
        class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -168,7 +106,7 @@
     </div>
   </div>
 
-  {# History Modal #}
+  <!-- History Modal -->
   <div x-show="historyOpen"
        @keydown.escape.window="historyOpen = false"
        class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
