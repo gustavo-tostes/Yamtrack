@@ -48,8 +48,20 @@
            class="hover:text-white transition-colors">{{ title }}</a>
       </h3>
 
-      <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-400">
-        <span class="flex items-center gap-1.5">
+      <div class="text-sm text-gray-400"
+           style="
+             display: flex;
+             align-items: center;
+             flex-wrap: wrap;
+             column-gap: 12px;
+             row-gap: 4px;
+           ">
+        <span style="
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          white-space: nowrap;
+        ">
           {% icon item.media_type is_active=False extra_classes="w-4 h-4 text-gray-300" %}
           {% if item.media_type == MediaTypes.TV.value %}
             Série
@@ -70,11 +82,17 @@
           width: 4px;
           height: 4px;
           border-radius: 9999px;
-          background: rgba(255,255,255,0.28);
+          background: rgba(255,255,255,0.30);
           display: inline-block;
+          flex: 0 0 auto;
         "></span>
 
-        <span class="flex items-center gap-1.5">
+        <span style="
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          white-space: nowrap;
+        ">
           {% include "app/icons/cube.svg" with classes="w-4 h-4 text-gray-300" %}
           {{ item.media_type|default_source }}
         </span>
