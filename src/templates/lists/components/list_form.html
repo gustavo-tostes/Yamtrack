@@ -1,55 +1,264 @@
 {% load widget_tweaks %}
 
+<style>
+  .yamtrack-list-modal-backdrop {
+    background: rgba(0, 0, 0, 0.62);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .yamtrack-list-modal-panel {
+    width: min(680px, calc(100vw - 32px));
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 30px;
+    border: 1px solid rgba(255,255,255,0.14);
+    background:
+      radial-gradient(circle at top left, rgba(255,255,255,0.12), transparent 38%),
+      linear-gradient(135deg, rgba(255,255,255,0.09), rgba(255,255,255,0.035)) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.12),
+      inset 0 -1px 0 rgba(255,255,255,0.03),
+      0 22px 56px rgba(0,0,0,0.34);
+    backdrop-filter: blur(24px) saturate(155%);
+    -webkit-backdrop-filter: blur(24px) saturate(155%);
+    padding: 28px;
+  }
+
+  .yamtrack-list-modal-title {
+    color: rgba(255,255,255,0.96);
+    font-size: 24px;
+    line-height: 1.15;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+  }
+
+  .yamtrack-list-modal-label {
+    display: block;
+    margin-bottom: 9px;
+    color: rgba(255,255,255,0.88);
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .yamtrack-list-modal-input,
+  .yamtrack-list-modal-panel input,
+  .yamtrack-list-modal-panel textarea,
+  .yamtrack-list-modal-panel select {
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.14);
+    background:
+      radial-gradient(circle at 34% 24%, rgba(255,255,255,0.16), rgba(255,255,255,0.055) 52%, rgba(255,255,255,0.025) 100%) !important;
+    color: rgba(255,255,255,0.92);
+    outline: none;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.12),
+      inset 0 -1px 0 rgba(255,255,255,0.03),
+      0 8px 18px rgba(0,0,0,0.14);
+    backdrop-filter: blur(18px) saturate(150%);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
+  }
+
+  .yamtrack-list-modal-panel input,
+  .yamtrack-list-modal-panel select {
+    min-height: 48px;
+    padding: 0 15px;
+  }
+
+  .yamtrack-list-modal-panel textarea {
+    min-height: 220px;
+    padding: 14px 15px;
+    resize: vertical;
+  }
+
+  .yamtrack-list-modal-panel input::placeholder,
+  .yamtrack-list-modal-panel textarea::placeholder {
+    color: rgba(255,255,255,0.42);
+  }
+
+  .yamtrack-list-modal-panel input:focus,
+  .yamtrack-list-modal-panel textarea:focus,
+  .yamtrack-list-modal-panel select:focus {
+    border-color: rgba(255,255,255,0.24);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.16),
+      0 0 0 2px rgba(130,140,255,0.20),
+      0 12px 24px rgba(0,0,0,0.18);
+  }
+
+  .yamtrack-list-modal-button {
+    min-height: 42px;
+    border-radius: 9999px;
+    padding: 0 18px;
+    border: 1px solid rgba(255,255,255,0.14);
+    background:
+      radial-gradient(circle at 34% 24%, rgba(255,255,255,0.18), rgba(255,255,255,0.08) 44%, rgba(255,255,255,0.035) 100%) !important;
+    color: rgba(255,255,255,0.90);
+    font-size: 14px;
+    font-weight: 800;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.14),
+      inset 0 -1px 0 rgba(255,255,255,0.03),
+      0 8px 18px rgba(0,0,0,0.14);
+    backdrop-filter: blur(18px) saturate(155%);
+    -webkit-backdrop-filter: blur(18px) saturate(155%);
+    cursor: pointer;
+  }
+
+  .yamtrack-list-modal-button:hover {
+    border-color: rgba(255,255,255,0.22);
+    color: #ffffff;
+  }
+
+  .yamtrack-list-modal-button-danger {
+    min-height: 42px;
+    border-radius: 9999px;
+    padding: 0 18px;
+    border: 1px solid rgba(248,113,113,0.28);
+    background: rgba(127,29,29,0.36) !important;
+    color: rgba(254,202,202,0.96);
+    font-size: 14px;
+    font-weight: 800;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.10),
+      0 8px 18px rgba(0,0,0,0.14);
+    cursor: pointer;
+  }
+
+  .yamtrack-list-modal-button-danger:hover {
+    background: rgba(153,27,27,0.46) !important;
+    color: #ffffff;
+  }
+
+  .yamtrack-list-modal-button-disabled {
+    opacity: 0.50;
+    cursor: not-allowed;
+  }
+
+  .yamtrack-list-modal-close {
+    width: 40px;
+    height: 40px;
+    border-radius: 9999px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.05);
+    color: rgba(255,255,255,0.58);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+      color 180ms ease,
+      background 180ms ease,
+      border-color 180ms ease;
+  }
+
+  .yamtrack-list-modal-close:hover {
+    color: #ffffff;
+    background: rgba(255,255,255,0.09);
+    border-color: rgba(255,255,255,0.18);
+  }
+
+  .yamtrack-list-modal-panel .select2-container,
+  .yamtrack-list-modal-panel .select2-container--default {
+    width: 100% !important;
+  }
+
+  .yamtrack-list-modal-panel .select2-selection {
+    min-height: 48px !important;
+    border-radius: 18px !important;
+    border: 1px solid rgba(255,255,255,0.14) !important;
+    background:
+      radial-gradient(circle at 34% 24%, rgba(255,255,255,0.16), rgba(255,255,255,0.055) 52%, rgba(255,255,255,0.025) 100%) !important;
+    color: rgba(255,255,255,0.92) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.12),
+      inset 0 -1px 0 rgba(255,255,255,0.03),
+      0 8px 18px rgba(0,0,0,0.14) !important;
+  }
+
+  .yamtrack-list-modal-panel .select2-selection__rendered {
+    color: rgba(255,255,255,0.92) !important;
+  }
+
+  .yamtrack-list-modal-panel .select2-search__field {
+    color: rgba(255,255,255,0.92) !important;
+  }
+</style>
+
 <div x-show="showModal"
      x-cloak
-     class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+     x-transition.opacity
+     class="yamtrack-list-modal-backdrop fixed inset-0 flex items-center justify-center z-50 px-4">
   <div @click.outside="showModal = false"
-       class="bg-[#2a2f35] p-6 rounded-lg w-152 max-h-[90vh] overflow-y-auto">
+       class="yamtrack-list-modal-panel">
     <div class="flex items-center justify-between mb-6">
-      <h2 class="text-2xl font-bold">
+      <h2 class="yamtrack-list-modal-title">
         {% if form.instance.pk %}
-          Edit List
+          Editar lista
         {% else %}
-          Create New List
+          Criar nova lista
         {% endif %}
       </h2>
+
       <button @click="showModal = false"
-              class="text-gray-400 hover:text-white transition-colors cursor-pointer">
+              type="button"
+              class="yamtrack-list-modal-close">
         {% include "app/icons/x.svg" with classes="w-6 h-6" %}
       </button>
     </div>
+
     <form class="space-y-6" method="post">
       {% csrf_token %}
       <input type="hidden" name="list_id" value="{{ custom_list.id }}">
+
       {% for field in form %}
         <div>
-          <label class="block text text-sm font-medium mb-2 text-gray-300">{{ field.label }}</label>
-          {% if field.name != 'collaborators' %}
-            {{ field|add_class:"w-full p-2 bg-[#39404b] rounded-md text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#4a9eff] appearance-none" }}
+          <label class="yamtrack-list-modal-label" for="{{ field.id_for_label }}">
+            {% if field.name == "name" %}
+              Nome
+            {% elif field.name == "description" %}
+              Descrição
+            {% elif field.name == "collaborators" %}
+              Colaboradores
+            {% else %}
+              {{ field.label }}
+            {% endif %}
+          </label>
+
+          {% if field.name == "name" %}
+            {{ field|add_class:"yamtrack-list-modal-input"|attr:"placeholder:Nome da lista" }}
+          {% elif field.name == "description" %}
+            {{ field|add_class:"yamtrack-list-modal-input"|attr:"placeholder:Descreva o objetivo desta lista" }}
+          {% elif field.name == "collaborators" %}
+            {{ field|add_class:"yamtrack-list-modal-input"|attr:"placeholder:Buscar usuários para adicionar..." }}
           {% else %}
-            {{ field }}
+            {{ field|add_class:"yamtrack-list-modal-input" }}
           {% endif %}
         </div>
       {% endfor %}
 
       {% if form.instance.pk %}
-        <div class="flex flex-row-reverse justify-between mt-6">
+        <div class="flex flex-row-reverse justify-between gap-3 pt-4">
           <button type="submit"
                   formaction="{% url 'list_edit' %}?next={{ request.path }}"
-                  class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 cursor-pointer">
-            Save
+                  class="yamtrack-list-modal-button">
+            Salvar
           </button>
+
           <button type="submit"
                   formaction="{% url 'list_delete' %}?next={{ request.path }}"
-                  class="px-4 py-2 rounded-md transition duration-300 {% if request.user == custom_list.owner %}bg-red-700 text-white hover:bg-red-800 cursor-pointer{% else %}bg-gray-600 text-gray-300 cursor-not-allowed{% endif %}"
-                  {% if not request.user == custom_list.owner %}disabled{% endif %}>Delete</button>
+                  class="{% if request.user == custom_list.owner %}yamtrack-list-modal-button-danger{% else %}yamtrack-list-modal-button yamtrack-list-modal-button-disabled{% endif %}"
+                  {% if not request.user == custom_list.owner %}disabled{% endif %}>
+            Excluir
+          </button>
         </div>
       {% else %}
         <div class="flex justify-end pt-4">
           <button type="submit"
                   formaction="{% url 'list_create' %}?next={{ request.path }}"
-                  class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors cursor-pointer">
-            Create List
+                  class="yamtrack-list-modal-button">
+            Criar lista
           </button>
         </div>
       {% endif %}

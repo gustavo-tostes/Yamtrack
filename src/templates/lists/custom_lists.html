@@ -46,10 +46,7 @@
     body > div.flex.min-h-screen > aside nav a,
     body > div.flex.min-h-screen > aside form button {
       border: 1px solid transparent;
-      transition:
-        background 180ms ease,
-        border-color 180ms ease,
-        box-shadow 180ms ease;
+      transition: background 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
     }
 
     body > div.flex.min-h-screen > aside nav a:hover,
@@ -280,7 +277,8 @@
         border-radius: 24px;
       }
 
-      .yamtrack-lists-controls > div {
+      .yamtrack-lists-controls > div,
+      .yamtrack-lists-controls > button {
         width: 100%;
       }
 
@@ -367,21 +365,9 @@
 
 {% block content %}
   <div x-data="{ showModal: false }" class="yamtrack-lists-page space-y-6">
-    <div class="relative flex flex-col items-center justify-center">
+    <div class="flex flex-col items-center justify-center">
       <h1 class="yamtrack-lists-title-pill">Listas</h1>
       <p class="yamtrack-lists-subtitle">Organize e compartilhe suas listas de mídia.</p>
-
-      <button @click="showModal = true"
-              class="yamtrack-glass-button absolute right-0 top-1/2 hidden sm:inline-flex items-center px-4 py-2 text-sm font-semibold cursor-pointer">
-        {% include "app/icons/plus.svg" with classes="w-5 h-5 mr-2" %}
-        Nova lista
-      </button>
-
-      <button @click="showModal = true"
-              class="yamtrack-glass-button mt-5 inline-flex sm:hidden items-center px-4 py-2 text-sm font-semibold cursor-pointer">
-        {% include "app/icons/plus.svg" with classes="w-5 h-5 mr-2" %}
-        Nova lista
-      </button>
     </div>
 
     <div class="yamtrack-lists-controls"
@@ -411,7 +397,7 @@
       </div>
 
       <div class="relative" x-data="{ open: false }">
-        <button class="yamtrack-glass-button flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-colors cursor-pointer"
+        <button class="yamtrack-glass-button flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-colors cursor-pointer whitespace-nowrap"
                 @click="open = !open"
                 type="button">
           {% include "app/icons/arrows-up-down.svg" with classes="w-4 h-4" %}
@@ -453,6 +439,13 @@
           {% endfor %}
         </div>
       </div>
+
+      <button @click="showModal = true"
+              class="yamtrack-glass-button flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold cursor-pointer whitespace-nowrap"
+              type="button">
+        {% include "app/icons/plus.svg" with classes="w-5 h-5" %}
+        Nova lista
+      </button>
     </div>
 
     {% if custom_lists %}
