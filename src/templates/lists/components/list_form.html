@@ -245,6 +245,7 @@
     display: flex !important;
     align-items: center !important;
     flex-wrap: nowrap !important;
+    gap: 6px !important;
     overflow: hidden !important;
     padding: 0 14px !important;
     margin: 0 !important;
@@ -264,6 +265,12 @@
     margin: 0 !important;
     padding: 0 !important;
     float: none !important;
+  }
+
+  .yamtrack-collaborators-control.has-value .select2-search--inline {
+    flex: 0 1 24px !important;
+    min-width: 24px !important;
+    width: 24px !important;
   }
 
   .yamtrack-collaborators-field .select2-selection--multiple .select2-search__field,
@@ -299,16 +306,25 @@
   }
 
   .yamtrack-collaborators-field .select2-selection__choice {
+    flex: 0 1 auto !important;
     min-height: 28px !important;
+    max-height: 28px !important;
     display: inline-flex !important;
     align-items: center !important;
     border-radius: 9999px !important;
     border: 1px solid rgba(255,255,255,0.16) !important;
-    background: rgba(255,255,255,0.10) !important;
+    background: rgba(255,255,255,0.12) !important;
     color: rgba(255,255,255,0.92) !important;
     padding: 3px 10px !important;
-    margin: 0 6px 0 0 !important;
-    max-width: 160px !important;
+    margin: 0 !important;
+    max-width: 220px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    box-sizing: border-box !important;
+  }
+
+  .yamtrack-collaborators-field .select2-selection__choice__display {
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
@@ -363,6 +379,8 @@
      x-cloak
      x-transition.opacity
      x-init="
+       let collaboratorsObserver = null;
+
        function updateCollaboratorsField() {
          const wrapper = $el.querySelector('.yamtrack-collaborators-field');
          if (!wrapper) return;
@@ -374,6 +392,17 @@
          const search = wrapper.querySelector('.select2-search--inline');
          const field = wrapper.querySelector('.select2-search__field');
          const choices = wrapper.querySelectorAll('.select2-selection__choice');
+
+         const hasSelectedOptions = select && Array.from(select.selectedOptions || []).length > 0;
+         const hasChoices = choices.length > 0;
+
+         if (control) {
+           if (hasSelectedOptions || hasChoices) {
+             control.classList.add('has-value');
+           } else {
+             control.classList.remove('has-value');
+           }
+         }
 
          if (select) {
            select.style.height = '48px';
@@ -395,6 +424,7 @@
            rendered.style.display = 'flex';
            rendered.style.alignItems = 'center';
            rendered.style.flexWrap = 'nowrap';
+           rendered.style.gap = '6px';
            rendered.style.overflow = 'hidden';
          }
 
@@ -403,6 +433,9 @@
            search.style.minHeight = '46px';
            search.style.display = 'flex';
            search.style.alignItems = 'center';
+           search.style.flex = (hasSelectedOptions || hasChoices) ? '0 1 24px' : '1 1 auto';
+           search.style.minWidth = (hasSelectedOptions || hasChoices) ? '24px' : '0';
+           search.style.width = (hasSelectedOptions || hasChoices) ? '24px' : '100%';
          }
 
          if (field) {
@@ -415,33 +448,74 @@
            field.style.margin = '0';
            field.style.padding = '0';
 
-           field.addEventListener('focus', () => {
-             if (control) control.classList.add('is-active');
+           if (!field.dataset.yamtrackBound) {
+             field.dataset.yamtrackBound = 'true';
+
+             field.addEventListener('focus', () => {
+               if (control) control.classList.add('is-active');
+             });
+
+             field.addEventListener('blur', () => {
+               setTimeout(() => {
+                 if (control) control.classList.remove('is-active');
+                 updateCollaboratorsField();
+               }, 120);
+             });
+           }
+         }
+       }
+
+       function bindCollaboratorsEvents() {
+         const wrapper = $el.querySelector('.yamtrack-collaborators-field');
+         if (!wrapper) return;
+
+         const select = wrapper.querySelector('select');
+         const rendered = wrapper.querySelector('.select2-selection__rendered');
+
+         if (select && !select.dataset.yamtrackSelectBound) {
+           select.dataset.yamtrackSelectBound = 'true';
+
+           select.addEventListener('change', () => {
+             setTimeout(updateCollaboratorsField, 50);
+             setTimeout(updateCollaboratorsField, 150);
            });
 
-           field.addEventListener('blur', () => {
-             setTimeout(() => {
-               if (control) {
-                 control.classList.remove('is-active');
-                 updateCollaboratorsField();
-               }
-             }, 120);
-           });
+           if (window.jQuery) {
+             window.jQuery(select).on('select2:select select2:unselect select2:clear change', function () {
+               setTimeout(updateCollaboratorsField, 50);
+               setTimeout(updateCollaboratorsField, 150);
+             });
+           }
          }
 
-         if (control) {
-           if (choices.length > 0) {
-             control.classList.add('has-value');
-           } else {
-             control.classList.remove('has-value');
-           }
+         if (rendered && !rendered.dataset.yamtrackObserved) {
+           rendered.dataset.yamtrackObserved = 'true';
+
+           collaboratorsObserver = new MutationObserver(() => {
+             updateCollaboratorsField();
+           });
+
+           collaboratorsObserver.observe(rendered, {
+             childList: true,
+             subtree: true,
+             attributes: true
+           });
          }
        }
 
        $watch('showModal', value => {
          if (value) {
-           setTimeout(updateCollaboratorsField, 100);
-           setTimeout(updateCollaboratorsField, 300);
+           setTimeout(() => {
+             updateCollaboratorsField();
+             bindCollaboratorsEvents();
+           }, 100);
+
+           setTimeout(() => {
+             updateCollaboratorsField();
+             bindCollaboratorsEvents();
+           }, 300);
+
+           setTimeout(updateCollaboratorsField, 600);
          }
        });
      "
