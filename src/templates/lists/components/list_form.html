@@ -170,7 +170,7 @@
 
   .yamtrack-collaborators-placeholder {
     position: absolute;
-    z-index: 3;
+    z-index: 5;
     left: 15px;
     top: 50%;
     transform: translateY(-50%);
@@ -182,9 +182,47 @@
     white-space: nowrap;
   }
 
-  .yamtrack-collaborators-control.is-active .yamtrack-collaborators-placeholder,
-  .yamtrack-collaborators-control.has-value .yamtrack-collaborators-placeholder {
+  .yamtrack-collaborators-selected {
+    position: absolute;
+    z-index: 6;
+    left: 10px;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: none;
+    align-items: center;
+    gap: 6px;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .yamtrack-collaborators-control.has-value .yamtrack-collaborators-selected {
+    display: flex;
+  }
+
+  .yamtrack-collaborators-control.has-value .yamtrack-collaborators-placeholder,
+  .yamtrack-collaborators-control.is-active .yamtrack-collaborators-placeholder {
     opacity: 0;
+  }
+
+  .yamtrack-collaborator-chip {
+    max-width: 220px;
+    min-height: 28px;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    border: 1px solid rgba(255,255,255,0.16);
+    background: rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.92);
+    padding: 3px 10px;
+    font-size: 13px;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.10),
+      0 6px 14px rgba(0,0,0,0.12);
   }
 
   .yamtrack-collaborators-field select,
@@ -245,13 +283,16 @@
     display: flex !important;
     align-items: center !important;
     flex-wrap: nowrap !important;
-    gap: 6px !important;
     overflow: hidden !important;
     padding: 0 14px !important;
     margin: 0 !important;
     box-sizing: border-box !important;
     list-style: none !important;
-    color: rgba(255,255,255,0.88) !important;
+    color: transparent !important;
+  }
+
+  .yamtrack-collaborators-field .select2-selection__choice {
+    display: none !important;
   }
 
   .yamtrack-collaborators-field .select2-selection--multiple .select2-search--inline {
@@ -267,12 +308,6 @@
     float: none !important;
   }
 
-  .yamtrack-collaborators-control.has-value .select2-search--inline {
-    flex: 0 1 24px !important;
-    min-width: 24px !important;
-    width: 24px !important;
-  }
-
   .yamtrack-collaborators-field .select2-selection--multiple .select2-search__field,
   .yamtrack-collaborators-field .select2-search__field {
     width: 100% !important;
@@ -285,7 +320,8 @@
     border: none !important;
     border-radius: 0 !important;
     background: transparent !important;
-    color: rgba(255,255,255,0.88) !important;
+    color: transparent !important;
+    caret-color: rgba(255,255,255,0.82) !important;
     box-shadow: none !important;
     outline: none !important;
     font-size: 14px !important;
@@ -294,45 +330,9 @@
     -webkit-backdrop-filter: none !important;
   }
 
-  .yamtrack-collaborators-field .select2-selection--multiple .select2-search__field::placeholder,
   .yamtrack-collaborators-field .select2-search__field::placeholder {
     color: transparent !important;
     opacity: 0 !important;
-  }
-
-  .yamtrack-collaborators-field .select2-selection__placeholder {
-    color: transparent !important;
-    opacity: 0 !important;
-  }
-
-  .yamtrack-collaborators-field .select2-selection__choice {
-    flex: 0 1 auto !important;
-    min-height: 28px !important;
-    max-height: 28px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    border-radius: 9999px !important;
-    border: 1px solid rgba(255,255,255,0.16) !important;
-    background: rgba(255,255,255,0.12) !important;
-    color: rgba(255,255,255,0.92) !important;
-    padding: 3px 10px !important;
-    margin: 0 !important;
-    max-width: 220px !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
-    box-sizing: border-box !important;
-  }
-
-  .yamtrack-collaborators-field .select2-selection__choice__display {
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
-  }
-
-  .yamtrack-collaborators-field .select2-selection__choice__remove {
-    color: rgba(255,255,255,0.68) !important;
-    margin-right: 6px !important;
   }
 
   .select2-dropdown {
@@ -386,18 +386,40 @@
          if (!wrapper) return;
 
          const control = wrapper.querySelector('.yamtrack-collaborators-control');
+         const selectedContainer = wrapper.querySelector('.yamtrack-collaborators-selected');
          const select = wrapper.querySelector('select');
          const selection = wrapper.querySelector('.select2-selection');
          const rendered = wrapper.querySelector('.select2-selection__rendered');
-         const search = wrapper.querySelector('.select2-search--inline');
          const field = wrapper.querySelector('.select2-search__field');
-         const choices = wrapper.querySelectorAll('.select2-selection__choice');
 
-         const hasSelectedOptions = select && Array.from(select.selectedOptions || []).length > 0;
-         const hasChoices = choices.length > 0;
+         let selectedOptions = [];
+
+         if (select) {
+           selectedOptions = Array.from(select.selectedOptions || [])
+             .filter(option => option.value && option.textContent.trim())
+             .map(option => option.textContent.trim());
+         }
+
+         if (selectedContainer) {
+           selectedContainer.innerHTML = '';
+
+           selectedOptions.slice(0, 2).forEach(name => {
+             const chip = document.createElement('span');
+             chip.className = 'yamtrack-collaborator-chip';
+             chip.textContent = name;
+             selectedContainer.appendChild(chip);
+           });
+
+           if (selectedOptions.length > 2) {
+             const chip = document.createElement('span');
+             chip.className = 'yamtrack-collaborator-chip';
+             chip.textContent = `+${selectedOptions.length - 2}`;
+             selectedContainer.appendChild(chip);
+           }
+         }
 
          if (control) {
-           if (hasSelectedOptions || hasChoices) {
+           if (selectedOptions.length > 0) {
              control.classList.add('has-value');
            } else {
              control.classList.remove('has-value');
@@ -424,18 +446,7 @@
            rendered.style.display = 'flex';
            rendered.style.alignItems = 'center';
            rendered.style.flexWrap = 'nowrap';
-           rendered.style.gap = '6px';
            rendered.style.overflow = 'hidden';
-         }
-
-         if (search) {
-           search.style.height = '46px';
-           search.style.minHeight = '46px';
-           search.style.display = 'flex';
-           search.style.alignItems = 'center';
-           search.style.flex = (hasSelectedOptions || hasChoices) ? '0 1 24px' : '1 1 auto';
-           search.style.minWidth = (hasSelectedOptions || hasChoices) ? '24px' : '0';
-           search.style.width = (hasSelectedOptions || hasChoices) ? '24px' : '100%';
          }
 
          if (field) {
@@ -564,6 +575,7 @@
             <div class="yamtrack-collaborators-control">
               {{ field|add_class:"yamtrack-list-modal-input"|attr:"data-placeholder:" }}
               <span class="yamtrack-collaborators-placeholder">Buscar usuários para adicionar...</span>
+              <span class="yamtrack-collaborators-selected"></span>
             </div>
           {% else %}
             {{ field|add_class:"yamtrack-list-modal-input" }}
