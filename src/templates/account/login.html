@@ -3,31 +3,153 @@
 {% load socialaccount %}
 
 {% block head_title %}
-  Login
+  Entrar
 {% endblock head_title %}
 
 {% block content_title %}
-  Sign in to your account
+  Entre na sua conta
 {% endblock content_title %}
 
 {% block content %}
   {% if not SOCIALACCOUNT_ONLY %}
-
     {% url 'account_login' as login_url %}
-    {% element form form=form method="post" action=login_url tags="entrance,login" %}
-      {% slot body %}
-        {% csrf_token %}
-        {% element fields form=form unlabeled=True %}
-        {% endelement %}
-        {{ redirect_field }}
-      {% endslot %}
 
-      {% slot actions %}
-        {% element button type="submit" tags="prominent,login" icon='<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" x2="3" y1="12" y2="12"></line>' %}
-          Sign In
-        {% endelement %}
-      {% endslot %}
-    {% endelement %}
+    <form method="post"
+          action="{{ login_url }}"
+          style="
+            padding: 32px;
+            border-radius: 28px;
+            border: 1px solid rgba(255,255,255,0.13);
+            background:
+              radial-gradient(circle at 18% 18%, rgba(255,255,255,0.14), transparent 34%),
+              radial-gradient(circle at 82% 24%, rgba(115,125,255,0.13), transparent 36%),
+              linear-gradient(135deg, rgba(255,255,255,0.078), rgba(255,255,255,0.03));
+            box-shadow:
+              inset 0 1px 0 rgba(255,255,255,0.12),
+              inset 0 -1px 0 rgba(255,255,255,0.025),
+              0 18px 42px rgba(0,0,0,0.28);
+            backdrop-filter: blur(26px) saturate(160%);
+            -webkit-backdrop-filter: blur(26px) saturate(160%);
+          ">
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        <div style="
+          margin-bottom: 18px;
+          padding: 12px 14px;
+          border-radius: 16px;
+          border: 1px solid rgba(248,113,113,0.28);
+          background: rgba(248,113,113,0.10);
+          color: rgba(254,202,202,0.95);
+          font-size: 14px;
+        ">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      <div style="display: flex; flex-direction: column; gap: 22px;">
+        <div>
+          <label for="{{ form.login.id_for_label }}"
+                 style="display: block; margin-bottom: 9px; color: #ffffff; font-size: 14px; font-weight: 700;">
+            Usuário
+          </label>
+
+          <input type="text"
+                 name="{{ form.login.html_name }}"
+                 id="{{ form.login.id_for_label }}"
+                 value="{{ form.login.value|default_if_none:'' }}"
+                 autocomplete="username"
+                 placeholder="Digite seu usuário"
+                 required
+                 style="
+                   width: 100%;
+                   height: 52px;
+                   padding: 0 16px;
+                   border-radius: 14px;
+                   border: 1px solid rgba(255,255,255,0.16);
+                   background: rgba(255,255,255,0.075);
+                   color: #ffffff;
+                   outline: none;
+                   box-shadow:
+                     inset 0 1px 0 rgba(255,255,255,0.10),
+                     0 10px 24px rgba(0,0,0,0.14);
+                   backdrop-filter: blur(18px) saturate(150%);
+                   -webkit-backdrop-filter: blur(18px) saturate(150%);
+                 ">
+
+          {% if form.login.errors %}
+            <div style="margin-top: 7px; color: #fca5a5; font-size: 13px;">
+              {{ form.login.errors }}
+            </div>
+          {% endif %}
+        </div>
+
+        <div>
+          <label for="{{ form.password.id_for_label }}"
+                 style="display: block; margin-bottom: 9px; color: #ffffff; font-size: 14px; font-weight: 700;">
+            Senha
+          </label>
+
+          <input type="password"
+                 name="{{ form.password.html_name }}"
+                 id="{{ form.password.id_for_label }}"
+                 autocomplete="current-password"
+                 placeholder="Digite sua senha"
+                 required
+                 style="
+                   width: 100%;
+                   height: 52px;
+                   padding: 0 16px;
+                   border-radius: 14px;
+                   border: 1px solid rgba(255,255,255,0.16);
+                   background: rgba(255,255,255,0.075);
+                   color: #ffffff;
+                   outline: none;
+                   box-shadow:
+                     inset 0 1px 0 rgba(255,255,255,0.10),
+                     0 10px 24px rgba(0,0,0,0.14);
+                   backdrop-filter: blur(18px) saturate(150%);
+                   -webkit-backdrop-filter: blur(18px) saturate(150%);
+                 ">
+
+          {% if form.password.errors %}
+            <div style="margin-top: 7px; color: #fca5a5; font-size: 13px;">
+              {{ form.password.errors }}
+            </div>
+          {% endif %}
+        </div>
+
+        {% if form.remember %}
+          <label style="display: inline-flex; align-items: center; gap: 9px; color: rgba(255,255,255,0.72); font-size: 14px;">
+            {{ form.remember }}
+            Lembrar de mim
+          </label>
+        {% endif %}
+
+        {{ redirect_field }}
+
+        <button type="submit"
+                style="
+                  width: 100%;
+                  height: 52px;
+                  margin-top: 2px;
+                  border: 0;
+                  border-radius: 16px;
+                  color: #ffffff;
+                  font-weight: 700;
+                  cursor: pointer;
+                  background:
+                    radial-gradient(circle at 35% 20%, rgba(255,255,255,0.30), rgba(255,255,255,0.08) 32%, transparent 58%),
+                    linear-gradient(135deg, #6d5dfc, #4f35f5);
+                  box-shadow:
+                    inset 0 1px 0 rgba(255,255,255,0.24),
+                    0 14px 30px rgba(79,53,245,0.30);
+                  transition: transform 180ms ease, filter 180ms ease;
+                ">
+          Entrar
+        </button>
+      </div>
+    </form>
   {% endif %}
 
   {% if SOCIALACCOUNT_ENABLED %}
@@ -37,9 +159,9 @@
   {% if not SOCIALACCOUNT_ONLY and REGISTRATION %}
     <div class="mt-6 text-center">
       <p class="text-gray-400">
-        Need an account?
+        Ainda não tem uma conta?
         <a class="text-indigo-400 hover:text-indigo-300"
-           href="{% url 'account_signup' %}">Register now</a>
+           href="{% url 'account_signup' %}">Cadastre-se agora</a>
       </p>
     </div>
   {% endif %}
@@ -55,8 +177,7 @@
         const providerContainer = document.getElementById('providers');
         if (providerContainer) {
           const providerForms = providerContainer.querySelectorAll('form');
-      
-          // Only submit if there's exactly one provider form
+
           if (providerForms.length === 1) {
             providerForms[0].submit();
           }
