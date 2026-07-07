@@ -11,12 +11,14 @@
 
 {% block content %}
   <style>
+    html,
+    body {
+      min-height: 100%;
+    }
+
     body:has(.yamtrack-login-shell) {
-      background:
-        radial-gradient(circle at 18% 16%, rgba(120, 110, 255, 0.20), transparent 30%),
-        radial-gradient(circle at 78% 20%, rgba(80, 180, 255, 0.12), transparent 32%),
-        radial-gradient(circle at 50% 92%, rgba(255, 255, 255, 0.06), transparent 34%),
-        #191f23 !important;
+      background: #071015 !important;
+      overflow-x: hidden;
     }
 
     body:has(.yamtrack-login-shell) main,
@@ -24,7 +26,9 @@
     body:has(.yamtrack-login-shell) .bg-gray-800,
     body:has(.yamtrack-login-shell) .bg-gray-900,
     body:has(.yamtrack-login-shell) .bg-slate-800,
-    body:has(.yamtrack-login-shell) .bg-slate-900 {
+    body:has(.yamtrack-login-shell) .bg-slate-900,
+    body:has(.yamtrack-login-shell) .bg-[#1f252b],
+    body:has(.yamtrack-login-shell) .bg-[#20262d] {
       background: transparent !important;
       box-shadow: none !important;
       border-color: transparent !important;
@@ -37,8 +41,48 @@
       padding: 0 !important;
     }
 
+    .yamtrack-liquid-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(125, 115, 255, 0.28), transparent 30%),
+        radial-gradient(circle at 82% 16%, rgba(80, 190, 255, 0.18), transparent 32%),
+        radial-gradient(circle at 52% 82%, rgba(255, 255, 255, 0.08), transparent 34%),
+        linear-gradient(135deg, #071015 0%, #111a22 48%, #070b10 100%);
+    }
+
+    .yamtrack-liquid-bg::before {
+      content: "";
+      position: absolute;
+      inset: -18%;
+      background:
+        linear-gradient(115deg, transparent 0%, rgba(255,255,255,0.055) 42%, transparent 72%),
+        radial-gradient(circle at 34% 30%, rgba(255,255,255,0.10), transparent 18%),
+        radial-gradient(circle at 66% 60%, rgba(255,255,255,0.07), transparent 20%);
+      filter: blur(4px);
+      backdrop-filter: blur(22px) saturate(160%);
+      -webkit-backdrop-filter: blur(22px) saturate(160%);
+    }
+
+    .yamtrack-liquid-bg::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 72px 72px;
+      mask-image: radial-gradient(circle at center, black, transparent 78%);
+      -webkit-mask-image: radial-gradient(circle at center, black, transparent 78%);
+      opacity: 0.35;
+    }
+
     .yamtrack-login-shell {
       position: relative;
+      z-index: 2;
       width: min(440px, calc(100vw - 32px));
       margin: 0 auto;
     }
@@ -185,7 +229,25 @@
       color: rgba(254,202,202,0.96);
       font-size: 14px;
     }
+
+    .yamtrack-register {
+      margin-top: 24px;
+      text-align: center;
+      color: rgba(255,255,255,0.56);
+      font-size: 14px;
+    }
+
+    .yamtrack-register a {
+      color: rgba(175,170,255,0.95);
+      text-decoration: none;
+    }
+
+    .yamtrack-register a:hover {
+      color: #ffffff;
+    }
   </style>
+
+  <div class="yamtrack-liquid-bg"></div>
 
   <div class="yamtrack-login-shell">
     <div class="yamtrack-login-brand">
@@ -215,6 +277,12 @@
                    autocomplete="username"
                    placeholder="Digite seu usuário"
                    required>
+
+            {% if form.login.errors %}
+              <div class="yamtrack-error" style="margin-top: 10px; margin-bottom: 0;">
+                {{ form.login.errors }}
+              </div>
+            {% endif %}
           </div>
 
           <div class="yamtrack-field">
@@ -225,6 +293,12 @@
                    autocomplete="current-password"
                    placeholder="Digite sua senha"
                    required>
+
+            {% if form.password.errors %}
+              <div class="yamtrack-error" style="margin-top: 10px; margin-bottom: 0;">
+                {{ form.password.errors }}
+              </div>
+            {% endif %}
           </div>
 
           {% if form.remember %}
@@ -245,6 +319,13 @@
 
     {% if SOCIALACCOUNT_ENABLED %}
       {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
+    {% endif %}
+
+    {% if not SOCIALACCOUNT_ONLY and REGISTRATION %}
+      <div class="yamtrack-register">
+        Ainda não tem uma conta?
+        <a href="{% url 'account_signup' %}">Cadastre-se agora</a>
+      </div>
     {% endif %}
   </div>
 {% endblock content %}
