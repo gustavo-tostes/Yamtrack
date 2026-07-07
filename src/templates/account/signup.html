@@ -23,12 +23,11 @@
 
     body:has(.yamtrack-auth-shell) main,
     body:has(.yamtrack-auth-shell) section,
-    body:has(.yamtrack-auth-shell) .bg-gray-800,
-    body:has(.yamtrack-auth-shell) .bg-gray-900,
-    body:has(.yamtrack-auth-shell) .bg-slate-800,
-    body:has(.yamtrack-auth-shell) .bg-slate-900,
-    body:has(.yamtrack-auth-shell) .bg-[#1f252b],
-    body:has(.yamtrack-auth-shell) .bg-[#20262d] {
+    body:has(.yamtrack-auth-shell) div:has(> .yamtrack-auth-shell),
+    body:has(.yamtrack-auth-shell) [class*="bg-[#2a2f35]"],
+    body:has(.yamtrack-auth-shell) [class*="bg-[#212529]"],
+    body:has(.yamtrack-auth-shell) [class*="bg-gray"],
+    body:has(.yamtrack-auth-shell) [class*="bg-slate"] {
       background: transparent !important;
       box-shadow: none !important;
       border-color: transparent !important;
@@ -37,7 +36,6 @@
     .yamtrack-auth-shell {
       width: min(460px, calc(100vw - 32px));
       margin: 0 auto;
-      transform: translateY(10px);
     }
 
     .yamtrack-auth-brand {
@@ -45,22 +43,12 @@
       margin-bottom: 26px;
     }
 
-    .yamtrack-auth-brand h1 {
-      margin: 0 0 18px;
-      color: #ffffff;
-      font-size: 34px;
-      line-height: 1;
-      font-weight: 800;
-      letter-spacing: -0.035em;
-      text-shadow: 0 10px 30px rgba(0,0,0,0.28);
-    }
-
     .yamtrack-auth-title-pill {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       border-radius: 9999px;
-      padding: 9px 26px;
+      padding: 9px 28px;
       color: rgba(255,255,255,0.94);
       font-size: 14px;
       font-weight: 900;
@@ -78,7 +66,7 @@
     }
 
     .yamtrack-auth-subtitle {
-      margin: 14px 0 0;
+      margin: 16px 0 0;
       color: rgba(255,255,255,0.58);
       font-size: 15px;
     }
@@ -114,7 +102,7 @@
       width: 100%;
       min-height: 48px;
       box-sizing: border-box;
-      padding: 0 15px;
+      padding: 0 16px;
       border-radius: 9999px;
       border: 1px solid rgba(255,255,255,0.14);
       background:
@@ -131,14 +119,6 @@
 
     .yamtrack-auth-input::placeholder {
       color: rgba(255,255,255,0.42);
-    }
-
-    .yamtrack-auth-input:focus {
-      border-color: rgba(255,255,255,0.24);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.16),
-        0 0 0 2px rgba(130,140,255,0.20),
-        0 12px 24px rgba(0,0,0,0.18);
     }
 
     .yamtrack-auth-button {
@@ -186,7 +166,6 @@
 
   <div class="yamtrack-auth-shell">
     <div class="yamtrack-auth-brand">
-      <h1>Yamtrack</h1>
       <div class="yamtrack-auth-title-pill">Criar conta</div>
       <p class="yamtrack-auth-subtitle">Cadastre-se para começar sua coleção.</p>
     </div>
