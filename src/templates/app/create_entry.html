@@ -2,22 +2,313 @@
 {% load app_tags %}
 
 {% block title %}
-  Create - Yamtrack
+  Criar entrada - Yamtrack
 {% endblock title %}
 
 {% block content %}
-  <div class="mx-auto max-w-4xl">
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold mb-2">Create Custom Entry</h1>
-      <p class="text-gray-400">Add a custom media entry to your collection if it's not available in the database.</p>
+  <style>
+    [x-cloak] {
+      display: none !important;
+    }
+
+    .yamtrack-custom-page {
+      position: relative;
+      max-width: 980px;
+      margin: 0 auto;
+      padding-bottom: 48px;
+    }
+
+    .yamtrack-custom-header {
+      margin-bottom: 28px;
+    }
+
+    .yamtrack-custom-header h1 {
+      margin: 0 0 8px;
+      color: #ffffff;
+      font-size: 34px;
+      line-height: 1.08;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      text-shadow: 0 10px 30px rgba(0,0,0,0.28);
+    }
+
+    .yamtrack-custom-header p {
+      margin: 0;
+      color: rgba(255,255,255,0.62);
+      font-size: 15px;
+    }
+
+    .yamtrack-glass-panel {
+      position: relative;
+      overflow: hidden;
+      padding: 28px;
+      border-radius: 28px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.105), rgba(255,255,255,0.038) 52%, rgba(255,255,255,0.072)),
+        radial-gradient(circle at 18% 10%, rgba(255,255,255,0.18), transparent 34%),
+        radial-gradient(circle at 86% 16%, rgba(111,91,255,0.14), transparent 38%);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.18),
+        inset 0 -1px 0 rgba(255,255,255,0.04),
+        0 22px 54px rgba(0,0,0,0.28);
+      backdrop-filter: blur(28px) saturate(165%);
+      -webkit-backdrop-filter: blur(28px) saturate(165%);
+    }
+
+    .yamtrack-glass-panel::before {
+      content: "";
+      position: absolute;
+      inset: 1px;
+      border-radius: 27px;
+      pointer-events: none;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.12), transparent 34%),
+        radial-gradient(circle at 30% 18%, rgba(255,255,255,0.10), transparent 28%);
+      opacity: 0.74;
+    }
+
+    .yamtrack-glass-panel::after {
+      content: "";
+      position: absolute;
+      left: 22px;
+      right: 22px;
+      top: 13px;
+      height: 1px;
+      pointer-events: none;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.40), transparent);
+      opacity: 0.62;
+    }
+
+    .yamtrack-form-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .yamtrack-form-grid {
+      display: grid;
+      gap: 22px;
+    }
+
+    .yamtrack-label {
+      display: block;
+      margin-bottom: 9px;
+      color: rgba(255,255,255,0.90);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .yamtrack-input,
+    .yamtrack-select,
+    .yamtrack-textarea {
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.105), rgba(255,255,255,0.052));
+      color: #ffffff;
+      outline: none;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.13),
+        inset 0 -1px 0 rgba(255,255,255,0.035),
+        0 10px 24px rgba(0,0,0,0.14);
+      backdrop-filter: blur(18px) saturate(155%);
+      -webkit-backdrop-filter: blur(18px) saturate(155%);
+    }
+
+    .yamtrack-input,
+    .yamtrack-select {
+      height: 48px;
+      padding: 0 14px;
+    }
+
+    .yamtrack-textarea {
+      min-height: 118px;
+      padding: 14px;
+      resize: vertical;
+    }
+
+    .yamtrack-input::placeholder,
+    .yamtrack-textarea::placeholder {
+      color: rgba(255,255,255,0.48);
+    }
+
+    .yamtrack-input:focus,
+    .yamtrack-select:focus,
+    .yamtrack-textarea:focus {
+      border-color: rgba(185,185,255,0.48);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.18),
+        0 0 0 4px rgba(111,91,255,0.13),
+        0 14px 30px rgba(0,0,0,0.18);
+    }
+
+    .yamtrack-type-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .yamtrack-type-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 48px;
+      padding: 0 13px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.075), rgba(255,255,255,0.035));
+      color: rgba(255,255,255,0.78);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.10),
+        0 8px 18px rgba(0,0,0,0.12);
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+    }
+
+    .yamtrack-type-btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255,255,255,0.24);
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.11), rgba(255,255,255,0.052));
+    }
+
+    .yamtrack-type-btn.is-active {
+      border-color: rgba(185,178,255,0.58);
+      color: #ffffff;
+      background:
+        radial-gradient(circle at 28% 18%, rgba(255,255,255,0.30), transparent 30%),
+        linear-gradient(135deg, #7667ee, #5742e6);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.24),
+        0 14px 30px rgba(82,55,245,0.28);
+    }
+
+    .yamtrack-image-row {
+      display: flex;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .yamtrack-image-preview {
+      width: 82px;
+      height: 82px;
+      flex: 0 0 auto;
+      overflow: hidden;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.045));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        0 12px 24px rgba(0,0,0,0.16);
+    }
+
+    .yamtrack-stepper {
+      position: absolute;
+      inset-y: 0;
+      right: 0;
+      display: flex;
+      flex-direction: column;
+      width: 42px;
+      border-left: 1px solid rgba(255,255,255,0.12);
+      overflow: hidden;
+      border-radius: 0 16px 16px 0;
+    }
+
+    .yamtrack-stepper button {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.82);
+      background: rgba(255,255,255,0.035);
+      transition: background 160ms ease;
+    }
+
+    .yamtrack-stepper button:hover {
+      background: rgba(255,255,255,0.09);
+    }
+
+    .yamtrack-save-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      margin-top: 26px;
+      height: 48px;
+      padding: 0 18px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.20);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      background:
+        radial-gradient(circle at 30% 18%, rgba(255,255,255,0.30), transparent 28%),
+        linear-gradient(135deg, #7667ee, #5742e6);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.24),
+        inset 0 -1px 0 rgba(0,0,0,0.16),
+        0 18px 38px rgba(82,55,245,0.26);
+      transition: transform 180ms ease, filter 180ms ease;
+    }
+
+    .yamtrack-save-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+    }
+
+    @media (max-width: 900px) {
+      .yamtrack-type-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .yamtrack-custom-header h1 {
+        font-size: 28px;
+      }
+
+      .yamtrack-glass-panel {
+        padding: 22px;
+        border-radius: 24px;
+      }
+
+      .yamtrack-type-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .yamtrack-image-row {
+        flex-direction: column;
+      }
+
+      .yamtrack-image-preview {
+        width: 100%;
+        height: 160px;
+      }
+    }
+  </style>
+
+  <div class="yamtrack-custom-page">
+    <div class="yamtrack-custom-header">
+      <h1>Criar entrada personalizada</h1>
+      <p>Adicione uma mídia manualmente à sua coleção quando ela não estiver disponível na base de dados.</p>
     </div>
+
     {# djlint:off #}
-    <form method="post" class="space-y-6" x-data="{
+    <form method="post" class="yamtrack-glass-panel" x-data="{
       mediaType: 'tv',
       placeholderHtml: null,
 
       init() {
-        // Store the initial placeholder HTML
         this.placeholderHtml = document.getElementById('image-preview').innerHTML;
       },
 
@@ -26,330 +317,324 @@
         const imageUrl = input.value.trim();
 
         if (imageUrl) {
-          // Clear the preview div
           previewDiv.innerHTML = '';
 
-          // Create the image element
           const img = document.createElement('img');
-          img.alt = 'Preview';
+          img.alt = 'Prévia';
           img.className = 'w-full h-full object-cover';
           img.src = imageUrl;
 
-          // Handle image load error
           img.onerror = function() {
             previewDiv.innerHTML = document.getElementById('error-icon').innerHTML;
           };
 
-          // Add the image to the preview div
           previewDiv.appendChild(img);
         } else {
-          // Restore the default placeholder icon
           previewDiv.innerHTML = this.placeholderHtml;
         }
       },
-    
+
       showField(field) {
-        // TV Show fields
         if (this.mediaType === 'tv') {
           return ['title', 'image', 'score', 'status', 'notes'].includes(field);
-        }
-    
-        // Season fields
-        else if (this.mediaType === 'season') {
+        } else if (this.mediaType === 'season') {
           return ['parentShow', 'image', 'seasonNumber', 'score', 'status', 'notes'].includes(field);
-        }
-    
-        // Episode fields
-        else if (this.mediaType === 'episode') {
+        } else if (this.mediaType === 'episode') {
           return ['parentSeason', 'image', 'episodeNumber', 'endDate'].includes(field);
-        }
-    
-        // Movie, Anime, Manga, Game, Book fields
-        else {
+        } else {
           return ['title', 'image', 'score', 'progress', 'status', 'startDate', 'endDate', 'notes'].includes(field);
         }
       },
-    
+
       getProgressLabel() {
-        if (this.mediaType === 'anime') return 'Progress (Episodes)';
-        if (this.mediaType === 'manga') return 'Progress (Chapters)';
-        if (this.mediaType === 'game') return 'Progress (Play Time)';
-        if (this.mediaType === 'book') return 'Progress (Pages)';
-        return 'Progress';
+        if (this.mediaType === 'anime') return 'Progresso (episódios)';
+        if (this.mediaType === 'manga') return 'Progresso (capítulos)';
+        if (this.mediaType === 'game') return 'Progresso (tempo de jogo)';
+        if (this.mediaType === 'book') return 'Progresso (páginas)';
+        return 'Progresso';
       },
-    
+
       validateForm() {
-        // Validate parent TV selection for Season
         if (this.mediaType === 'season') {
           const parentTvId = document.getElementById('parent-tv-id').value;
           if (!parentTvId) {
-            alert('Please select a parent TV show from the dropdown');
+            alert('Selecione uma série principal na lista.');
             return false;
           }
         }
-    
-        // Validate parent Season selection for Episode
+
         if (this.mediaType === 'episode') {
           const parentSeasonId = document.getElementById('parent-season-id').value;
           if (!parentSeasonId) {
-            alert('Please select a parent Season from the dropdown');
+            alert('Selecione uma temporada principal na lista.');
             return false;
           }
         }
-    
+
         return true;
       }
     }" @submit.prevent="validateForm() && $event.target.submit()">
     {# djlint:on #}
-    {% csrf_token %}
-    <input type="hidden" name="media_type" :value="mediaType">
+      {% csrf_token %}
+      <input type="hidden" name="media_type" :value="mediaType">
 
-    <div class="bg-[#2a2f35] rounded-lg p-6">
-      <div class="grid gap-6">
-        <div x-cloak>
-          <label class="block text-sm font-medium mb-2 text-gray-300">Media Type</label>
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {% for media_type in media_types %}
-              <button type="button"
-                      @click="mediaType = '{{ media_type }}'"
-                      :class="mediaType === '{{ media_type }}' ? 'bg-indigo-600 border-indigo-500 text-white' : 'border-gray-600 text-gray-300 hover:bg-[#39404b]'"
-                      class="flex items-center gap-2 p-3 rounded-md border transition-colors cursor-pointer">
-                {% icon media_type is_active=False %}
-                <span class="text-sm font-medium">{{ media_type|media_type_readable }}</span>
-              </button>
-            {% endfor %}
+      <div class="yamtrack-form-content">
+        <div class="yamtrack-form-grid">
+          <div x-cloak>
+            <label class="yamtrack-label">Tipo de mídia</label>
+            <div class="yamtrack-type-grid">
+              {% for media_type in media_types %}
+                <button type="button"
+                        @click="mediaType = '{{ media_type }}'"
+                        class="yamtrack-type-btn"
+                        :class="{ 'is-active': mediaType === '{{ media_type }}' }">
+                  {% icon media_type is_active=False %}
+                  <span>
+                    {% if media_type == MediaTypes.TV.value %}
+                      Série
+                    {% elif media_type == MediaTypes.SEASON.value %}
+                      Temporada
+                    {% elif media_type == MediaTypes.EPISODE.value %}
+                      Episódio
+                    {% elif media_type == MediaTypes.MOVIE.value %}
+                      Filme
+                    {% elif media_type == MediaTypes.ANIME.value %}
+                      Anime
+                    {% elif media_type == MediaTypes.MANGA.value %}
+                      Mangá
+                    {% elif media_type == MediaTypes.GAME.value %}
+                      Jogo
+                    {% elif media_type == MediaTypes.BOOK.value %}
+                      Livro
+                    {% elif media_type == MediaTypes.COMIC.value %}
+                      Quadrinho
+                    {% elif media_type == MediaTypes.BOARDGAME.value %}
+                      Jogo de tabuleiro
+                    {% else %}
+                      {{ media_type|media_type_readable }}
+                    {% endif %}
+                  </span>
+                </button>
+              {% endfor %}
+            </div>
           </div>
-        </div>
 
-        <!-- Title field (TV, Movie, Anime, Manga, Game, Book) -->
-        <div x-show="showField('title')">
-          <label class="block text-sm font-medium mb-2 text-gray-300">Title</label>
-          <input class="w-full p-2 bg-[#39404b] rounded-md text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#4a9eff] appearance-none"
-                 placeholder="Enter title"
-                 name="title"
-                 type="text"
-                 value="">
-        </div>
+          <div x-show="showField('title')">
+            <label class="yamtrack-label">Título</label>
+            <input class="yamtrack-input"
+                   placeholder="Digite o título"
+                   name="title"
+                   type="text"
+                   value="">
+          </div>
 
-        <!-- Parent TV Show field (Season) -->
-        <div x-show="showField('parentShow')">
-          <label class="block text-sm font-medium mb-2 text-gray-300">Parent TV Show</label>
-          <div class="relative">
+          <div x-show="showField('parentShow')">
+            <label class="yamtrack-label">Série principal</label>
             <div class="relative">
               <input id="parent-tv-input"
-                     class="w-full p-2 pl-9 bg-[#39404b] rounded-md text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#4a9eff] appearance-none"
-                     placeholder="Search for a TV show..."
+                     class="yamtrack-input pl-9"
+                     placeholder="Busque uma série..."
                      name="q"
                      type="text"
                      autocomplete="off"
                      hx-get="{% url 'search_parent_tv' %}"
                      hx-trigger="keyup changed delay:300ms"
                      hx-target="#parent-tv-results">
-              <!-- Hidden input to store the selected TV ID -->
               <input id="parent-tv-id" name="parent_tv" type="hidden">
               {% include "app/icons/magnifying-glass.svg" with classes="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" %}
             </div>
             <div id="parent-tv-results"></div>
           </div>
-        </div>
 
-        <!-- Season Number field (Season) -->
-        <div x-show="showField('seasonNumber')">
-          <label class="block text-sm font-medium mb-2 text-gray-300">Season Number</label>
-          <div class="relative">
-            <input min="1"
-                   max="999"
-                   class="w-full p-2 pr-12 bg-[#39404b] rounded-md text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#4a9eff] [appearance:textfield] [&amp;::-webkit-outer-spin-button]:appearance-none [&amp;::-webkit-inner-spin-button]:appearance-none"
-                   name="season_number"
-                   type="number"
-                   value="1">
-            <div class="absolute inset-y-0 right-0 flex flex-col border-l border-gray-600">
-              <button type="button"
-                      onclick="this.parentElement.previousElementSibling.stepUp()"
-                      class="flex-1 px-2 hover:bg-gray-700 transition-colors rounded-tr-md border-t border-r border-gray-600 group">
-                {% include "app/icons/chevron-up.svg" with classes="w-3.5 h-3.5" %}
-              </button>
-              <button type="button"
-                      onclick="this.parentElement.previousElementSibling.stepDown()"
-                      class="flex-1 px-2 hover:bg-gray-700 transition-colors rounded-br-md border-b border-r border-gray-600 group">
-                {% include "app/icons/chevron-down.svg" with classes="w-3.5 h-3.5" %}
-              </button>
+          <div x-show="showField('seasonNumber')">
+            <label class="yamtrack-label">Número da temporada</label>
+            <div class="relative">
+              <input min="1"
+                     max="999"
+                     class="yamtrack-input pr-12 [appearance:textfield] [&amp;::-webkit-outer-spin-button]:appearance-none [&amp;::-webkit-inner-spin-button]:appearance-none"
+                     name="season_number"
+                     type="number"
+                     value="1">
+              <div class="yamtrack-stepper">
+                <button type="button" onclick="this.parentElement.previousElementSibling.stepUp()">
+                  {% include "app/icons/chevron-up.svg" with classes="w-3.5 h-3.5" %}
+                </button>
+                <button type="button" onclick="this.parentElement.previousElementSibling.stepDown()">
+                  {% include "app/icons/chevron-down.svg" with classes="w-3.5 h-3.5" %}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Parent Season field (Episode) -->
-        <div x-show="showField('parentSeason')">
-          <label class="block text-sm font-medium mb-2 text-gray-300">Parent Season</label>
-          <div class="relative">
+          <div x-show="showField('parentSeason')">
+            <label class="yamtrack-label">Temporada principal</label>
             <div class="relative">
               <input id="parent-season-input"
-                     class="w-full p-2 pl-9 bg-[#39404b] rounded-md text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#4a9eff] appearance-none"
-                     placeholder="Search for a season..."
+                     class="yamtrack-input pl-9"
+                     placeholder="Busque uma temporada..."
                      name="q"
                      type="text"
                      autocomplete="off"
                      hx-get="{% url 'search_parent_season' %}"
                      hx-trigger="keyup changed delay:300ms"
                      hx-target="#parent-season-results">
-              <!-- Hidden input to store the selected Season ID -->
               <input id="parent-season-id" name="parent_season" type="hidden">
               {% include "app/icons/magnifying-glass.svg" with classes="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" %}
             </div>
             <div id="parent-season-results"></div>
           </div>
-        </div>
 
-        <!-- Episode Number field (Episode) -->
-        <div x-show="showField('episodeNumber')">
-          <label class="block text-sm font-medium mb-2 text-gray-300">Episode Number</label>
-          <div class="relative">
-            <input min="1"
-                   max="999"
-                   class="w-full p-2 pr-12 bg-[#39404b] rounded-md text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#4a9eff] [appearance:textfield] [&amp;::-webkit-outer-spin-button]:appearance-none [&amp;::-webkit-inner-spin-button]:appearance-none"
-                   name="episode_number"
-                   type="number"
-                   value="1">
-            <div class="absolute inset-y-0 right-0 flex flex-col border-l border-gray-600">
-              <button type="button"
-                      onclick="this.parentElement.previousElementSibling.stepUp()"
-                      class="flex-1 px-2 hover:bg-gray-700 transition-colors rounded-tr-md border-t border-r border-gray-600 group">
-                {% include "app/icons/chevron-up.svg" with classes="w-3.5 h-3.5" %}
-              </button>
-              <button type="button"
-                      onclick="this.parentElement.previousElementSibling.stepDown()"
-                      class="flex-1 px-2 hover:bg-gray-700 transition-colors rounded-br-md border-b border-r border-gray-600 group">
-                {% include "app/icons/chevron-down.svg" with classes="w-3.5 h-3.5" %}
-              </button>
+          <div x-show="showField('episodeNumber')">
+            <label class="yamtrack-label">Número do episódio</label>
+            <div class="relative">
+              <input min="1"
+                     max="999"
+                     class="yamtrack-input pr-12 [appearance:textfield] [&amp;::-webkit-outer-spin-button]:appearance-none [&amp;::-webkit-inner-spin-button]:appearance-none"
+                     name="episode_number"
+                     type="number"
+                     value="1">
+              <div class="yamtrack-stepper">
+                <button type="button" onclick="this.parentElement.previousElementSibling.stepUp()">
+                  {% include "app/icons/chevron-up.svg" with classes="w-3.5 h-3.5" %}
+                </button>
+                <button type="button" onclick="this.parentElement.previousElementSibling.stepDown()">
+                  {% include "app/icons/chevron-down.svg" with classes="w-3.5 h-3.5" %}
+                </button>
+              </div>
             </div>
+          </div>
+
+          <div x-show="showField('image')">
+            <label class="yamtrack-label">URL da imagem</label>
+            <div class="yamtrack-image-row">
+              <div class="flex-1">
+                <input class="yamtrack-input"
+                       name="image"
+                       placeholder="Digite a URL da imagem"
+                       type="url"
+                       value=""
+                       x-on:input="updateImagePreview($event.target)">
+              </div>
+              <div id="image-preview" class="yamtrack-image-preview">
+                {% include "app/icons/image.svg" with classes="w-8 h-8 text-gray-500" %}
+              </div>
+              <div id="error-icon" class="hidden">{% include "app/icons/circle-x.svg" with classes="w-8 h-8 text-red-500" %}</div>
+            </div>
+          </div>
+
+          <div x-show="showField('score')">
+            <label class="yamtrack-label">Nota</label>
+            <div class="relative">
+              <input min="0"
+                     max="10"
+                     class="yamtrack-input pr-12 [appearance:textfield] [&amp;::-webkit-outer-spin-button]:appearance-none [&amp;::-webkit-inner-spin-button]:appearance-none"
+                     name="score"
+                     type="number"
+                     placeholder="0-10">
+              <div class="yamtrack-stepper">
+                <button type="button" onclick="this.parentElement.previousElementSibling.stepUp()">
+                  {% include "app/icons/chevron-up.svg" with classes="w-3.5 h-3.5" %}
+                </button>
+                <button type="button" onclick="this.parentElement.previousElementSibling.stepDown()">
+                  {% include "app/icons/chevron-down.svg" with classes="w-3.5 h-3.5" %}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div x-show="showField('progress')">
+            <label class="yamtrack-label" x-text="getProgressLabel()">Progresso</label>
+            <div class="relative">
+              <input class="yamtrack-input pr-12"
+                     name="progress"
+                     x-bind:type="mediaType === 'game' ? 'text' : 'number'"
+                     x-bind:placeholder="mediaType === 'game' ? 'hh:mm' : ''"
+                     x-bind:min="mediaType !== 'game' ? 0 : null"
+                     x-bind:max="mediaType !== 'game' ? 99999 : null"
+                     x-bind:class="{'[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none': mediaType !== 'game'}"
+                     x-bind:value="mediaType !== 'game' ? '0' : ''">
+
+              <div x-show="mediaType !== 'game'" class="yamtrack-stepper">
+                <button type="button" onclick="this.parentElement.previousElementSibling.stepUp()">
+                  {% include "app/icons/chevron-up.svg" with classes="w-3.5 h-3.5" %}
+                </button>
+                <button type="button" onclick="this.parentElement.previousElementSibling.stepDown()">
+                  {% include "app/icons/chevron-down.svg" with classes="w-3.5 h-3.5" %}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div x-show="showField('status')">
+            <label class="yamtrack-label">Status</label>
+            <div class="relative">
+              <select class="yamtrack-select appearance-none" name="status">
+                {% for status in Status.values %}
+                  <option value="{{ status }}">
+                    {% if status == "Completed" %}
+                      Concluído
+                    {% elif status == "Watching" %}
+                      Assistindo
+                    {% elif status == "Reading" %}
+                      Lendo
+                    {% elif status == "Playing" %}
+                      Jogando
+                    {% elif status == "In Progress" %}
+                      Em andamento
+                    {% elif status == "Plan to Watch" %}
+                      Quero assistir
+                    {% elif status == "Plan to Read" %}
+                      Quero ler
+                    {% elif status == "Plan to Play" %}
+                      Quero jogar
+                    {% elif status == "Planning" %}
+                      Planejado
+                    {% elif status == "Paused" %}
+                      Pausado
+                    {% elif status == "Dropped" %}
+                      Abandonado
+                    {% else %}
+                      {{ status }}
+                    {% endif %}
+                  </option>
+                {% endfor %}
+              </select>
+              <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                {% include "app/icons/chevron-down.svg" with classes="w-4 h-4" %}
+              </div>
+            </div>
+          </div>
+
+          <div x-show="showField('startDate')">
+            <label class="yamtrack-label">Data de início</label>
+            <input class="yamtrack-input"
+                   name="start_date"
+                   type="date"
+                   value="">
+          </div>
+
+          <div x-show="showField('endDate')">
+            <label class="yamtrack-label">Data de conclusão</label>
+            <input class="yamtrack-input"
+                   name="end_date"
+                   type="date"
+                   value="">
+          </div>
+
+          <div x-show="showField('notes')">
+            <label class="yamtrack-label">Observações</label>
+            <textarea class="yamtrack-textarea"
+                      rows="4"
+                      name="notes"
+                      placeholder="Adicione observações ou comentários..."></textarea>
           </div>
         </div>
 
-        <!-- Image URL field (All types) -->
-        <div x-show="showField('image')">
-          <label class="block text-sm font-medium mb-2 text-gray-300">Image URL</label>
-          <div class="flex gap-4">
-            <div class="flex-1">
-              <input class="w-full p-2 bg-[#39404b] rounded-md text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#4a9eff] appearance-none"
-                     name="image"
-                     placeholder="Enter image URL"
-                     type="url"
-                     value=""
-                     x-on:input="updateImagePreview($event.target)">
-            </div>
-            <div id="image-preview"
-                 class="w-20 h-20 rounded-md overflow-hidden bg-[#39404b] border border-gray-600 flex items-center justify-center">
-              {% include "app/icons/image.svg" with classes="w-8 h-8 text-gray-500" %}
-            </div>
-            <!-- Hidden error icon template -->
-            <div id="error-icon" class="hidden">{% include "app/icons/circle-x.svg" with classes="w-8 h-8 text-red-500" %}</div>
-          </div>
-        </div>
-
-        <!-- Score field (TV, Movie, Anime, Manga, Game, Book, Season) -->
-        <div x-show="showField('score')">
-          <label class="block text-sm font-medium mb-2 text-gray-300">Score</label>
-          <div class="relative">
-            <input min="0"
-                   max="10"
-                   class="w-full p-2 pr-12 bg-[#39404b] rounded-md text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#4a9eff] [appearance:textfield] [&amp;::-webkit-outer-spin-button]:appearance-none [&amp;::-webkit-inner-spin-button]:appearance-none"
-                   name="score"
-                   type="number"
-                   placeholder="0-10">
-            <div class="absolute inset-y-0 right-0 flex flex-col border-l border-gray-600">
-              <button type="button"
-                      onclick="this.parentElement.previousElementSibling.stepUp()"
-                      class="flex-1 px-2 hover:bg-gray-700 transition-colors rounded-tr-md border-t border-r border-gray-600 group">
-                {% include "app/icons/chevron-up.svg" with classes="w-3.5 h-3.5" %}
-              </button>
-              <button type="button"
-                      onclick="this.parentElement.previousElementSibling.stepDown()"
-                      class="flex-1 px-2 hover:bg-gray-700 transition-colors rounded-br-md border-b border-r border-gray-600 group">
-                {% include "app/icons/chevron-down.svg" with classes="w-3.5 h-3.5" %}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Progress field (Movie, Anime, Manga, Game, Book) -->
-        <div x-show="showField('progress')">
-          <label class="block text-sm font-medium mb-2 text-gray-300"
-                 x-text="getProgressLabel()">Progress</label>
-
-          <div class="relative">
-            <input class="w-full p-2 pr-12 bg-[#39404b] rounded-md text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#4a9eff] appearance-none"
-                   name="progress"
-                   x-bind:type="mediaType === 'game' ? 'text' : 'number'"
-                   x-bind:placeholder="mediaType === 'game' ? 'hh:mm' : ''"
-                   x-bind:min="mediaType !== 'game' ? 0 : null"
-                   x-bind:max="mediaType !== 'game' ? 99999 : null"
-                   x-bind:class="{'[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none': mediaType !== 'game'}"
-                   x-bind:value="mediaType !== 'game' ? '0' : ''">
-
-            <div x-show="mediaType !== 'game'"
-                 class="absolute inset-y-0 right-0 flex flex-col border-l border-gray-600">
-              <button type="button"
-                      onclick="this.parentElement.previousElementSibling.stepUp()"
-                      class="flex-1 px-2 hover:bg-gray-700 transition-colors rounded-tr-md border-t border-r border-gray-600 group">
-                {% include "app/icons/chevron-up.svg" with classes="w-3.5 h-3.5" %}
-              </button>
-              <button type="button"
-                      onclick="this.parentElement.previousElementSibling.stepDown()"
-                      class="flex-1 px-2 hover:bg-gray-700 transition-colors rounded-br-md border-b border-r border-gray-600 group">
-                {% include "app/icons/chevron-down.svg" with classes="w-3.5 h-3.5" %}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Status field (TV, Movie, Anime, Manga, Game, Book, Season) -->
-        <div x-show="showField('status')">
-          <label class="block text-sm font-medium mb-2 text-gray-300">Status</label>
-          <div class="relative">
-            <select class="w-full p-2 bg-[#39404b] rounded-md text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#4a9eff] appearance-none"
-                    name="status">
-              {% for status in Status.values %}<option value="{{ status }}">{{ status }}</option>{% endfor %}
-            </select>
-            <div class="absolute inset-y-0 right-2 flex items-center pointer-events-none">
-              {% include "app/icons/chevron-down.svg" with classes="w-4 h-4" %}
-            </div>
-          </div>
-        </div>
-
-        <!-- Start Date field (Movie, Anime, Manga, Game, Book) -->
-        <div x-show="showField('startDate')">
-          <label class="block text-sm font-medium mb-2 text-gray-300">Start Date</label>
-          <input class="w-full p-2 bg-[#39404b] rounded-md text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#4a9eff] appearance-none"
-                 name="start_date"
-                 type="date"
-                 value="">
-        </div>
-
-        <!-- End Date field (Episode, Movie, Anime, Manga, Game, Book) -->
-        <div x-show="showField('endDate')">
-          <label class="block text-sm font-medium mb-2 text-gray-300">End Date</label>
-          <input class="w-full p-2 bg-[#39404b] rounded-md text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#4a9eff] appearance-none"
-                 name="end_date"
-                 type="date"
-                 value="">
-        </div>
-
-        <!-- Notes field (TV, Movie, Anime, Manga, Game, Book, Season) -->
-        <div x-show="showField('notes')">
-          <label class="block text-sm font-medium mb-2 text-gray-300">Notes</label>
-          <textarea class="w-full p-2 bg-[#39404b] rounded-md text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#4a9eff] appearance-none"
-                    rows="4"
-                    name="notes"
-                    placeholder="Add any notes or comments..."></textarea>
-        </div>
+        <button type="submit" class="yamtrack-save-btn">
+          {% include "app/icons/save.svg" with classes="w-4 h-4" %}
+          Criar entrada
+        </button>
       </div>
-
-      <button type="submit"
-              class="flex items-center mt-5 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-sm cursor-pointer">
-        {% include "app/icons/save.svg" with classes="w-4 h-4 mr-2" %}
-        Create Entry
-      </button>
-    </div>
-  </form>
-</div>
+    </form>
+  </div>
 {% endblock content %}
