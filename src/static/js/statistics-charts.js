@@ -1,12 +1,76 @@
 document.addEventListener("DOMContentLoaded", function () {
   Chart.register(ChartDataLabels);
 
-  // Custom external tooltip for bar charts
+  function translateStatus(label) {
+    const labels = {
+      All: "Todos",
+      Completed: "Concluído",
+      "In Progress": "Em andamento",
+      Planning: "Planejado",
+      Paused: "Pausado",
+      Dropped: "Abandonado",
+      Watching: "Assistindo",
+      Reading: "Lendo",
+      Playing: "Jogando",
+      Rewatching: "Reassistindo",
+      Rereading: "Relendo",
+      Replaying: "Rejogando",
+      "Plan to Watch": "Quero assistir",
+      "Plan to Read": "Quero ler",
+      "Plan to Play": "Quero jogar",
+    };
+
+    return labels[label] || label;
+  }
+
+  function translateMediaType(label) {
+    const labels = {
+      TV: "Séries",
+      tv: "Séries",
+      "TV Show": "Série",
+      "TV Shows": "Séries",
+      Season: "Temporada",
+      Seasons: "Temporadas",
+      "TV Season": "Temporada",
+      "TV Seasons": "Temporadas",
+      Episode: "Episódio",
+      Episodes: "Episódios",
+      Movie: "Filme",
+      Movies: "Filmes",
+      Anime: "Animes",
+      Manga: "Mangás",
+      Game: "Jogos",
+      Games: "Jogos",
+      Book: "Livros",
+      Books: "Livros",
+      Comic: "Quadrinhos",
+      Comics: "Quadrinhos",
+      Boardgame: "Jogos de tabuleiro",
+      Boardgames: "Jogos de tabuleiro",
+      BoardGame: "Jogos de tabuleiro",
+      BoardGames: "Jogos de tabuleiro",
+    };
+
+    return labels[label] || label;
+  }
+
+  function translateChartLabel(label) {
+    if (label === null || label === undefined) return label;
+
+    const normalizedLabel = String(label);
+    return translateStatus(translateMediaType(normalizedLabel));
+  }
+
+  function translatePieData(chartData) {
+    return {
+      ...chartData,
+      labels: chartData.labels.map(translateChartLabel),
+    };
+  }
+
   function customBarTooltip(context) {
-    // External custom tooltip
     let tooltipEl = document.getElementById("chartjs-tooltip");
 
-    // Create element if it doesn't exist
     if (!tooltipEl) {
       tooltipEl = document.createElement("div");
       tooltipEl.id = "chartjs-tooltip";
@@ -14,43 +78,39 @@ document.addEventListener("DOMContentLoaded", function () {
       document.body.appendChild(tooltipEl);
     }
 
-    // Hide if no tooltip
     const tooltipModel = context.tooltip;
     if (tooltipModel.opacity === 0) {
       tooltipEl.style.opacity = 0;
       return;
     }
 
-    // Set Text
     if (tooltipModel.body) {
       const chart = context.chart;
       const dataIndex = tooltipModel.dataPoints[0].dataIndex;
       const title = tooltipModel.title[0] || "";
 
-      // Format title based on chart type
-      let formattedTitle = title;
+      let formattedTitle = translateChartLabel(title);
       if (chart.canvas.id === "scoreStackedChart") {
         const score = parseInt(title);
         if (score === 10) {
-          formattedTitle = `Score: 10`;
+          formattedTitle = "Nota: 10";
         } else {
-          formattedTitle = `Score: ${score}.0-${score}.9`;
+          formattedTitle = `Nota: ${score},0-${score},9`;
         }
       }
 
-      // Get all values for this stack
       let tableBody =
         '<thead><tr><th colspan="2">' +
         formattedTitle +
         "</th></tr></thead><tbody>";
       let stackTotal = 0;
 
-      chart.data.datasets.forEach((dataset, i) => {
+      chart.data.datasets.forEach((dataset) => {
         if (dataset.data[dataIndex] && dataset.data[dataIndex] > 0) {
           const value = dataset.data[dataIndex];
           stackTotal += value;
           const bgColor = dataset.backgroundColor;
-          const label = dataset.label || "";
+          const label = translateChartLabel(dataset.label || "");
 
           tableBody +=
             "<tr>" +
@@ -66,7 +126,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
 
-      // Add total row
       tableBody +=
         '<tr class="total-row">' +
         "<td>Total:</td>" +
@@ -81,10 +140,8 @@ document.addEventListener("DOMContentLoaded", function () {
       tableRoot.innerHTML = tableBody;
     }
 
-    // Position and style the tooltip
     const position = context.chart.canvas.getBoundingClientRect();
 
-    // Set tooltip styles
     tooltipEl.style.opacity = 1;
     tooltipEl.style.position = "absolute";
     tooltipEl.style.left =
@@ -95,50 +152,39 @@ document.addEventListener("DOMContentLoaded", function () {
     tooltipEl.style.pointerEvents = "none";
   }
 
-  // Custom external tooltip for pie charts
   function customPieTooltip(context) {
-    // External custom tooltip
     let tooltipEl = document.getElementById("chartjs-pie-tooltip");
 
-    // Create element if it doesn't exist
     if (!tooltipEl) {
       tooltipEl = document.createElement("div");
       tooltipEl.id = "chartjs-pie-tooltip";
       document.body.appendChild(tooltipEl);
     }
 
-    // Hide if no tooltip
     const tooltipModel = context.tooltip;
     if (tooltipModel.opacity === 0) {
       tooltipEl.style.opacity = 0;
       return;
     }
 
-    // Set Text
     if (tooltipModel.body) {
       const dataPoint = tooltipModel.dataPoints[0];
-      const label = dataPoint.label;
+      const label = translateChartLabel(dataPoint.label);
       const value = dataPoint.raw;
 
-      // Calculate percentage
       const dataset = context.chart.data.datasets[dataPoint.datasetIndex];
       const total = dataset.data.reduce((sum, val) => sum + val, 0);
       const percentage = Math.round((value / total) * 100);
 
-      // Create tooltip content
-      let tooltipContent = `
+      tooltipEl.innerHTML = `
         <div class="pie-label">${label}</div>
-        <div class="pie-value">Count: ${value}</div>
+        <div class="pie-value">Quantidade: ${value}</div>
         <div class="pie-percent">${percentage}%</div>
       `;
-
-      tooltipEl.innerHTML = tooltipContent;
     }
 
-    // Position and style the tooltip
     const position = context.chart.canvas.getBoundingClientRect();
 
-    // Set tooltip styles
     tooltipEl.style.opacity = 1;
     tooltipEl.style.position = "absolute";
     tooltipEl.style.left =
@@ -149,7 +195,6 @@ document.addEventListener("DOMContentLoaded", function () {
     tooltipEl.style.pointerEvents = "none";
   }
 
-  // Common configuration for pie charts
   const pieChartConfig = {
     responsive: true,
     maintainAspectRatio: false,
@@ -160,7 +205,7 @@ document.addEventListener("DOMContentLoaded", function () {
         formatter: (value, ctx) => {
           const total = ctx.dataset.data.reduce((acc, data) => acc + data, 0);
           const percentage = Math.round((value / total) * 100);
-          const label = ctx.chart.data.labels[ctx.dataIndex];
+          const label = translateChartLabel(ctx.chart.data.labels[ctx.dataIndex]);
           return percentage > 5 ? `${label}\n${percentage}%` : "";
         },
         textAlign: "center",
@@ -181,10 +226,12 @@ document.addEventListener("DOMContentLoaded", function () {
             const original =
               Chart.overrides.pie.plugins.legend.labels.generateLabels;
             const labels = original.call(this, chart);
+
             labels.forEach((label, i) => {
-              label.text = `${label.text} (${chart.data.datasets[0].data[i]})`;
+              label.text = `${translateChartLabel(label.text)} (${chart.data.datasets[0].data[i]})`;
               label.strokeStyle = "transparent";
             });
+
             return labels;
           },
         },
@@ -204,7 +251,6 @@ document.addEventListener("DOMContentLoaded", function () {
     },
   };
 
-  // Common configuration for bar charts
   const barChartConfig = {
     responsive: true,
     maintainAspectRatio: false,
@@ -212,7 +258,12 @@ document.addEventListener("DOMContentLoaded", function () {
       x: {
         stacked: true,
         grid: { color: "rgba(255, 255, 255, 0.1)" },
-        ticks: { color: "#D1D5DB" },
+        ticks: {
+          color: "#D1D5DB",
+          callback: function (value) {
+            return translateChartLabel(this.getLabelForValue(value));
+          },
+        },
       },
       y: {
         stacked: true,
@@ -236,14 +287,23 @@ document.addEventListener("DOMContentLoaded", function () {
             size: 12,
             lineHeight: 0.1,
           },
+          generateLabels: function (chart) {
+            const labels =
+              Chart.defaults.plugins.legend.labels.generateLabels(chart);
+
+            labels.forEach((label) => {
+              label.text = translateChartLabel(label.text);
+            });
+
+            return labels;
+          },
         },
       },
       tooltip: {
-        enabled: false, // Disable default tooltip
+        enabled: false,
         mode: "index",
         external: customBarTooltip,
       },
-      // Disable datalabels for bar charts
       datalabels: {
         display: false,
       },
@@ -254,13 +314,12 @@ document.addEventListener("DOMContentLoaded", function () {
     },
   };
 
-  // Helper function to process stacked bar data
   function processBarData(chartData) {
     return {
       labels: chartData.labels,
       datasets: chartData.datasets
         .map((dataset) => ({
-          label: dataset.label,
+          label: translateChartLabel(dataset.label),
           data: dataset.data,
           backgroundColor: dataset.background_color,
           borderColor: "rgba(255, 255, 255, 0.1)",
@@ -271,9 +330,9 @@ document.addEventListener("DOMContentLoaded", function () {
     };
   }
 
-  // Helper function to safely initialize charts
   function initializeChartIfExists(elementId, chartType, data, options) {
     const element = document.getElementById(elementId);
+
     if (element) {
       return new Chart(element.getContext("2d"), {
         type: chartType,
@@ -281,10 +340,10 @@ document.addEventListener("DOMContentLoaded", function () {
         options: options,
       });
     }
+
     return null;
   }
 
-  // Create Media Type Distribution Chart
   const mediaTypeDistributionElement = document.getElementById(
     "media_type_distribution"
   );
@@ -293,12 +352,11 @@ document.addEventListener("DOMContentLoaded", function () {
     initializeChartIfExists(
       "mediaTypeChart",
       "pie",
-      mediaTypeData,
+      translatePieData(mediaTypeData),
       pieChartConfig
     );
   }
 
-  // Create Status Distribution Chart
   const statusPieChartElement = document.getElementById(
     "status_pie_chart_data"
   );
@@ -307,12 +365,11 @@ document.addEventListener("DOMContentLoaded", function () {
     initializeChartIfExists(
       "statusChart",
       "pie",
-      statusPieData,
+      translatePieData(statusPieData),
       pieChartConfig
     );
   }
 
-  // Create Status Stacked Bar Chart
   const statusDistributionElement = document.getElementById(
     "status_distribution"
   );
@@ -326,39 +383,37 @@ document.addEventListener("DOMContentLoaded", function () {
     );
   }
 
-  // Create Score Stacked Bar Chart
   const scoreDistributionElement =
     document.getElementById("score_distribution");
   if (scoreDistributionElement) {
     const scoreData = JSON.parse(scoreDistributionElement.textContent);
-    const scoreChartOptions = JSON.parse(JSON.stringify(barChartConfig)); // Deep clone
+    const scoreChartOptions = JSON.parse(JSON.stringify(barChartConfig));
 
-    // Add score-specific configurations
     scoreChartOptions.scales.x.title = {
       display: true,
-      text: "Score",
+      text: "Nota",
       color: "#D1D5DB",
       padding: { top: 10, bottom: 0 },
     };
 
     scoreChartOptions.scales.y.title = {
       display: true,
-      text: "Number of Items",
+      text: "Quantidade de itens",
       color: "#D1D5DB",
       padding: { top: 0, left: 10 },
     };
 
     scoreChartOptions.plugins.title = {
       display: true,
-      text: `Average Score: ${scoreData.average_score} (${
-        scoreData.total_scored
-      } ${scoreData.total_scored === 1 ? "item" : "items"})`,
+      text: `Nota média: ${scoreData.average_score} (${scoreData.total_scored
+        } ${scoreData.total_scored === 1 ? "item" : "itens"})`,
       color: "#D1D5DB",
       padding: { bottom: 10 },
       font: { size: 14 },
     };
 
-    // Ensure tooltip is properly configured for score chart
+    scoreChartOptions.plugins.legend = barChartConfig.plugins.legend;
+
     scoreChartOptions.plugins.tooltip = {
       enabled: false,
       mode: "index",
