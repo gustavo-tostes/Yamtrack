@@ -14,11 +14,11 @@
     html,
     body {
       min-height: 100%;
-    }
-
-    body:has(.yamtrack-auth-shell) {
-      background: #071015 !important;
-      overflow-x: hidden;
+      background:
+        radial-gradient(circle at 50% -10%, rgba(255, 255, 255, 0.08), transparent 28%),
+        radial-gradient(circle at 72% 20%, rgba(110, 124, 255, 0.10), transparent 22%),
+        radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.04), transparent 20%),
+        linear-gradient(180deg, #17181b 0%, #111214 50%, #0d0e10 100%) !important;
     }
 
     body:has(.yamtrack-auth-shell) main,
@@ -34,197 +34,135 @@
       border-color: transparent !important;
     }
 
-    body:has(.yamtrack-auth-shell) form:not(.yamtrack-auth-form) {
-      background: transparent !important;
-      box-shadow: none !important;
-      border: 0 !important;
-      padding: 0 !important;
-    }
-
-    .yamtrack-liquid-bg {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      overflow: hidden;
-      background:
-        radial-gradient(circle at 18% 18%, rgba(125, 115, 255, 0.24), transparent 30%),
-        radial-gradient(circle at 82% 16%, rgba(80, 190, 255, 0.16), transparent 32%),
-        radial-gradient(circle at 52% 82%, rgba(255, 255, 255, 0.075), transparent 34%),
-        linear-gradient(135deg, #071015 0%, #111a22 48%, #070b10 100%);
-    }
-
-    .yamtrack-liquid-bg::before {
-      content: "";
-      position: absolute;
-      inset: -18%;
-      background:
-        linear-gradient(115deg, transparent 0%, rgba(255,255,255,0.045) 42%, transparent 72%),
-        radial-gradient(circle at 34% 30%, rgba(255,255,255,0.085), transparent 18%),
-        radial-gradient(circle at 66% 60%, rgba(255,255,255,0.055), transparent 20%);
-      filter: blur(4px);
-      backdrop-filter: blur(22px) saturate(155%);
-      -webkit-backdrop-filter: blur(22px) saturate(155%);
-    }
-
-    .yamtrack-liquid-bg::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px);
-      background-size: 72px 72px;
-      mask-image: radial-gradient(circle at center, black, transparent 78%);
-      -webkit-mask-image: radial-gradient(circle at center, black, transparent 78%);
-      opacity: 0.30;
-    }
-
     .yamtrack-auth-shell {
-      position: relative;
-      z-index: 2;
       width: min(460px, calc(100vw - 32px));
       margin: 0 auto;
-      transform: translateY(12px);
+      transform: translateY(10px);
     }
 
     .yamtrack-auth-brand {
       text-align: center;
-      margin-bottom: 28px;
+      margin-bottom: 26px;
     }
 
     .yamtrack-auth-brand h1 {
+      margin: 0 0 18px;
       color: #ffffff;
       font-size: 34px;
       line-height: 1;
       font-weight: 800;
-      letter-spacing: -0.03em;
-      margin: 0 0 10px;
-      text-shadow: 0 10px 34px rgba(0,0,0,0.34);
+      letter-spacing: -0.035em;
+      text-shadow: 0 10px 30px rgba(0,0,0,0.28);
     }
 
-    .yamtrack-auth-brand p {
-      margin: 0;
-      color: rgba(255,255,255,0.72);
+    .yamtrack-auth-title-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      padding: 9px 26px;
+      color: rgba(255,255,255,0.94);
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.26), rgba(255,255,255,0.10) 44%, rgba(255,255,255,0.04) 100%);
+      border: 1px solid rgba(255,255,255,0.20);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.20),
+        inset 0 -1px 0 rgba(255,255,255,0.04),
+        0 10px 24px rgba(0,0,0,0.18);
+      backdrop-filter: blur(20px) saturate(165%);
+      -webkit-backdrop-filter: blur(20px) saturate(165%);
+    }
+
+    .yamtrack-auth-subtitle {
+      margin: 14px 0 0;
+      color: rgba(255,255,255,0.58);
       font-size: 15px;
     }
 
     .yamtrack-auth-panel {
-      position: relative;
-      overflow: hidden;
-      padding: 34px;
-      border-radius: 34px;
-      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 30px;
+      border: 1px solid rgba(255,255,255,0.14);
       background:
-        linear-gradient(135deg, rgba(255,255,255,0.155), rgba(255,255,255,0.052) 50%, rgba(255,255,255,0.082)),
-        radial-gradient(circle at 22% 12%, rgba(255,255,255,0.20), transparent 34%),
-        radial-gradient(circle at 82% 18%, rgba(111,91,255,0.17), transparent 40%);
+        radial-gradient(circle at top left, rgba(255,255,255,0.12), transparent 38%),
+        linear-gradient(135deg, rgba(255,255,255,0.09), rgba(255,255,255,0.035)) !important;
       box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.26),
-        inset 0 -1px 0 rgba(255,255,255,0.06),
-        0 24px 70px rgba(0,0,0,0.36);
-      backdrop-filter: blur(34px) saturate(170%);
-      -webkit-backdrop-filter: blur(34px) saturate(170%);
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 18px 42px rgba(0,0,0,0.22);
+      backdrop-filter: blur(24px) saturate(155%);
+      -webkit-backdrop-filter: blur(24px) saturate(155%);
+      padding: 28px;
     }
 
-    .yamtrack-auth-panel::before {
-      content: "";
-      position: absolute;
-      inset: 1px;
-      border-radius: 33px;
-      pointer-events: none;
-      background:
-        linear-gradient(135deg, rgba(255,255,255,0.14), transparent 34%),
-        radial-gradient(circle at 28% 20%, rgba(255,255,255,0.11), transparent 30%);
-      opacity: 0.78;
-    }
-
-    .yamtrack-auth-panel::after {
-      content: "";
-      position: absolute;
-      left: 22px;
-      right: 22px;
-      top: 14px;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.44), transparent);
-      opacity: 0.62;
-    }
-
-    .yamtrack-auth-form {
-      position: relative;
-      z-index: 1;
-    }
-
-    .yamtrack-field {
+    .yamtrack-auth-field {
       margin-bottom: 18px;
     }
 
-    .yamtrack-field label {
+    .yamtrack-auth-field label {
       display: block;
       margin-bottom: 9px;
-      color: rgba(255,255,255,0.92);
+      color: rgba(255,255,255,0.88);
       font-size: 14px;
-      font-weight: 700;
+      font-weight: 800;
     }
 
-    .yamtrack-field input {
+    .yamtrack-auth-input {
       width: 100%;
-      height: 54px;
+      min-height: 48px;
       box-sizing: border-box;
-      padding: 0 17px;
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,0.18);
+      padding: 0 15px;
+      border-radius: 9999px;
+      border: 1px solid rgba(255,255,255,0.14);
       background:
-        linear-gradient(135deg, rgba(255,255,255,0.13), rgba(255,255,255,0.06));
-      color: #ffffff;
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.16), rgba(255,255,255,0.055) 52%, rgba(255,255,255,0.025) 100%) !important;
+      color: rgba(255,255,255,0.92);
       outline: none;
       box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.16),
-        inset 0 -1px 0 rgba(255,255,255,0.045),
-        0 12px 28px rgba(0,0,0,0.16);
-      backdrop-filter: blur(18px) saturate(155%);
-      -webkit-backdrop-filter: blur(18px) saturate(155%);
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 8px 18px rgba(0,0,0,0.14);
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
     }
 
-    .yamtrack-field input::placeholder {
-      color: rgba(255,255,255,0.52);
+    .yamtrack-auth-input::placeholder {
+      color: rgba(255,255,255,0.42);
     }
 
-    .yamtrack-field input:focus {
-      border-color: rgba(185,185,255,0.48);
+    .yamtrack-auth-input:focus {
+      border-color: rgba(255,255,255,0.24);
       box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.20),
-        0 0 0 4px rgba(111,91,255,0.14),
-        0 14px 32px rgba(0,0,0,0.20);
+        inset 0 1px 0 rgba(255,255,255,0.16),
+        0 0 0 2px rgba(130,140,255,0.20),
+        0 12px 24px rgba(0,0,0,0.18);
     }
 
     .yamtrack-auth-button {
       width: 100%;
-      height: 54px;
-      margin-top: 6px;
-      border: 1px solid rgba(255,255,255,0.20);
-      border-radius: 18px;
-      color: #ffffff;
-      font-weight: 800;
-      cursor: pointer;
+      min-height: 44px;
+      border-radius: 9999px;
+      padding: 0 20px;
+      border: 1px solid rgba(255,255,255,0.14);
       background:
-        radial-gradient(circle at 30% 18%, rgba(255,255,255,0.30), transparent 28%),
-        linear-gradient(135deg, #7667ee, #5742e6);
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.26), rgba(255,255,255,0.10) 44%, rgba(255,255,255,0.04) 100%) !important;
+      color: rgba(255,255,255,0.94);
+      font-size: 14px;
+      font-weight: 900;
+      cursor: pointer;
       box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.24),
-        inset 0 -1px 0 rgba(0,0,0,0.16),
-        0 18px 38px rgba(82,55,245,0.28);
-      transition: transform 180ms ease, filter 180ms ease;
+        inset 0 1px 0 rgba(255,255,255,0.16),
+        0 8px 18px rgba(0,0,0,0.16);
+      backdrop-filter: blur(18px) saturate(155%);
+      -webkit-backdrop-filter: blur(18px) saturate(155%);
     }
 
-    .yamtrack-auth-button:hover {
-      transform: translateY(-1px);
-      filter: brightness(1.05);
-    }
-
-    .yamtrack-error {
-      margin-bottom: 18px;
-      padding: 12px 14px;
+    .yamtrack-auth-error {
+      margin-bottom: 14px;
+      padding: 11px 13px;
       border-radius: 18px;
       border: 1px solid rgba(248,113,113,0.30);
       background: rgba(248,113,113,0.12);
@@ -235,134 +173,93 @@
     .yamtrack-auth-link {
       margin-top: 24px;
       text-align: center;
-      color: rgba(255,255,255,0.62);
+      color: rgba(255,255,255,0.58);
       font-size: 14px;
     }
 
     .yamtrack-auth-link a {
-      color: rgba(190,186,255,0.98);
+      color: rgba(210,212,255,0.92);
       text-decoration: none;
-    }
-
-    .yamtrack-auth-link a:hover {
-      color: #ffffff;
-    }
-
-    @media (max-width: 640px) {
-      .yamtrack-auth-shell {
-        transform: translateY(0);
-      }
-
-      .yamtrack-auth-panel {
-        padding: 26px;
-        border-radius: 28px;
-      }
-
-      .yamtrack-auth-brand h1 {
-        font-size: 30px;
-      }
+      font-weight: 700;
     }
   </style>
-
-  <div class="yamtrack-liquid-bg"></div>
 
   <div class="yamtrack-auth-shell">
     <div class="yamtrack-auth-brand">
       <h1>Yamtrack</h1>
-      <p>Crie sua conta</p>
+      <div class="yamtrack-auth-title-pill">Criar conta</div>
+      <p class="yamtrack-auth-subtitle">Cadastre-se para começar sua coleção.</p>
     </div>
 
-    {% if not SOCIALACCOUNT_ONLY %}
-      {% url 'account_signup' as signup_url %}
+    {% url 'account_signup' as signup_url %}
 
-      <div class="yamtrack-auth-panel">
-        <form class="yamtrack-auth-form" method="post" action="{{ signup_url }}">
-          {% csrf_token %}
+    <div class="yamtrack-auth-panel">
+      <form method="post" action="{{ signup_url }}">
+        {% csrf_token %}
 
-          {% if form.non_field_errors %}
-            <div class="yamtrack-error">
-              {{ form.non_field_errors }}
-            </div>
-          {% endif %}
-
-          {% if form.username %}
-            <div class="yamtrack-field">
-              <label for="{{ form.username.id_for_label }}">Usuário</label>
-              <input type="text"
-                     name="{{ form.username.html_name }}"
-                     id="{{ form.username.id_for_label }}"
-                     value="{{ form.username.value|default_if_none:'' }}"
-                     autocomplete="username"
-                     placeholder="Escolha seu usuário"
-                     required>
-
-              {% if form.username.errors %}
-                <div class="yamtrack-error" style="margin-top: 10px; margin-bottom: 0;">
-                  {{ form.username.errors }}
-                </div>
-              {% endif %}
-            </div>
-          {% endif %}
-
-          {% if form.email %}
-            <div class="yamtrack-field">
-              <label for="{{ form.email.id_for_label }}">E-mail</label>
-              <input type="email"
-                     name="{{ form.email.html_name }}"
-                     id="{{ form.email.id_for_label }}"
-                     value="{{ form.email.value|default_if_none:'' }}"
-                     autocomplete="email"
-                     placeholder="Digite seu e-mail"
-                     required>
-
-              {% if form.email.errors %}
-                <div class="yamtrack-error" style="margin-top: 10px; margin-bottom: 0;">
-                  {{ form.email.errors }}
-                </div>
-              {% endif %}
-            </div>
-          {% endif %}
-
-          <div class="yamtrack-field">
-            <label for="{{ form.password1.id_for_label }}">Senha</label>
-            <input type="password"
-                   name="{{ form.password1.html_name }}"
-                   id="{{ form.password1.id_for_label }}"
-                   autocomplete="new-password"
-                   placeholder="Crie uma senha"
-                   required>
-
-            {% if form.password1.errors %}
-              <div class="yamtrack-error" style="margin-top: 10px; margin-bottom: 0;">
-                {{ form.password1.errors }}
-              </div>
-            {% endif %}
+        {% if form.non_field_errors %}
+          <div class="yamtrack-auth-error">
+            {{ form.non_field_errors }}
           </div>
+        {% endif %}
 
-          <div class="yamtrack-field">
-            <label for="{{ form.password2.id_for_label }}">Confirmar senha</label>
-            <input type="password"
-                   name="{{ form.password2.html_name }}"
-                   id="{{ form.password2.id_for_label }}"
-                   autocomplete="new-password"
-                   placeholder="Confirme sua senha"
+        {% if form.username %}
+          <div class="yamtrack-auth-field">
+            <label for="{{ form.username.id_for_label }}">Usuário</label>
+            <input class="yamtrack-auth-input"
+                   type="text"
+                   name="{{ form.username.html_name }}"
+                   id="{{ form.username.id_for_label }}"
+                   value="{{ form.username.value|default_if_none:'' }}"
+                   autocomplete="username"
+                   placeholder="Escolha seu usuário"
                    required>
-
-            {% if form.password2.errors %}
-              <div class="yamtrack-error" style="margin-top: 10px; margin-bottom: 0;">
-                {{ form.password2.errors }}
-              </div>
-            {% endif %}
           </div>
+        {% endif %}
 
-          {{ redirect_field }}
+        {% if form.email %}
+          <div class="yamtrack-auth-field">
+            <label for="{{ form.email.id_for_label }}">E-mail</label>
+            <input class="yamtrack-auth-input"
+                   type="email"
+                   name="{{ form.email.html_name }}"
+                   id="{{ form.email.id_for_label }}"
+                   value="{{ form.email.value|default_if_none:'' }}"
+                   autocomplete="email"
+                   placeholder="Digite seu e-mail"
+                   required>
+          </div>
+        {% endif %}
 
-          <button class="yamtrack-auth-button" type="submit">
-            Criar conta
-          </button>
-        </form>
-      </div>
-    {% endif %}
+        <div class="yamtrack-auth-field">
+          <label for="{{ form.password1.id_for_label }}">Senha</label>
+          <input class="yamtrack-auth-input"
+                 type="password"
+                 name="{{ form.password1.html_name }}"
+                 id="{{ form.password1.id_for_label }}"
+                 autocomplete="new-password"
+                 placeholder="Crie uma senha"
+                 required>
+        </div>
+
+        <div class="yamtrack-auth-field">
+          <label for="{{ form.password2.id_for_label }}">Confirmar senha</label>
+          <input class="yamtrack-auth-input"
+                 type="password"
+                 name="{{ form.password2.html_name }}"
+                 id="{{ form.password2.id_for_label }}"
+                 autocomplete="new-password"
+                 placeholder="Confirme sua senha"
+                 required>
+        </div>
+
+        {{ redirect_field }}
+
+        <button class="yamtrack-auth-button" type="submit">
+          Criar conta
+        </button>
+      </form>
+    </div>
 
     {% if SOCIALACCOUNT_ENABLED %}
       {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
