@@ -7,164 +7,246 @@
 {% endblock head_title %}
 
 {% block content_title %}
-  Entre na sua conta
 {% endblock content_title %}
 
 {% block content %}
-  {% if not SOCIALACCOUNT_ONLY %}
-    {% url 'account_login' as login_url %}
+  <style>
+    body:has(.yamtrack-login-shell) {
+      background:
+        radial-gradient(circle at 18% 16%, rgba(120, 110, 255, 0.20), transparent 30%),
+        radial-gradient(circle at 78% 20%, rgba(80, 180, 255, 0.12), transparent 32%),
+        radial-gradient(circle at 50% 92%, rgba(255, 255, 255, 0.06), transparent 34%),
+        #191f23 !important;
+    }
 
-    <form method="post"
-          action="{{ login_url }}"
-          style="
-            padding: 32px;
-            border-radius: 28px;
-            border: 1px solid rgba(255,255,255,0.13);
-            background:
-              radial-gradient(circle at 18% 18%, rgba(255,255,255,0.14), transparent 34%),
-              radial-gradient(circle at 82% 24%, rgba(115,125,255,0.13), transparent 36%),
-              linear-gradient(135deg, rgba(255,255,255,0.078), rgba(255,255,255,0.03));
-            box-shadow:
-              inset 0 1px 0 rgba(255,255,255,0.12),
-              inset 0 -1px 0 rgba(255,255,255,0.025),
-              0 18px 42px rgba(0,0,0,0.28);
-            backdrop-filter: blur(26px) saturate(160%);
-            -webkit-backdrop-filter: blur(26px) saturate(160%);
-          ">
-      {% csrf_token %}
+    body:has(.yamtrack-login-shell) main,
+    body:has(.yamtrack-login-shell) section,
+    body:has(.yamtrack-login-shell) .bg-gray-800,
+    body:has(.yamtrack-login-shell) .bg-gray-900,
+    body:has(.yamtrack-login-shell) .bg-slate-800,
+    body:has(.yamtrack-login-shell) .bg-slate-900 {
+      background: transparent !important;
+      box-shadow: none !important;
+      border-color: transparent !important;
+    }
 
-      {% if form.non_field_errors %}
-        <div style="
-          margin-bottom: 18px;
-          padding: 12px 14px;
-          border-radius: 16px;
-          border: 1px solid rgba(248,113,113,0.28);
-          background: rgba(248,113,113,0.10);
-          color: rgba(254,202,202,0.95);
-          font-size: 14px;
-        ">
-          {{ form.non_field_errors }}
-        </div>
-      {% endif %}
+    body:has(.yamtrack-login-shell) form:not(.yamtrack-login-form) {
+      background: transparent !important;
+      box-shadow: none !important;
+      border: 0 !important;
+      padding: 0 !important;
+    }
 
-      <div style="display: flex; flex-direction: column; gap: 22px;">
-        <div>
-          <label for="{{ form.login.id_for_label }}"
-                 style="display: block; margin-bottom: 9px; color: #ffffff; font-size: 14px; font-weight: 700;">
-            Usuário
-          </label>
+    .yamtrack-login-shell {
+      position: relative;
+      width: min(440px, calc(100vw - 32px));
+      margin: 0 auto;
+    }
 
-          <input type="text"
-                 name="{{ form.login.html_name }}"
-                 id="{{ form.login.id_for_label }}"
-                 value="{{ form.login.value|default_if_none:'' }}"
-                 autocomplete="username"
-                 placeholder="Digite seu usuário"
-                 required
-                 style="
-                   width: 100%;
-                   height: 52px;
-                   padding: 0 16px;
-                   border-radius: 14px;
-                   border: 1px solid rgba(255,255,255,0.16);
-                   background: rgba(255,255,255,0.075);
-                   color: #ffffff;
-                   outline: none;
-                   box-shadow:
-                     inset 0 1px 0 rgba(255,255,255,0.10),
-                     0 10px 24px rgba(0,0,0,0.14);
-                   backdrop-filter: blur(18px) saturate(150%);
-                   -webkit-backdrop-filter: blur(18px) saturate(150%);
-                 ">
+    .yamtrack-login-brand {
+      text-align: center;
+      margin-bottom: 30px;
+    }
 
-          {% if form.login.errors %}
-            <div style="margin-top: 7px; color: #fca5a5; font-size: 13px;">
-              {{ form.login.errors }}
-            </div>
-          {% endif %}
-        </div>
+    .yamtrack-login-brand h1 {
+      color: #fff;
+      font-size: 34px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin: 0 0 10px;
+      text-shadow: 0 10px 34px rgba(0,0,0,0.34);
+    }
 
-        <div>
-          <label for="{{ form.password.id_for_label }}"
-                 style="display: block; margin-bottom: 9px; color: #ffffff; font-size: 14px; font-weight: 700;">
-            Senha
-          </label>
+    .yamtrack-login-brand p {
+      margin: 0;
+      color: rgba(255,255,255,0.56);
+      font-size: 15px;
+    }
 
-          <input type="password"
-                 name="{{ form.password.html_name }}"
-                 id="{{ form.password.id_for_label }}"
-                 autocomplete="current-password"
-                 placeholder="Digite sua senha"
-                 required
-                 style="
-                   width: 100%;
-                   height: 52px;
-                   padding: 0 16px;
-                   border-radius: 14px;
-                   border: 1px solid rgba(255,255,255,0.16);
-                   background: rgba(255,255,255,0.075);
-                   color: #ffffff;
-                   outline: none;
-                   box-shadow:
-                     inset 0 1px 0 rgba(255,255,255,0.10),
-                     0 10px 24px rgba(0,0,0,0.14);
-                   backdrop-filter: blur(18px) saturate(150%);
-                   -webkit-backdrop-filter: blur(18px) saturate(150%);
-                 ">
+    .yamtrack-login-panel {
+      position: relative;
+      overflow: hidden;
+      padding: 34px;
+      border-radius: 34px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.20), rgba(255,255,255,0.055) 48%, rgba(255,255,255,0.10)),
+        radial-gradient(circle at 22% 12%, rgba(255,255,255,0.32), transparent 34%),
+        radial-gradient(circle at 82% 18%, rgba(111,91,255,0.28), transparent 40%);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.34),
+        inset 0 -1px 0 rgba(255,255,255,0.08),
+        0 24px 70px rgba(0,0,0,0.36);
+      backdrop-filter: blur(34px) saturate(180%);
+      -webkit-backdrop-filter: blur(34px) saturate(180%);
+    }
 
-          {% if form.password.errors %}
-            <div style="margin-top: 7px; color: #fca5a5; font-size: 13px;">
-              {{ form.password.errors }}
-            </div>
-          {% endif %}
-        </div>
+    .yamtrack-login-panel::before {
+      content: "";
+      position: absolute;
+      inset: 1px;
+      border-radius: 33px;
+      pointer-events: none;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.22), transparent 32%),
+        radial-gradient(circle at 28% 20%, rgba(255,255,255,0.18), transparent 28%);
+      opacity: 0.85;
+    }
 
-        {% if form.remember %}
-          <label style="display: inline-flex; align-items: center; gap: 9px; color: rgba(255,255,255,0.72); font-size: 14px;">
-            {{ form.remember }}
-            Lembrar de mim
-          </label>
-        {% endif %}
+    .yamtrack-login-panel::after {
+      content: "";
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      top: 14px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.62), transparent);
+      opacity: 0.7;
+    }
 
-        {{ redirect_field }}
+    .yamtrack-login-form {
+      position: relative;
+      z-index: 1;
+    }
 
-        <button type="submit"
-                style="
-                  width: 100%;
-                  height: 52px;
-                  margin-top: 2px;
-                  border: 0;
-                  border-radius: 16px;
-                  color: #ffffff;
-                  font-weight: 700;
-                  cursor: pointer;
-                  background:
-                    radial-gradient(circle at 35% 20%, rgba(255,255,255,0.30), rgba(255,255,255,0.08) 32%, transparent 58%),
-                    linear-gradient(135deg, #6d5dfc, #4f35f5);
-                  box-shadow:
-                    inset 0 1px 0 rgba(255,255,255,0.24),
-                    0 14px 30px rgba(79,53,245,0.30);
-                  transition: transform 180ms ease, filter 180ms ease;
-                ">
-          Entrar
-        </button>
-      </div>
-    </form>
-  {% endif %}
+    .yamtrack-field {
+      margin-bottom: 20px;
+    }
 
-  {% if SOCIALACCOUNT_ENABLED %}
-    {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
-  {% endif %}
+    .yamtrack-field label {
+      display: block;
+      margin-bottom: 9px;
+      color: rgba(255,255,255,0.92);
+      font-size: 14px;
+      font-weight: 700;
+    }
 
-  {% if not SOCIALACCOUNT_ONLY and REGISTRATION %}
-    <div class="mt-6 text-center">
-      <p class="text-gray-400">
-        Ainda não tem uma conta?
-        <a class="text-indigo-400 hover:text-indigo-300"
-           href="{% url 'account_signup' %}">Cadastre-se agora</a>
-      </p>
+    .yamtrack-field input {
+      width: 100%;
+      height: 54px;
+      padding: 0 17px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.20);
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.16), rgba(255,255,255,0.07));
+      color: #fff;
+      outline: none;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.18),
+        inset 0 -1px 0 rgba(255,255,255,0.05),
+        0 12px 28px rgba(0,0,0,0.18);
+      backdrop-filter: blur(18px) saturate(165%);
+      -webkit-backdrop-filter: blur(18px) saturate(165%);
+    }
+
+    .yamtrack-field input::placeholder {
+      color: rgba(255,255,255,0.48);
+    }
+
+    .yamtrack-field input:focus {
+      border-color: rgba(180,175,255,0.56);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.22),
+        0 0 0 4px rgba(111,91,255,0.18),
+        0 14px 32px rgba(0,0,0,0.22);
+    }
+
+    .yamtrack-login-button {
+      width: 100%;
+      height: 54px;
+      margin-top: 6px;
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 18px;
+      color: #fff;
+      font-weight: 800;
+      cursor: pointer;
+      background:
+        radial-gradient(circle at 30% 18%, rgba(255,255,255,0.42), transparent 28%),
+        linear-gradient(135deg, #816bff, #5237f5);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.30),
+        inset 0 -1px 0 rgba(0,0,0,0.18),
+        0 18px 40px rgba(82,55,245,0.34);
+      transition: transform 180ms ease, filter 180ms ease;
+    }
+
+    .yamtrack-login-button:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+    }
+
+    .yamtrack-error {
+      margin-bottom: 18px;
+      padding: 12px 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(248,113,113,0.30);
+      background: rgba(248,113,113,0.12);
+      color: rgba(254,202,202,0.96);
+      font-size: 14px;
+    }
+  </style>
+
+  <div class="yamtrack-login-shell">
+    <div class="yamtrack-login-brand">
+      <h1>Yamtrack</h1>
+      <p>Entre na sua conta</p>
     </div>
-  {% endif %}
+
+    {% if not SOCIALACCOUNT_ONLY %}
+      {% url 'account_login' as login_url %}
+
+      <div class="yamtrack-login-panel">
+        <form class="yamtrack-login-form" method="post" action="{{ login_url }}">
+          {% csrf_token %}
+
+          {% if form.non_field_errors %}
+            <div class="yamtrack-error">
+              {{ form.non_field_errors }}
+            </div>
+          {% endif %}
+
+          <div class="yamtrack-field">
+            <label for="{{ form.login.id_for_label }}">Usuário</label>
+            <input type="text"
+                   name="{{ form.login.html_name }}"
+                   id="{{ form.login.id_for_label }}"
+                   value="{{ form.login.value|default_if_none:'' }}"
+                   autocomplete="username"
+                   placeholder="Digite seu usuário"
+                   required>
+          </div>
+
+          <div class="yamtrack-field">
+            <label for="{{ form.password.id_for_label }}">Senha</label>
+            <input type="password"
+                   name="{{ form.password.html_name }}"
+                   id="{{ form.password.id_for_label }}"
+                   autocomplete="current-password"
+                   placeholder="Digite sua senha"
+                   required>
+          </div>
+
+          {% if form.remember %}
+            <label style="display:inline-flex;align-items:center;gap:9px;margin-bottom:18px;color:rgba(255,255,255,0.68);font-size:14px;">
+              {{ form.remember }}
+              Lembrar de mim
+            </label>
+          {% endif %}
+
+          {{ redirect_field }}
+
+          <button class="yamtrack-login-button" type="submit">
+            Entrar
+          </button>
+        </form>
+      </div>
+    {% endif %}
+
+    {% if SOCIALACCOUNT_ENABLED %}
+      {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
+    {% endif %}
+  </div>
 {% endblock content %}
 
 {% block extra_body %}
