@@ -222,6 +222,8 @@
     }
 
     .yamtrack-lists-controls {
+      position: relative;
+      z-index: 50;
       display: flex;
       gap: 10px;
       align-items: center;
@@ -240,6 +242,8 @@
     }
 
     .yamtrack-panel {
+      position: relative;
+      z-index: 1;
       border-radius: 30px;
       border: 1px solid rgba(255,255,255,0.14);
       background:
@@ -405,7 +409,7 @@
           {% include "app/icons/chevron-down.svg" with classes="w-4 h-4" %}
         </button>
 
-        <div class="yamtrack-glass-menu absolute right-0 mt-2 py-1 w-56 overflow-hidden z-10"
+        <div class="yamtrack-glass-menu absolute right-0 mt-2 py-1 w-56 overflow-hidden z-[999]"
              x-cloak
              x-show="open"
              @click.outside="open = false"
