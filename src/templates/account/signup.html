@@ -1,43 +1,376 @@
 {% extends "account/base_entrance.html" %}
 {% load allauth account %}
+{% load socialaccount %}
 
 {% block head_title %}
-  Register
+  Criar conta
 {% endblock head_title %}
 
 {% block content_title %}
-  Create your account
 {% endblock content_title %}
 
 {% block content %}
+  <style>
+    html,
+    body {
+      min-height: 100%;
+    }
 
-  {% if not SOCIALACCOUNT_ONLY %}
-    {% url 'account_signup' as action_url %}
-    {% element form form=form method="post" action=action_url tags="entrance,signup" %}
-      {% slot body %}
-        {% csrf_token %}
-        {% element fields form=form unlabeled=True %}
-        {% endelement %}
-        {{ redirect_field }}
-      {% endslot %}
-      {% slot actions %}
-        {% element button tags="prominent,signup" type="submit" icon='<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path> <circle cx="9" cy="7" r="4"></circle><line x1="19" x2="19" y1="8" y2="14"></line><line x1="22" x2="16" y1="11" y2="11"></line>' %}
-          Create Account
-        {% endelement %}
-      {% endslot %}
-    {% endelement %}
-  {% endif %}
+    body:has(.yamtrack-auth-shell) {
+      background: #071015 !important;
+      overflow-x: hidden;
+    }
 
-  {% if SOCIALACCOUNT_ENABLED %}
-    {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
-  {% endif %}
+    body:has(.yamtrack-auth-shell) main,
+    body:has(.yamtrack-auth-shell) section,
+    body:has(.yamtrack-auth-shell) .bg-gray-800,
+    body:has(.yamtrack-auth-shell) .bg-gray-900,
+    body:has(.yamtrack-auth-shell) .bg-slate-800,
+    body:has(.yamtrack-auth-shell) .bg-slate-900,
+    body:has(.yamtrack-auth-shell) .bg-[#1f252b],
+    body:has(.yamtrack-auth-shell) .bg-[#20262d] {
+      background: transparent !important;
+      box-shadow: none !important;
+      border-color: transparent !important;
+    }
 
-  <div class="mt-6 text-center">
-    <p class="text-gray-400">
-      Already have an account?
-      <a class="text-indigo-400 hover:text-indigo-300"
-         href="{% url 'account_login' %}">Sign in</a>
-    </p>
+    body:has(.yamtrack-auth-shell) form:not(.yamtrack-auth-form) {
+      background: transparent !important;
+      box-shadow: none !important;
+      border: 0 !important;
+      padding: 0 !important;
+    }
+
+    .yamtrack-liquid-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(125, 115, 255, 0.24), transparent 30%),
+        radial-gradient(circle at 82% 16%, rgba(80, 190, 255, 0.16), transparent 32%),
+        radial-gradient(circle at 52% 82%, rgba(255, 255, 255, 0.075), transparent 34%),
+        linear-gradient(135deg, #071015 0%, #111a22 48%, #070b10 100%);
+    }
+
+    .yamtrack-liquid-bg::before {
+      content: "";
+      position: absolute;
+      inset: -18%;
+      background:
+        linear-gradient(115deg, transparent 0%, rgba(255,255,255,0.045) 42%, transparent 72%),
+        radial-gradient(circle at 34% 30%, rgba(255,255,255,0.085), transparent 18%),
+        radial-gradient(circle at 66% 60%, rgba(255,255,255,0.055), transparent 20%);
+      filter: blur(4px);
+      backdrop-filter: blur(22px) saturate(155%);
+      -webkit-backdrop-filter: blur(22px) saturate(155%);
+    }
+
+    .yamtrack-liquid-bg::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px);
+      background-size: 72px 72px;
+      mask-image: radial-gradient(circle at center, black, transparent 78%);
+      -webkit-mask-image: radial-gradient(circle at center, black, transparent 78%);
+      opacity: 0.30;
+    }
+
+    .yamtrack-auth-shell {
+      position: relative;
+      z-index: 2;
+      width: min(460px, calc(100vw - 32px));
+      margin: 0 auto;
+      transform: translateY(12px);
+    }
+
+    .yamtrack-auth-brand {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .yamtrack-auth-brand h1 {
+      color: #ffffff;
+      font-size: 34px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin: 0 0 10px;
+      text-shadow: 0 10px 34px rgba(0,0,0,0.34);
+    }
+
+    .yamtrack-auth-brand p {
+      margin: 0;
+      color: rgba(255,255,255,0.72);
+      font-size: 15px;
+    }
+
+    .yamtrack-auth-panel {
+      position: relative;
+      overflow: hidden;
+      padding: 34px;
+      border-radius: 34px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.155), rgba(255,255,255,0.052) 50%, rgba(255,255,255,0.082)),
+        radial-gradient(circle at 22% 12%, rgba(255,255,255,0.20), transparent 34%),
+        radial-gradient(circle at 82% 18%, rgba(111,91,255,0.17), transparent 40%);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.26),
+        inset 0 -1px 0 rgba(255,255,255,0.06),
+        0 24px 70px rgba(0,0,0,0.36);
+      backdrop-filter: blur(34px) saturate(170%);
+      -webkit-backdrop-filter: blur(34px) saturate(170%);
+    }
+
+    .yamtrack-auth-panel::before {
+      content: "";
+      position: absolute;
+      inset: 1px;
+      border-radius: 33px;
+      pointer-events: none;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.14), transparent 34%),
+        radial-gradient(circle at 28% 20%, rgba(255,255,255,0.11), transparent 30%);
+      opacity: 0.78;
+    }
+
+    .yamtrack-auth-panel::after {
+      content: "";
+      position: absolute;
+      left: 22px;
+      right: 22px;
+      top: 14px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.44), transparent);
+      opacity: 0.62;
+    }
+
+    .yamtrack-auth-form {
+      position: relative;
+      z-index: 1;
+    }
+
+    .yamtrack-field {
+      margin-bottom: 18px;
+    }
+
+    .yamtrack-field label {
+      display: block;
+      margin-bottom: 9px;
+      color: rgba(255,255,255,0.92);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .yamtrack-field input {
+      width: 100%;
+      height: 54px;
+      box-sizing: border-box;
+      padding: 0 17px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.13), rgba(255,255,255,0.06));
+      color: #ffffff;
+      outline: none;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.16),
+        inset 0 -1px 0 rgba(255,255,255,0.045),
+        0 12px 28px rgba(0,0,0,0.16);
+      backdrop-filter: blur(18px) saturate(155%);
+      -webkit-backdrop-filter: blur(18px) saturate(155%);
+    }
+
+    .yamtrack-field input::placeholder {
+      color: rgba(255,255,255,0.52);
+    }
+
+    .yamtrack-field input:focus {
+      border-color: rgba(185,185,255,0.48);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.20),
+        0 0 0 4px rgba(111,91,255,0.14),
+        0 14px 32px rgba(0,0,0,0.20);
+    }
+
+    .yamtrack-auth-button {
+      width: 100%;
+      height: 54px;
+      margin-top: 6px;
+      border: 1px solid rgba(255,255,255,0.20);
+      border-radius: 18px;
+      color: #ffffff;
+      font-weight: 800;
+      cursor: pointer;
+      background:
+        radial-gradient(circle at 30% 18%, rgba(255,255,255,0.30), transparent 28%),
+        linear-gradient(135deg, #7667ee, #5742e6);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.24),
+        inset 0 -1px 0 rgba(0,0,0,0.16),
+        0 18px 38px rgba(82,55,245,0.28);
+      transition: transform 180ms ease, filter 180ms ease;
+    }
+
+    .yamtrack-auth-button:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+    }
+
+    .yamtrack-error {
+      margin-bottom: 18px;
+      padding: 12px 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(248,113,113,0.30);
+      background: rgba(248,113,113,0.12);
+      color: rgba(254,202,202,0.96);
+      font-size: 14px;
+    }
+
+    .yamtrack-auth-link {
+      margin-top: 24px;
+      text-align: center;
+      color: rgba(255,255,255,0.62);
+      font-size: 14px;
+    }
+
+    .yamtrack-auth-link a {
+      color: rgba(190,186,255,0.98);
+      text-decoration: none;
+    }
+
+    .yamtrack-auth-link a:hover {
+      color: #ffffff;
+    }
+
+    @media (max-width: 640px) {
+      .yamtrack-auth-shell {
+        transform: translateY(0);
+      }
+
+      .yamtrack-auth-panel {
+        padding: 26px;
+        border-radius: 28px;
+      }
+
+      .yamtrack-auth-brand h1 {
+        font-size: 30px;
+      }
+    }
+  </style>
+
+  <div class="yamtrack-liquid-bg"></div>
+
+  <div class="yamtrack-auth-shell">
+    <div class="yamtrack-auth-brand">
+      <h1>Yamtrack</h1>
+      <p>Crie sua conta</p>
+    </div>
+
+    {% if not SOCIALACCOUNT_ONLY %}
+      {% url 'account_signup' as signup_url %}
+
+      <div class="yamtrack-auth-panel">
+        <form class="yamtrack-auth-form" method="post" action="{{ signup_url }}">
+          {% csrf_token %}
+
+          {% if form.non_field_errors %}
+            <div class="yamtrack-error">
+              {{ form.non_field_errors }}
+            </div>
+          {% endif %}
+
+          {% if form.username %}
+            <div class="yamtrack-field">
+              <label for="{{ form.username.id_for_label }}">Usuário</label>
+              <input type="text"
+                     name="{{ form.username.html_name }}"
+                     id="{{ form.username.id_for_label }}"
+                     value="{{ form.username.value|default_if_none:'' }}"
+                     autocomplete="username"
+                     placeholder="Escolha seu usuário"
+                     required>
+
+              {% if form.username.errors %}
+                <div class="yamtrack-error" style="margin-top: 10px; margin-bottom: 0;">
+                  {{ form.username.errors }}
+                </div>
+              {% endif %}
+            </div>
+          {% endif %}
+
+          {% if form.email %}
+            <div class="yamtrack-field">
+              <label for="{{ form.email.id_for_label }}">E-mail</label>
+              <input type="email"
+                     name="{{ form.email.html_name }}"
+                     id="{{ form.email.id_for_label }}"
+                     value="{{ form.email.value|default_if_none:'' }}"
+                     autocomplete="email"
+                     placeholder="Digite seu e-mail"
+                     required>
+
+              {% if form.email.errors %}
+                <div class="yamtrack-error" style="margin-top: 10px; margin-bottom: 0;">
+                  {{ form.email.errors }}
+                </div>
+              {% endif %}
+            </div>
+          {% endif %}
+
+          <div class="yamtrack-field">
+            <label for="{{ form.password1.id_for_label }}">Senha</label>
+            <input type="password"
+                   name="{{ form.password1.html_name }}"
+                   id="{{ form.password1.id_for_label }}"
+                   autocomplete="new-password"
+                   placeholder="Crie uma senha"
+                   required>
+
+            {% if form.password1.errors %}
+              <div class="yamtrack-error" style="margin-top: 10px; margin-bottom: 0;">
+                {{ form.password1.errors }}
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="yamtrack-field">
+            <label for="{{ form.password2.id_for_label }}">Confirmar senha</label>
+            <input type="password"
+                   name="{{ form.password2.html_name }}"
+                   id="{{ form.password2.id_for_label }}"
+                   autocomplete="new-password"
+                   placeholder="Confirme sua senha"
+                   required>
+
+            {% if form.password2.errors %}
+              <div class="yamtrack-error" style="margin-top: 10px; margin-bottom: 0;">
+                {{ form.password2.errors }}
+              </div>
+            {% endif %}
+          </div>
+
+          {{ redirect_field }}
+
+          <button class="yamtrack-auth-button" type="submit">
+            Criar conta
+          </button>
+        </form>
+      </div>
+    {% endif %}
+
+    {% if SOCIALACCOUNT_ENABLED %}
+      {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
+    {% endif %}
+
+    <div class="yamtrack-auth-link">
+      Já tem uma conta?
+      <a href="{% url 'account_login' %}">Entrar agora</a>
+    </div>
   </div>
-
 {% endblock content %}
