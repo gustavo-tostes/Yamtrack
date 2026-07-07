@@ -159,14 +159,32 @@
     border-color: rgba(255,255,255,0.18);
   }
 
-  /*
-    Colaboradores:
-    Esta parte força qualquer renderização do campo — select normal,
-    select múltiplo ou Select2 — a se comportar visualmente como input comum.
-  */
-
   .yamtrack-collaborators-field {
     position: relative;
+  }
+
+  .yamtrack-collaborators-control {
+    position: relative;
+    width: 100%;
+  }
+
+  .yamtrack-collaborators-placeholder {
+    position: absolute;
+    z-index: 3;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255,255,255,0.62);
+    font-size: 14px;
+    line-height: 1;
+    pointer-events: none;
+    transition: opacity 150ms ease;
+    white-space: nowrap;
+  }
+
+  .yamtrack-collaborators-control.is-active .yamtrack-collaborators-placeholder,
+  .yamtrack-collaborators-control.has-value .yamtrack-collaborators-placeholder {
+    opacity: 0;
   }
 
   .yamtrack-collaborators-field select,
@@ -271,12 +289,13 @@
 
   .yamtrack-collaborators-field .select2-selection--multiple .select2-search__field::placeholder,
   .yamtrack-collaborators-field .select2-search__field::placeholder {
-    color: rgba(255,255,255,0.62) !important;
-    opacity: 1 !important;
+    color: transparent !important;
+    opacity: 0 !important;
   }
 
   .yamtrack-collaborators-field .select2-selection__placeholder {
-    color: rgba(255,255,255,0.62) !important;
+    color: transparent !important;
+    opacity: 0 !important;
   }
 
   .yamtrack-collaborators-field .select2-selection__choice {
@@ -343,62 +362,89 @@
 <div x-show="showModal"
      x-cloak
      x-transition.opacity
-     x-init="$watch('showModal', value => {
-       if (value) {
-         setTimeout(() => {
-           const wrapper = $el.querySelector('.yamtrack-collaborators-field');
+     x-init="
+       function updateCollaboratorsField() {
+         const wrapper = $el.querySelector('.yamtrack-collaborators-field');
+         if (!wrapper) return;
 
-           if (wrapper) {
-             const select = wrapper.querySelector('select');
-             const selection = wrapper.querySelector('.select2-selection');
-             const rendered = wrapper.querySelector('.select2-selection__rendered');
-             const search = wrapper.querySelector('.select2-search--inline');
-             const field = wrapper.querySelector('.select2-search__field');
+         const control = wrapper.querySelector('.yamtrack-collaborators-control');
+         const select = wrapper.querySelector('select');
+         const selection = wrapper.querySelector('.select2-selection');
+         const rendered = wrapper.querySelector('.select2-selection__rendered');
+         const search = wrapper.querySelector('.select2-search--inline');
+         const field = wrapper.querySelector('.select2-search__field');
+         const choices = wrapper.querySelectorAll('.select2-selection__choice');
 
-             if (select) {
-               select.style.height = '48px';
-               select.style.minHeight = '48px';
-               select.style.maxHeight = '48px';
-               select.style.overflow = 'hidden';
-             }
+         if (select) {
+           select.style.height = '48px';
+           select.style.minHeight = '48px';
+           select.style.maxHeight = '48px';
+           select.style.overflow = 'hidden';
+         }
 
-             if (selection) {
-               selection.style.height = '48px';
-               selection.style.minHeight = '48px';
-               selection.style.maxHeight = '48px';
-             }
+         if (selection) {
+           selection.style.height = '48px';
+           selection.style.minHeight = '48px';
+           selection.style.maxHeight = '48px';
+         }
 
-             if (rendered) {
-               rendered.style.height = '46px';
-               rendered.style.minHeight = '46px';
-               rendered.style.maxHeight = '46px';
-               rendered.style.display = 'flex';
-               rendered.style.alignItems = 'center';
-               rendered.style.flexWrap = 'nowrap';
-               rendered.style.overflow = 'hidden';
-             }
+         if (rendered) {
+           rendered.style.height = '46px';
+           rendered.style.minHeight = '46px';
+           rendered.style.maxHeight = '46px';
+           rendered.style.display = 'flex';
+           rendered.style.alignItems = 'center';
+           rendered.style.flexWrap = 'nowrap';
+           rendered.style.overflow = 'hidden';
+         }
 
-             if (search) {
-               search.style.height = '46px';
-               search.style.minHeight = '46px';
-               search.style.display = 'flex';
-               search.style.alignItems = 'center';
-             }
+         if (search) {
+           search.style.height = '46px';
+           search.style.minHeight = '46px';
+           search.style.display = 'flex';
+           search.style.alignItems = 'center';
+         }
 
-             if (field) {
-               field.placeholder = 'Buscar usuários para adicionar...';
-               field.style.width = '100%';
-               field.style.height = '46px';
-               field.style.minHeight = '46px';
-               field.style.maxHeight = '46px';
-               field.style.lineHeight = '46px';
-               field.style.margin = '0';
-               field.style.padding = '0';
-             }
+         if (field) {
+           field.placeholder = '';
+           field.style.width = '100%';
+           field.style.height = '46px';
+           field.style.minHeight = '46px';
+           field.style.maxHeight = '46px';
+           field.style.lineHeight = '46px';
+           field.style.margin = '0';
+           field.style.padding = '0';
+
+           field.addEventListener('focus', () => {
+             if (control) control.classList.add('is-active');
+           });
+
+           field.addEventListener('blur', () => {
+             setTimeout(() => {
+               if (control) {
+                 control.classList.remove('is-active');
+                 updateCollaboratorsField();
+               }
+             }, 120);
+           });
+         }
+
+         if (control) {
+           if (choices.length > 0) {
+             control.classList.add('has-value');
+           } else {
+             control.classList.remove('has-value');
            }
-         }, 150);
+         }
        }
-     })"
+
+       $watch('showModal', value => {
+         if (value) {
+           setTimeout(updateCollaboratorsField, 100);
+           setTimeout(updateCollaboratorsField, 300);
+         }
+       });
+     "
      class="yamtrack-list-modal-backdrop fixed inset-0 flex items-center justify-center z-50 px-4">
   <div @click.outside="showModal = false"
        class="yamtrack-list-modal-panel">
@@ -441,7 +487,10 @@
           {% elif field.name == "description" %}
             {{ field|add_class:"yamtrack-list-modal-input"|attr:"placeholder:Descreva o objetivo desta lista" }}
           {% elif field.name == "collaborators" %}
-            {{ field|add_class:"yamtrack-list-modal-input"|attr:"data-placeholder:Buscar usuários para adicionar..." }}
+            <div class="yamtrack-collaborators-control">
+              {{ field|add_class:"yamtrack-list-modal-input"|attr:"data-placeholder:" }}
+              <span class="yamtrack-collaborators-placeholder">Buscar usuários para adicionar...</span>
+            </div>
           {% else %}
             {{ field|add_class:"yamtrack-list-modal-input" }}
           {% endif %}
