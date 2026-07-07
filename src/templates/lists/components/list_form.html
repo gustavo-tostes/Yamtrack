@@ -75,7 +75,7 @@
 
   .yamtrack-list-modal-panel input::placeholder,
   .yamtrack-list-modal-panel textarea::placeholder {
-    color: rgba(255,255,255,0.42);
+    color: rgba(255,255,255,0.62);
   }
 
   .yamtrack-list-modal-panel input:focus,
@@ -184,11 +184,43 @@
   .yamtrack-list-modal-panel .select2-search__field {
     color: rgba(255,255,255,0.92) !important;
   }
+
+  .yamtrack-list-modal-panel .select2-search__field::placeholder {
+    color: rgba(255,255,255,0.68) !important;
+    opacity: 1 !important;
+  }
+
+  .yamtrack-list-modal-panel .select2-selection__placeholder {
+    color: rgba(255,255,255,0.68) !important;
+  }
+
+  .yamtrack-list-modal-panel .select2-selection--multiple {
+    padding: 8px !important;
+  }
+
+  .yamtrack-list-modal-panel .select2-selection--multiple .select2-selection__choice {
+    border-radius: 9999px !important;
+    border: 1px solid rgba(255,255,255,0.16) !important;
+    background: rgba(255,255,255,0.10) !important;
+    color: rgba(255,255,255,0.92) !important;
+    padding: 4px 9px !important;
+  }
+
+  .yamtrack-list-modal-panel .select2-selection--multiple .select2-selection__choice__remove {
+    color: rgba(255,255,255,0.68) !important;
+    margin-right: 5px !important;
+  }
 </style>
 
 <div x-show="showModal"
      x-cloak
      x-transition.opacity
+     x-init="$nextTick(() => {
+       const field = $el.querySelector('.select2-search__field');
+       if (field) {
+         field.placeholder = 'Buscar usuários para adicionar...';
+       }
+     })"
      class="yamtrack-list-modal-backdrop fixed inset-0 flex items-center justify-center z-50 px-4">
   <div @click.outside="showModal = false"
        class="yamtrack-list-modal-panel">
@@ -231,7 +263,7 @@
           {% elif field.name == "description" %}
             {{ field|add_class:"yamtrack-list-modal-input"|attr:"placeholder:Descreva o objetivo desta lista" }}
           {% elif field.name == "collaborators" %}
-            {{ field|add_class:"yamtrack-list-modal-input"|attr:"placeholder:Buscar usuários para adicionar..." }}
+            {{ field|add_class:"yamtrack-list-modal-input"|attr:"data-placeholder:Buscar usuários para adicionar..." }}
           {% else %}
             {{ field|add_class:"yamtrack-list-modal-input" }}
           {% endif %}
