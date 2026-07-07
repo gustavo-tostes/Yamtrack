@@ -159,8 +159,37 @@
     border-color: rgba(255,255,255,0.18);
   }
 
-  .yamtrack-collaborators-field select {
-    display: none !important;
+  /*
+    Colaboradores:
+    Esta parte força qualquer renderização do campo — select normal,
+    select múltiplo ou Select2 — a se comportar visualmente como input comum.
+  */
+
+  .yamtrack-collaborators-field {
+    position: relative;
+  }
+
+  .yamtrack-collaborators-field select,
+  .yamtrack-collaborators-field select[multiple],
+  .yamtrack-collaborators-field .yamtrack-list-modal-input {
+    height: 48px !important;
+    min-height: 48px !important;
+    max-height: 48px !important;
+    line-height: 48px !important;
+    overflow: hidden !important;
+    padding: 0 15px !important;
+    border-radius: 18px !important;
+    border: 1px solid rgba(255,255,255,0.14) !important;
+    background:
+      radial-gradient(circle at 34% 24%, rgba(255,255,255,0.16), rgba(255,255,255,0.055) 52%, rgba(255,255,255,0.025) 100%) !important;
+    color: rgba(255,255,255,0.88) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.12),
+      inset 0 -1px 0 rgba(255,255,255,0.03),
+      0 8px 18px rgba(0,0,0,0.14) !important;
+    backdrop-filter: blur(18px) saturate(150%) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(150%) !important;
+    appearance: none !important;
   }
 
   .yamtrack-collaborators-field .select2-container {
@@ -168,10 +197,13 @@
     display: block !important;
   }
 
-  .yamtrack-collaborators-field .select2-container--default .select2-selection--multiple {
+  .yamtrack-collaborators-field .select2-container--default .select2-selection--multiple,
+  .yamtrack-collaborators-field .select2-container .select2-selection,
+  .yamtrack-collaborators-field .select2-selection {
     width: 100% !important;
+    height: 48px !important;
     min-height: 48px !important;
-    height: auto !important;
+    max-height: 48px !important;
     border-radius: 18px !important;
     border: 1px solid rgba(255,255,255,0.14) !important;
     background:
@@ -180,38 +212,35 @@
       inset 0 1px 0 rgba(255,255,255,0.12),
       inset 0 -1px 0 rgba(255,255,255,0.03),
       0 8px 18px rgba(0,0,0,0.14) !important;
-    backdrop-filter: blur(18px) saturate(150%);
-    -webkit-backdrop-filter: blur(18px) saturate(150%);
-    padding: 0 !important;
+    backdrop-filter: blur(18px) saturate(150%) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(150%) !important;
     overflow: hidden !important;
+    padding: 0 !important;
   }
 
-  .yamtrack-collaborators-field .select2-container--default.select2-container--focus .select2-selection--multiple {
-    border-color: rgba(255,255,255,0.24) !important;
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.16),
-      0 0 0 2px rgba(130,140,255,0.20),
-      0 12px 24px rgba(0,0,0,0.18) !important;
-  }
-
-  .yamtrack-collaborators-field .select2-selection--multiple .select2-selection__rendered {
+  .yamtrack-collaborators-field .select2-selection--multiple .select2-selection__rendered,
+  .yamtrack-collaborators-field .select2-selection__rendered {
+    width: 100% !important;
+    height: 46px !important;
     min-height: 46px !important;
-    height: auto !important;
+    max-height: 46px !important;
     display: flex !important;
     align-items: center !important;
-    flex-wrap: wrap !important;
-    gap: 6px !important;
-    padding: 8px 14px !important;
+    flex-wrap: nowrap !important;
+    overflow: hidden !important;
+    padding: 0 14px !important;
     margin: 0 !important;
     box-sizing: border-box !important;
     list-style: none !important;
+    color: rgba(255,255,255,0.88) !important;
   }
 
   .yamtrack-collaborators-field .select2-selection--multiple .select2-search--inline {
-    flex: 1 1 240px !important;
-    min-width: 180px !important;
-    height: 30px !important;
-    min-height: 30px !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    height: 46px !important;
+    min-height: 46px !important;
     display: flex !important;
     align-items: center !important;
     margin: 0 !important;
@@ -219,11 +248,13 @@
     float: none !important;
   }
 
-  .yamtrack-collaborators-field .select2-selection--multiple .select2-search__field {
+  .yamtrack-collaborators-field .select2-selection--multiple .select2-search__field,
+  .yamtrack-collaborators-field .select2-search__field {
     width: 100% !important;
-    height: 30px !important;
-    min-height: 30px !important;
-    line-height: 30px !important;
+    height: 46px !important;
+    min-height: 46px !important;
+    max-height: 46px !important;
+    line-height: 46px !important;
     margin: 0 !important;
     padding: 0 !important;
     border: none !important;
@@ -238,7 +269,8 @@
     -webkit-backdrop-filter: none !important;
   }
 
-  .yamtrack-collaborators-field .select2-selection--multiple .select2-search__field::placeholder {
+  .yamtrack-collaborators-field .select2-selection--multiple .select2-search__field::placeholder,
+  .yamtrack-collaborators-field .select2-search__field::placeholder {
     color: rgba(255,255,255,0.62) !important;
     opacity: 1 !important;
   }
@@ -247,7 +279,7 @@
     color: rgba(255,255,255,0.62) !important;
   }
 
-  .yamtrack-collaborators-field .select2-selection--multiple .select2-selection__choice {
+  .yamtrack-collaborators-field .select2-selection__choice {
     min-height: 28px !important;
     display: inline-flex !important;
     align-items: center !important;
@@ -256,10 +288,14 @@
     background: rgba(255,255,255,0.10) !important;
     color: rgba(255,255,255,0.92) !important;
     padding: 3px 10px !important;
-    margin: 0 !important;
+    margin: 0 6px 0 0 !important;
+    max-width: 160px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
   }
 
-  .yamtrack-collaborators-field .select2-selection--multiple .select2-selection__choice__remove {
+  .yamtrack-collaborators-field .select2-selection__choice__remove {
     color: rgba(255,255,255,0.68) !important;
     margin-right: 6px !important;
   }
@@ -293,6 +329,8 @@
 
   .select2-search--dropdown .select2-search__field {
     min-height: 42px !important;
+    height: 42px !important;
+    line-height: 42px !important;
     border-radius: 9999px !important;
     border: 1px solid rgba(255,255,255,0.14) !important;
     background: rgba(255,255,255,0.08) !important;
@@ -309,30 +347,56 @@
        if (value) {
          setTimeout(() => {
            const wrapper = $el.querySelector('.yamtrack-collaborators-field');
-           const field = wrapper ? wrapper.querySelector('.select2-search__field') : null;
-           const rendered = wrapper ? wrapper.querySelector('.select2-selection__rendered') : null;
-           const selection = wrapper ? wrapper.querySelector('.select2-selection--multiple') : null;
 
-           if (field) {
-             field.placeholder = 'Buscar usuários para adicionar...';
-             field.style.width = '100%';
-             field.style.height = '30px';
-             field.style.minHeight = '30px';
-             field.style.lineHeight = '30px';
-             field.style.margin = '0';
-             field.style.padding = '0';
-           }
+           if (wrapper) {
+             const select = wrapper.querySelector('select');
+             const selection = wrapper.querySelector('.select2-selection');
+             const rendered = wrapper.querySelector('.select2-selection__rendered');
+             const search = wrapper.querySelector('.select2-search--inline');
+             const field = wrapper.querySelector('.select2-search__field');
 
-           if (rendered) {
-             rendered.style.minHeight = '46px';
-             rendered.style.display = 'flex';
-             rendered.style.alignItems = 'center';
-           }
+             if (select) {
+               select.style.height = '48px';
+               select.style.minHeight = '48px';
+               select.style.maxHeight = '48px';
+               select.style.overflow = 'hidden';
+             }
 
-           if (selection) {
-             selection.style.minHeight = '48px';
+             if (selection) {
+               selection.style.height = '48px';
+               selection.style.minHeight = '48px';
+               selection.style.maxHeight = '48px';
+             }
+
+             if (rendered) {
+               rendered.style.height = '46px';
+               rendered.style.minHeight = '46px';
+               rendered.style.maxHeight = '46px';
+               rendered.style.display = 'flex';
+               rendered.style.alignItems = 'center';
+               rendered.style.flexWrap = 'nowrap';
+               rendered.style.overflow = 'hidden';
+             }
+
+             if (search) {
+               search.style.height = '46px';
+               search.style.minHeight = '46px';
+               search.style.display = 'flex';
+               search.style.alignItems = 'center';
+             }
+
+             if (field) {
+               field.placeholder = 'Buscar usuários para adicionar...';
+               field.style.width = '100%';
+               field.style.height = '46px';
+               field.style.minHeight = '46px';
+               field.style.maxHeight = '46px';
+               field.style.lineHeight = '46px';
+               field.style.margin = '0';
+               field.style.padding = '0';
+             }
            }
-         }, 120);
+         }, 150);
        }
      })"
      class="yamtrack-list-modal-backdrop fixed inset-0 flex items-center justify-center z-50 px-4">
