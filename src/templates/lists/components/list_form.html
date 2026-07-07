@@ -159,13 +159,20 @@
     border-color: rgba(255,255,255,0.18);
   }
 
-  .yamtrack-list-modal-panel .select2-container,
-  .yamtrack-list-modal-panel .select2-container--default {
-    width: 100% !important;
+  .yamtrack-collaborators-field {
+    position: relative;
   }
 
-  .yamtrack-list-modal-panel .select2-selection {
+  .yamtrack-collaborators-field .select2-container,
+  .yamtrack-collaborators-field .select2-container--default {
+    width: 100% !important;
+    display: block !important;
+  }
+
+  .yamtrack-collaborators-field .select2-container--default .select2-selection--multiple {
+    width: 100% !important;
     min-height: 48px !important;
+    height: auto !important;
     border-radius: 18px !important;
     border: 1px solid rgba(255,255,255,0.14) !important;
     background:
@@ -175,50 +182,136 @@
       inset 0 1px 0 rgba(255,255,255,0.12),
       inset 0 -1px 0 rgba(255,255,255,0.03),
       0 8px 18px rgba(0,0,0,0.14) !important;
+    backdrop-filter: blur(18px) saturate(150%);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
+    padding: 0 !important;
+    overflow: hidden !important;
   }
 
-  .yamtrack-list-modal-panel .select2-selection__rendered {
-    color: rgba(255,255,255,0.92) !important;
+  .yamtrack-collaborators-field .select2-container--default.select2-container--focus .select2-selection--multiple {
+    border-color: rgba(255,255,255,0.24) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.16),
+      0 0 0 2px rgba(130,140,255,0.20),
+      0 12px 24px rgba(0,0,0,0.18) !important;
   }
 
-  .yamtrack-list-modal-panel .select2-search__field {
-    color: rgba(255,255,255,0.92) !important;
+  .yamtrack-collaborators-field .select2-selection--multiple .select2-selection__rendered {
+    width: 100% !important;
+    min-height: 46px !important;
+    display: flex !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    padding: 7px 14px !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
   }
 
-  .yamtrack-list-modal-panel .select2-search__field::placeholder {
-    color: rgba(255,255,255,0.68) !important;
+  .yamtrack-collaborators-field .select2-selection--multiple .select2-search--inline {
+    flex: 1 1 240px !important;
+    min-width: 180px !important;
+    height: 30px !important;
+    display: flex !important;
+    align-items: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .yamtrack-collaborators-field .select2-selection--multiple .select2-search__field {
+    width: 100% !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    line-height: 30px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: rgba(255,255,255,0.88) !important;
+    box-shadow: none !important;
+    outline: none !important;
+    font-size: 14px !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .yamtrack-collaborators-field .select2-selection--multiple .select2-search__field::placeholder {
+    color: rgba(255,255,255,0.64) !important;
     opacity: 1 !important;
   }
 
-  .yamtrack-list-modal-panel .select2-selection__placeholder {
-    color: rgba(255,255,255,0.68) !important;
+  .yamtrack-collaborators-field .select2-selection__placeholder {
+    color: rgba(255,255,255,0.64) !important;
   }
 
-  .yamtrack-list-modal-panel .select2-selection--multiple {
-    padding: 8px !important;
-  }
-
-  .yamtrack-list-modal-panel .select2-selection--multiple .select2-selection__choice {
+  .yamtrack-collaborators-field .select2-selection--multiple .select2-selection__choice {
+    min-height: 28px !important;
+    display: inline-flex !important;
+    align-items: center !important;
     border-radius: 9999px !important;
     border: 1px solid rgba(255,255,255,0.16) !important;
     background: rgba(255,255,255,0.10) !important;
     color: rgba(255,255,255,0.92) !important;
-    padding: 4px 9px !important;
+    padding: 3px 10px !important;
+    margin: 0 !important;
   }
 
-  .yamtrack-list-modal-panel .select2-selection--multiple .select2-selection__choice__remove {
+  .yamtrack-collaborators-field .select2-selection--multiple .select2-selection__choice__remove {
     color: rgba(255,255,255,0.68) !important;
-    margin-right: 5px !important;
+    margin-right: 6px !important;
+  }
+
+  .select2-dropdown {
+    border-radius: 18px !important;
+    border: 1px solid rgba(255,255,255,0.13) !important;
+    background:
+      linear-gradient(135deg, rgba(33,35,40,0.96), rgba(18,19,22,0.96)) !important;
+    color: rgba(255,255,255,0.90) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.10),
+      0 18px 36px rgba(0,0,0,0.30) !important;
+    overflow: hidden !important;
+  }
+
+  .select2-results__option {
+    color: rgba(255,255,255,0.84) !important;
+    padding: 10px 14px !important;
+  }
+
+  .select2-results__option--highlighted {
+    background: rgba(255,255,255,0.12) !important;
+    color: #ffffff !important;
+  }
+
+  .select2-search--dropdown {
+    padding: 10px !important;
+    background: transparent !important;
+  }
+
+  .select2-search--dropdown .select2-search__field {
+    min-height: 42px !important;
+    border-radius: 9999px !important;
+    border: 1px solid rgba(255,255,255,0.14) !important;
+    background: rgba(255,255,255,0.08) !important;
+    color: rgba(255,255,255,0.90) !important;
+    padding: 0 14px !important;
+    outline: none !important;
   }
 </style>
 
 <div x-show="showModal"
      x-cloak
      x-transition.opacity
-     x-init="$nextTick(() => {
-       const field = $el.querySelector('.select2-search__field');
-       if (field) {
-         field.placeholder = 'Buscar usuários para adicionar...';
+     x-init="$watch('showModal', value => {
+       if (value) {
+         setTimeout(() => {
+           const field = $el.querySelector('.yamtrack-collaborators-field .select2-search__field');
+           if (field) {
+             field.placeholder = 'Buscar usuários para adicionar...';
+             field.style.width = '100%';
+           }
+         }, 80);
        }
      })"
      class="yamtrack-list-modal-backdrop fixed inset-0 flex items-center justify-center z-50 px-4">
@@ -245,7 +338,7 @@
       <input type="hidden" name="list_id" value="{{ custom_list.id }}">
 
       {% for field in form %}
-        <div>
+        <div class="{% if field.name == 'collaborators' %}yamtrack-collaborators-field{% endif %}">
           <label class="yamtrack-list-modal-label" for="{{ field.id_for_label }}">
             {% if field.name == "name" %}
               Nome
