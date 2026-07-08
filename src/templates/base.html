@@ -62,13 +62,14 @@
         {# Sidebar #}
         <aside class="fixed top-0 left-0 z-40 h-screen w-64 bg-[#1a1d20] transform transition-transform duration-300 ease-in-out border-r border-[#2c3136] -translate-x-full lg:translate-x-0 lg:sticky flex flex-col"
                :class="isMobileMenuOpen ? 'translate-x-0' : ''">
-          <div class="h-16 border-b border-[#2c3136] flex items-center px-6">
+
+          <div class="h-20 border-b border-[#2c3136] flex items-center px-7">
             <a href="{% url 'home' %}"
                class="inline-flex items-center"
                aria-label="FlexiHub">
               <img src="{% static 'img/flexihub/Logo.png' %}"
                    alt="FlexiHub"
-                   class="h-8 w-auto max-w-[170px] object-contain">
+                   class="h-12 w-auto max-w-[210px] object-contain scale-[1.35] origin-left">
             </a>
           </div>
 
@@ -340,7 +341,9 @@
       </div>
     </div>
 
-    <div id="persistent-messages-actions">{% include "app/components/messages/persistent_messages_actions.html" %}</div>
+    <div id="persistent-messages-actions">
+      {% include "app/components/messages/persistent_messages_actions.html" %}
+    </div>
 
     {% block js %}
     {% endblock js %}
