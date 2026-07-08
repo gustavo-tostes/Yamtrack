@@ -3,85 +3,399 @@
 {% load app_tags %}
 
 {% block title %}
-  Import - Yamtrack
+  Importar dados - Yamtrack
 {% endblock title %}
 
 {% block settings_content %}
-  <div class="space-y-6"
+  <style>
+    [x-cloak] {
+      display: none !important;
+    }
+
+    .yamtrack-import-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .yamtrack-import-card,
+    .yamtrack-import-source-card,
+    .yamtrack-import-row,
+    .yamtrack-import-empty {
+      border-radius: 30px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.12), transparent 38%),
+        linear-gradient(135deg, rgba(255,255,255,0.09), rgba(255,255,255,0.035)) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 18px 42px rgba(0,0,0,0.22);
+      backdrop-filter: blur(24px) saturate(155%);
+      -webkit-backdrop-filter: blur(24px) saturate(155%);
+    }
+
+    .yamtrack-import-source-card,
+    .yamtrack-import-row,
+    .yamtrack-import-empty {
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.14), rgba(255,255,255,0.055) 52%, rgba(255,255,255,0.025) 100%) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.10),
+        0 10px 24px rgba(0,0,0,0.14);
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+    }
+
+    .yamtrack-import-heading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .yamtrack-import-heading-icon {
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.18), rgba(255,255,255,0.08) 44%, rgba(255,255,255,0.035) 100%);
+      color: rgba(160,168,255,0.98);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.14),
+        0 8px 18px rgba(0,0,0,0.14);
+      backdrop-filter: blur(18px) saturate(155%);
+      -webkit-backdrop-filter: blur(18px) saturate(155%);
+    }
+
+    .yamtrack-import-heading-title {
+      color: rgba(255,255,255,0.94);
+      font-size: 21px;
+      font-weight: 850;
+      line-height: 1.2;
+    }
+
+    .yamtrack-import-description {
+      color: rgba(255,255,255,0.54);
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    .yamtrack-import-description a {
+      color: rgba(190,196,255,0.96);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .yamtrack-import-description a:hover {
+      text-decoration: underline;
+    }
+
+    .yamtrack-import-label {
+      display: block;
+      color: rgba(255,255,255,0.72);
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .yamtrack-import-control {
+      width: 100%;
+      min-height: 46px;
+      border-radius: 18px !important;
+      border: 1px solid rgba(255,255,255,0.14) !important;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.16), rgba(255,255,255,0.055) 52%, rgba(255,255,255,0.025) 100%) !important;
+      color: rgba(255,255,255,0.92) !important;
+      padding: 0 15px;
+      font-size: 14px;
+      outline: none;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 8px 18px rgba(0,0,0,0.14) !important;
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+    }
+
+    .yamtrack-import-control::placeholder {
+      color: rgba(255,255,255,0.42);
+    }
+
+    .yamtrack-import-control:focus {
+      border-color: rgba(255,255,255,0.24) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.16),
+        0 0 0 2px rgba(130,140,255,0.20),
+        0 12px 24px rgba(0,0,0,0.18) !important;
+    }
+
+    .yamtrack-import-button,
+    .yamtrack-settings-content .yamtrack-import-button {
+      min-height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 9999px !important;
+      border: 1px solid rgba(255,255,255,0.14) !important;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.20), rgba(255,255,255,0.08) 44%, rgba(255,255,255,0.035) 100%) !important;
+      color: rgba(255,255,255,0.92) !important;
+      padding: 0 18px;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.14),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 8px 18px rgba(0,0,0,0.14);
+      backdrop-filter: blur(18px) saturate(155%);
+      -webkit-backdrop-filter: blur(18px) saturate(155%);
+      cursor: pointer;
+      transition: color 180ms ease, border-color 180ms ease, opacity 180ms ease;
+    }
+
+    .yamtrack-import-button:hover,
+    .yamtrack-settings-content .yamtrack-import-button:hover {
+      border-color: rgba(255,255,255,0.22) !important;
+      color: #ffffff !important;
+    }
+
+    .yamtrack-import-button-disabled {
+      opacity: 0.48;
+      cursor: not-allowed !important;
+    }
+
+    .yamtrack-import-inline-form {
+      display: flex;
+      width: 100%;
+      gap: 8px;
+    }
+
+    .yamtrack-import-inline-form .yamtrack-import-control {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .yamtrack-import-source-title {
+      display: flex;
+      align-items: center;
+      min-height: 28px;
+      margin-bottom: 12px;
+    }
+
+    .yamtrack-import-source-help {
+      color: rgba(255,255,255,0.52);
+      font-size: 13px;
+      line-height: 1.45;
+      margin-bottom: 14px;
+    }
+
+    .yamtrack-import-checkbox {
+      width: 16px;
+      height: 16px;
+      border-radius: 5px;
+      border: 1px solid rgba(255,255,255,0.20);
+      background: rgba(255,255,255,0.08);
+      accent-color: rgb(130, 140, 255);
+    }
+
+    .yamtrack-import-info-link,
+    .yamtrack-settings-content .yamtrack-import-info-link {
+      width: 34px;
+      height: 34px;
+      min-height: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px !important;
+      border: 1px solid rgba(255,255,255,0.10) !important;
+      background: rgba(255,255,255,0.05) !important;
+      color: rgba(255,255,255,0.56) !important;
+      box-shadow: none !important;
+      backdrop-filter: blur(12px) saturate(140%) !important;
+      -webkit-backdrop-filter: blur(12px) saturate(140%) !important;
+      cursor: pointer;
+    }
+
+    .yamtrack-import-info-link:hover,
+    .yamtrack-settings-content .yamtrack-import-info-link:hover {
+      color: #ffffff !important;
+      background: rgba(255,255,255,0.09) !important;
+      border-color: rgba(255,255,255,0.18) !important;
+    }
+
+    .yamtrack-import-tooltip {
+      position: absolute;
+      right: 0;
+      bottom: 100%;
+      width: 240px;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background:
+        linear-gradient(135deg, rgba(33,35,40,0.96), rgba(18,19,22,0.96)) !important;
+      color: rgba(255,255,255,0.76);
+      font-size: 12px;
+      line-height: 1.45;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.10),
+        0 18px 36px rgba(0,0,0,0.30);
+      visibility: hidden;
+      z-index: 40;
+    }
+
+    .group:hover .yamtrack-import-tooltip {
+      visibility: visible;
+    }
+
+    .yamtrack-import-status {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 9999px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 800;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.08);
+    }
+
+    .yamtrack-import-status-success {
+      color: rgba(134,239,172,0.96);
+      background: rgba(34,197,94,0.12);
+    }
+
+    .yamtrack-import-status-finished {
+      color: rgba(110,231,183,0.96);
+      background: rgba(16,185,129,0.12);
+    }
+
+    .yamtrack-import-status-started {
+      color: rgba(147,197,253,0.96);
+      background: rgba(59,130,246,0.12);
+    }
+
+    .yamtrack-import-status-failed {
+      color: rgba(252,165,165,0.96);
+      background: rgba(239,68,68,0.12);
+    }
+
+    .yamtrack-import-status-pending {
+      color: rgba(253,224,71,0.96);
+      background: rgba(234,179,8,0.12);
+    }
+
+    .yamtrack-import-error-box {
+      border-radius: 18px;
+      border: 1px solid rgba(248,113,113,0.22);
+      background: rgba(127,29,29,0.18);
+      padding: 12px;
+      overflow-x: auto;
+      word-break: break-word;
+    }
+
+    @media (max-width: 768px) {
+      .yamtrack-import-inline-form {
+        flex-direction: column;
+      }
+
+      .yamtrack-import-button {
+        width: 100%;
+      }
+    }
+  </style>
+
+  <div class="yamtrack-import-stack"
        x-data="{ importFrequency: 'once', importTime: '{% now "H:i" %}', importMode: 'new' }">
 
-    {# Import settings #}
-    <div class="bg-[#2a2f35] rounded-lg p-6">
-      <div class="flex items-center mb-4">
-        {% include "app/icons/horizontal-sliders.svg" with classes="w-6 h-6 text-indigo-400 mr-3" %}
-        <h2 class="text-xl font-semibold">Import Settings</h2>
+    <div class="yamtrack-import-card p-6">
+      <div class="yamtrack-import-heading">
+        <div class="yamtrack-import-heading-icon">
+          {% include "app/icons/horizontal-sliders.svg" with classes="w-6 h-6" %}
+        </div>
+        <h2 class="yamtrack-import-heading-title">Configurações de importação</h2>
       </div>
-      <p class="text-gray-400 mb-5 text-sm">Configure your import preferences.</p>
-      <div class="bg-[#39404b] p-5 rounded-lg">
+
+      <p class="yamtrack-import-description">
+        Configure suas preferências de importação.
+      </p>
+
+      <div class="yamtrack-import-source-card p-5">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm text-gray-400 mb-2">Import Frequency</label>
+            <label class="yamtrack-import-label">Frequência da importação</label>
             <div class="relative">
               <select x-model="importFrequency"
-                      class="w-full py-2 px-3 bg-[#2a2f35] rounded-md text-white text-sm border border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 appearance-none">
-                <option value="once">One Time Import</option>
-                <option value="daily">Every Day</option>
-                <option value="2days">Every 2 Days</option>
+                      class="yamtrack-import-control appearance-none">
+                <option value="once">Importação única</option>
+                <option value="daily">Todos os dias</option>
+                <option value="2days">A cada 2 dias</option>
               </select>
-              {% include "app/icons/chevron-down.svg" with classes="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" %}
+              {% include "app/icons/chevron-down.svg" with classes="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" %}
             </div>
+
             <div x-cloak class="mt-4" x-show="importFrequency !== 'once'">
-              <label class="block text-sm text-gray-400 mb-2">Import Time</label>
+              <label class="yamtrack-import-label">Horário da importação</label>
               <input x-model="importTime"
-                     class="w-full py-2 px-3 bg-[#2a2f35] rounded-md text-white text-sm border border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 scheme-dark"
+                     class="yamtrack-import-control scheme-dark"
                      type="time">
             </div>
           </div>
+
           <div>
-            <label class="block text-sm text-gray-400 mb-2">Import Mode</label>
+            <label class="yamtrack-import-label">Modo de importação</label>
             <div class="relative">
               <select x-model="importMode"
-                      class="w-full py-2 px-3 bg-[#2a2f35] rounded-md text-white text-sm border border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 appearance-none">
-                <option value="new">Only Sync New Items</option>
-                <option value="overwrite">Sync New Items and Overwrite Existing</option>
+                      class="yamtrack-import-control appearance-none">
+                <option value="new">Sincronizar apenas novos itens</option>
+                <option value="overwrite">Sincronizar novos itens e sobrescrever existentes</option>
               </select>
-              {% include "app/icons/chevron-down.svg" with classes="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" %}
+              {% include "app/icons/chevron-down.svg" with classes="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" %}
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    {# Import Sources #}
-    <div class="bg-[#2a2f35] rounded-lg p-6">
-      <div class="flex items-center mb-4">
-        {% include "app/icons/database.svg" with classes="w-6 h-6 text-indigo-400 mr-3" %}
-        <h2 class="text-xl font-semibold">Import Sources</h2>
+    <div class="yamtrack-import-card p-6">
+      <div class="yamtrack-import-heading">
+        <div class="yamtrack-import-heading-icon">
+          {% include "app/icons/database.svg" with classes="w-6 h-6" %}
+        </div>
+        <h2 class="yamtrack-import-heading-title">Fontes de importação</h2>
       </div>
-      <p class="text-gray-400 mb-5 text-sm">
-        Some of these require additional configuration, check the
+
+      <p class="yamtrack-import-description">
+        Algumas fontes exigem configuração adicional. Consulte o
         <a href="https://github.com/FuzzyGrim/Yamtrack/wiki/Media-Import-Configuration"
            target="_blank"
-           class="text-indigo-400 hover:text-indigo-300 underline">import configuration guide</a>.
+           rel="noopener noreferrer">guia de configuração de importação</a>.
       </p>
+
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-        {# Trakt #}
-        <div class="bg-[#39404b] p-4 rounded-lg"
+        <div class="yamtrack-import-source-card p-4"
              x-data="{ usePrivateImport: false }">
-          <div class="flex items-center mb-3">{% source_display "trakt" %}</div>
-          <p class="text-sm text-gray-400 mb-3">Import TV shows and movies</p>
+          <div class="yamtrack-import-source-title">{% source_display "trakt" %}</div>
+          <p class="yamtrack-import-source-help">Importe séries e filmes.</p>
 
           <div class="mb-3">
             <label class="flex items-center text-sm text-gray-300">
               <input type="checkbox"
                      x-model="usePrivateImport"
-                     class="mr-2 rounded bg-[#2a2f35] border-gray-600 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-0">
-              Import private profile (requires authentication)
+                     class="yamtrack-import-checkbox mr-2">
+              Importar perfil privado, requer autenticação
             </label>
           </div>
 
-          <form class="flex items-center"
+          <form class="yamtrack-import-inline-form"
                 method="post"
                 x-show="!usePrivateImport"
                 action="{% url 'import_trakt_public' %}">
@@ -90,21 +404,15 @@
             <input type="hidden" name="time" x-model="importTime">
             <input type="hidden" name="mode" x-model="importMode">
 
-            <div class="flex w-full">
-              <input placeholder="Public Trakt username"
-                     name="user"
-                     class="relative w-full py-2 px-3 bg-[#2a2f35] rounded-l-md text-white text-sm border border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                     type="text"
-                     required>
-              <button type="submit"
-                      class="px-3 py-2 bg-indigo-600 text-white rounded-r-md hover:bg-indigo-700 transition-colors text-sm border border-indigo-600 cursor-pointer">
-                Import
-              </button>
-            </div>
+            <input placeholder="Usuário público do Trakt"
+                   name="user"
+                   class="yamtrack-import-control"
+                   type="text"
+                   required>
+            <button type="submit" class="yamtrack-import-button">Importar</button>
           </form>
 
-          <form class="flex items-center"
-                method="post"
+          <form method="post"
                 x-show="usePrivateImport"
                 action="{% url 'trakt_oauth' %}">
             {% csrf_token %}
@@ -112,69 +420,63 @@
             <input type="hidden" name="time" x-model="importTime">
             <input type="hidden" name="mode" x-model="importMode">
 
-            <button type="submit"
-                    class="w-full px-4 py-2 text-sm rounded-md transition-colors cursor-pointer bg-indigo-600 text-white hover:bg-indigo-700">
-              Connect with Trakt & Import
+            <button type="submit" class="yamtrack-import-button w-full">
+              Conectar ao Trakt e importar
             </button>
           </form>
         </div>
 
-        {# Simkl #}
-        <div class="bg-[#39404b] p-4 rounded-lg">
-          <div class="flex items-center mb-3">{% source_display "simkl" %}</div>
-          <p class="text-sm text-gray-400 mb-3">Import TV shows, movies and anime</p>
+        <div class="yamtrack-import-source-card p-4">
+          <div class="yamtrack-import-source-title">{% source_display "simkl" %}</div>
+          <p class="yamtrack-import-source-help">Importe séries, filmes e animes.</p>
+
           <form method="post" action="{% url 'simkl_oauth' %}">
             {% csrf_token %}
             <input type="hidden" name="frequency" x-model="importFrequency">
             <input type="hidden" name="time" x-model="importTime">
             <input type="hidden" name="mode" x-model="importMode">
-            <button type="submit"
-                    class="w-full px-4 py-2 text-sm rounded-md transition-colors cursor-pointer bg-indigo-600 text-white hover:bg-indigo-700">
-              Connect with Simkl & Import
+
+            <button type="submit" class="yamtrack-import-button w-full">
+              Conectar ao Simkl e importar
             </button>
           </form>
         </div>
 
-        {# MyAnimeList #}
-        <div class="bg-[#39404b] p-4 rounded-lg">
-          <div class="flex items-center mb-3">{% source_display "myanimelist" %}</div>
-          <p class="text-sm text-gray-400 mb-3">Import anime and manga</p>
-          <form class="flex items-center"
+        <div class="yamtrack-import-source-card p-4">
+          <div class="yamtrack-import-source-title">{% source_display "myanimelist" %}</div>
+          <p class="yamtrack-import-source-help">Importe animes e mangás.</p>
+
+          <form class="yamtrack-import-inline-form"
                 method="post"
                 action="{% url 'import_mal' %}">
             {% csrf_token %}
             <input type="hidden" name="frequency" x-model="importFrequency">
             <input type="hidden" name="time" x-model="importTime">
             <input type="hidden" name="mode" x-model="importMode">
-            <div class="flex w-full">
-              <input placeholder="MAL username"
-                     name="user"
-                     class="relative w-full py-2 px-3 bg-[#2a2f35] rounded-l-md text-white text-sm border border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                     type="text">
-              <button type="submit"
-                      class="px-3 py-2 bg-indigo-600 text-white rounded-r-md hover:bg-indigo-700 transition-colors text-sm border border-indigo-600 cursor-pointer">
-                Import
-              </button>
-            </div>
+
+            <input placeholder="Usuário do MAL"
+                   name="user"
+                   class="yamtrack-import-control"
+                   type="text">
+            <button type="submit" class="yamtrack-import-button">Importar</button>
           </form>
         </div>
 
-        {# AniList #}
-        <div class="bg-[#39404b] p-4 rounded-lg"
+        <div class="yamtrack-import-source-card p-4"
              x-data="{ usePrivateImport: false }">
-          <div class="flex items-center mb-3">{% source_display "anilist" %}</div>
-          <p class="text-sm text-gray-400 mb-3">Import anime and manga</p>
+          <div class="yamtrack-import-source-title">{% source_display "anilist" %}</div>
+          <p class="yamtrack-import-source-help">Importe animes e mangás.</p>
 
           <div class="mb-3">
             <label class="flex items-center text-sm text-gray-300">
               <input type="checkbox"
                      x-model="usePrivateImport"
-                     class="mr-2 rounded bg-[#2a2f35] border-gray-600 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-0">
-              Import private profile (requires authentication)
+                     class="yamtrack-import-checkbox mr-2">
+              Importar perfil privado, requer autenticação
             </label>
           </div>
 
-          <form class="flex items-center"
+          <form class="yamtrack-import-inline-form"
                 method="post"
                 x-show="!usePrivateImport"
                 action="{% url 'import_anilist_public' %}">
@@ -183,21 +485,15 @@
             <input type="hidden" name="time" x-model="importTime">
             <input type="hidden" name="mode" x-model="importMode">
 
-            <div class="flex w-full">
-              <input placeholder="Public AniList username"
-                     name="user"
-                     class="relative w-full py-2 px-3 bg-[#2a2f35] rounded-l-md text-white text-sm border border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                     type="text"
-                     required>
-              <button type="submit"
-                      class="px-3 py-2 bg-indigo-600 text-white rounded-r-md hover:bg-indigo-700 transition-colors text-sm border border-indigo-600 cursor-pointer">
-                Import
-              </button>
-            </div>
+            <input placeholder="Usuário público do AniList"
+                   name="user"
+                   class="yamtrack-import-control"
+                   type="text"
+                   required>
+            <button type="submit" class="yamtrack-import-button">Importar</button>
           </form>
 
-          <form class="flex items-center"
-                method="post"
+          <form method="post"
                 x-show="usePrivateImport"
                 action="{% url 'import_anilist_oauth' %}">
             {% csrf_token %}
@@ -205,57 +501,59 @@
             <input type="hidden" name="time" x-model="importTime">
             <input type="hidden" name="mode" x-model="importMode">
 
-            <button type="submit"
-                    class="w-full px-4 py-2 text-sm rounded-md transition-colors cursor-pointer bg-indigo-600 text-white hover:bg-indigo-700">
-              Connect with AniList & Import
+            <button type="submit" class="yamtrack-import-button w-full">
+              Conectar ao AniList e importar
             </button>
           </form>
         </div>
 
-        {# Kitsu #}
-        <div class="bg-[#39404b] p-4 rounded-lg">
-          <div class="flex items-center mb-3">{% source_display "kitsu" %}</div>
-          <p class="text-sm text-gray-400 mb-3">Import anime and manga</p>
-          <form class="flex items-center"
+        <div class="yamtrack-import-source-card p-4">
+          <div class="yamtrack-import-source-title">{% source_display "kitsu" %}</div>
+          <p class="yamtrack-import-source-help">Importe animes e mangás.</p>
+
+          <form class="yamtrack-import-inline-form"
                 method="post"
                 action="{% url 'import_kitsu' %}">
             {% csrf_token %}
             <input type="hidden" name="frequency" x-model="importFrequency">
             <input type="hidden" name="time" x-model="importTime">
             <input type="hidden" name="mode" x-model="importMode">
+
             <div class="relative flex-1">
-              <input placeholder="Kitsu user ID"
+              <input placeholder="ID de usuário do Kitsu"
                      name="user"
-                     class="w-full py-2 px-3 bg-[#2a2f35] rounded-l-md text-white text-sm border border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                     class="yamtrack-import-control"
                      type="text">
-              <div class="group absolute right-2 top-1/2 -translate-y-1/2">
+              <div class="group absolute right-3 top-1/2 -translate-y-1/2">
                 {% include "app/icons/info.svg" with classes="w-4 h-4 text-gray-400" %}
-                <div class="absolute bottom-full mb-2 w-60 p-2 bg-[#2a2f35] rounded-md text-xs text-gray-300 shadow-lg border border-gray-600  invisible group-hover:visible">
-                  Find it on your Kitsu profile URL:
+                <div class="yamtrack-import-tooltip">
+                  Encontre no URL do seu perfil do Kitsu:
                   <br>
-                  kitsu.app/users/<span class="text-indigo-400">1234567</span>
+                  kitsu.app/users/<span class="text-indigo-300">1234567</span>
                 </div>
               </div>
             </div>
-            <button type="submit"
-                    class="px-3 py-2 bg-indigo-600 text-white rounded-r-md hover:bg-indigo-700 transition-colors text-sm border border-indigo-600 cursor-pointer">
-              Import
-            </button>
+
+            <button type="submit" class="yamtrack-import-button">Importar</button>
           </form>
         </div>
 
-        {# Yamtrack #}
-        <div class="bg-[#39404b] p-4 rounded-lg">
+        <div class="yamtrack-import-source-card p-4">
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center">{% source_display "yamtrack" %}</div>
             <a href="https://github.com/FuzzyGrim/Yamtrack/wiki/Media-Import-Configuration#yamtrack-csv-format"
                target="_blank"
-               class="text-gray-400 hover:text-indigo-400 transition-colors p-1 rounded-md hover:bg-gray-600/50"
-               title="View CSV format documentation">{% include "app/icons/info.svg" with classes="w-4 h-4" %}</a>
+               rel="noopener noreferrer"
+               class="yamtrack-import-info-link"
+               title="Ver documentação do formato CSV">
+              {% include "app/icons/info.svg" with classes="w-4 h-4" %}
+            </a>
           </div>
-          <p class="text-sm text-gray-400 mb-3"
-             x-text="importFrequency === 'once' ? 'Import from YamTrack backup' : 'File uploads are not available for periodic imports'">
+
+          <p class="yamtrack-import-source-help"
+             x-text="importFrequency === 'once' ? 'Importe de um backup do Yamtrack.' : 'Uploads de arquivo não estão disponíveis para importações periódicas.'">
           </p>
+
           <form method="post"
                 action="{% url 'import_yamtrack' %}"
                 enctype="multipart/form-data">
@@ -263,8 +561,9 @@
             <input type="hidden" name="frequency" x-model="importFrequency">
             <input type="hidden" name="time" x-model="importTime">
             <input type="hidden" name="mode" x-model="importMode">
-            <label class="flex items-center justify-center w-full px-4 py-2 text-sm rounded-md transition-colors"
-                   :class="importFrequency === 'once' ? 'bg-indigo-600 text-white hover:bg-indigo-700 cursor-pointer' : 'bg-gray-600 text-gray-400 cursor-not-allowed'"
+
+            <label class="yamtrack-import-button w-full"
+                   :class="importFrequency === 'once' ? '' : 'yamtrack-import-button-disabled'"
                    :disabled="importFrequency !== 'once'">
               <input name="yamtrack_csv"
                      accept=".csv"
@@ -272,17 +571,17 @@
                      type="file"
                      :disabled="importFrequency !== 'once'"
                      @change="importFrequency === 'once' && $el.form.submit()">
-              Select CSV File
+              Selecionar arquivo CSV
             </label>
           </form>
         </div>
 
-        {# HowLongToBeat #}
-        <div class="bg-[#39404b] p-4 rounded-lg">
-          <div class="flex items-center mb-3">{% source_display "hltb" %}</div>
-          <p class="text-sm text-gray-400 mb-3"
-             x-text="importFrequency === 'once' ? 'Import games' : 'File uploads are not available for periodic imports'">
+        <div class="yamtrack-import-source-card p-4">
+          <div class="yamtrack-import-source-title">{% source_display "hltb" %}</div>
+          <p class="yamtrack-import-source-help"
+             x-text="importFrequency === 'once' ? 'Importe jogos.' : 'Uploads de arquivo não estão disponíveis para importações periódicas.'">
           </p>
+
           <form method="post"
                 action="{% url 'import_hltb' %}"
                 enctype="multipart/form-data">
@@ -290,8 +589,9 @@
             <input type="hidden" name="frequency" x-model="importFrequency">
             <input type="hidden" name="time" x-model="importTime">
             <input type="hidden" name="mode" x-model="importMode">
-            <label class="flex items-center justify-center w-full px-4 py-2 text-sm rounded-md transition-colors"
-                   :class="importFrequency === 'once' ? 'bg-indigo-600 text-white hover:bg-indigo-700 cursor-pointer' : 'bg-gray-600 text-gray-400 cursor-not-allowed'"
+
+            <label class="yamtrack-import-button w-full"
+                   :class="importFrequency === 'once' ? '' : 'yamtrack-import-button-disabled'"
                    :disabled="importFrequency !== 'once'">
               <input name="hltb_csv"
                      accept=".csv"
@@ -299,52 +599,52 @@
                      type="file"
                      :disabled="importFrequency !== 'once'"
                      @change="importFrequency === 'once' && $el.form.submit()">
-              Select CSV File
+              Selecionar arquivo CSV
             </label>
           </form>
         </div>
 
-        {# Steam #}
-        <div class="bg-[#39404b] p-4 rounded-lg">
-          <div class="flex items-center mb-3">{% source_display "steam" %}</div>
-          <p class="text-sm text-gray-400 mb-3">Import games from your Steam library</p>
-          <form class="flex items-center"
+        <div class="yamtrack-import-source-card p-4">
+          <div class="yamtrack-import-source-title">{% source_display "steam" %}</div>
+          <p class="yamtrack-import-source-help">Importe jogos da sua biblioteca Steam.</p>
+
+          <form class="yamtrack-import-inline-form"
                 method="post"
                 action="{% url 'import_steam' %}">
             {% csrf_token %}
             <input type="hidden" name="frequency" x-model="importFrequency">
             <input type="hidden" name="time" x-model="importTime">
             <input type="hidden" name="mode" x-model="importMode">
+
             <div class="relative flex-1">
-              <input placeholder="Steam 64-bit ID"
+              <input placeholder="Steam ID de 64 bits"
                      name="user"
-                     class="w-full py-2 px-3 bg-[#2a2f35] rounded-l-md text-white text-sm border border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                     class="yamtrack-import-control"
                      type="text">
-              <div class="group absolute right-2 top-1/2 -translate-y-1/2">
+              <div class="group absolute right-3 top-1/2 -translate-y-1/2">
                 {% include "app/icons/info.svg" with classes="w-4 h-4 text-gray-400" %}
-                <div class="absolute bottom-full mb-2 w-60 p-2 bg-[#2a2f35] rounded-md text-xs text-gray-300 shadow-lg border border-gray-600  invisible group-hover:visible">
-                  Find it on your Steam account details page under your username.
+                <div class="yamtrack-import-tooltip">
+                  Encontre esse ID na página de detalhes da sua conta Steam, abaixo do seu nome de usuário.
                   <br>
                   <br>
-                  Your profile must be public if the API key you are using is not linked to the steamid you are requesting.
+                  Seu perfil precisa ser público se a chave de API usada não estiver vinculada ao Steam ID solicitado.
                 </div>
               </div>
             </div>
-            <button type="submit"
-                    class="px-3 py-2 bg-indigo-600 text-white rounded-r-md hover:bg-indigo-700 transition-colors text-sm border border-indigo-600 cursor-pointer">
-              Import
-            </button>
+
+            <button type="submit" class="yamtrack-import-button">Importar</button>
           </form>
         </div>
 
-        {# IMDB #}
-        <div class="bg-[#39404b] p-4 rounded-lg">
+        <div class="yamtrack-import-source-card p-4">
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center">{% source_display "imdb" %}</div>
           </div>
-          <p class="text-sm text-gray-400 mb-3"
-             x-text="importFrequency === 'once' ? 'Import movies and TV shows from your ratings' : 'File uploads are not available for periodic imports'">
+
+          <p class="yamtrack-import-source-help"
+             x-text="importFrequency === 'once' ? 'Importe filmes e séries a partir das suas avaliações.' : 'Uploads de arquivo não estão disponíveis para importações periódicas.'">
           </p>
+
           <form method="post"
                 action="{% url 'import_imdb' %}"
                 enctype="multipart/form-data">
@@ -352,8 +652,9 @@
             <input type="hidden" name="frequency" x-model="importFrequency">
             <input type="hidden" name="time" x-model="importTime">
             <input type="hidden" name="mode" x-model="importMode">
-            <label class="flex items-center justify-center w-full px-4 py-2 text-sm rounded-md transition-colors"
-                   :class="importFrequency === 'once' ? 'bg-indigo-600 text-white hover:bg-indigo-700 cursor-pointer' : 'bg-gray-600 text-gray-400 cursor-not-allowed'"
+
+            <label class="yamtrack-import-button w-full"
+                   :class="importFrequency === 'once' ? '' : 'yamtrack-import-button-disabled'"
                    :disabled="importFrequency !== 'once'">
               <input name="imdb_csv"
                      accept=".csv"
@@ -361,17 +662,18 @@
                      type="file"
                      :disabled="importFrequency !== 'once'"
                      @change="importFrequency === 'once' && $el.form.submit()">
-              Select CSV File
+              Selecionar arquivo CSV
             </label>
           </form>
         </div>
 
-        {# GoodReads #}
-        <div class="bg-[#39404b] p-4 rounded-lg">
-          <div class="flex items-center mb-3">{% source_display "goodreads" %}</div>
-          <p class="text-sm text-gray-400 mb-3"
-             x-text="importFrequency === 'once' ? 'Import from GoodReads backup' : 'File uploads are not available for periodic imports'">
+        <div class="yamtrack-import-source-card p-4">
+          <div class="yamtrack-import-source-title">{% source_display "goodreads" %}</div>
+
+          <p class="yamtrack-import-source-help"
+             x-text="importFrequency === 'once' ? 'Importe de um backup do GoodReads.' : 'Uploads de arquivo não estão disponíveis para importações periódicas.'">
           </p>
+
           <form method="post"
                 action="{% url 'import_goodreads' %}"
                 enctype="multipart/form-data">
@@ -379,8 +681,9 @@
             <input type="hidden" name="frequency" x-model="importFrequency">
             <input type="hidden" name="time" x-model="importTime">
             <input type="hidden" name="mode" x-model="importMode">
-            <label class="flex items-center justify-center w-full px-4 py-2 text-sm rounded-md transition-colors"
-                   :class="importFrequency === 'once' ? 'bg-indigo-600 text-white hover:bg-indigo-700 cursor-pointer' : 'bg-gray-600 text-gray-400 cursor-not-allowed'"
+
+            <label class="yamtrack-import-button w-full"
+                   :class="importFrequency === 'once' ? '' : 'yamtrack-import-button-disabled'"
                    :disabled="importFrequency !== 'once'">
               <input name="goodreads_csv"
                      accept=".csv"
@@ -388,7 +691,7 @@
                      type="file"
                      :disabled="importFrequency !== 'once'"
                      @change="importFrequency === 'once' && $el.form.submit()">
-              Select CSV File
+              Selecionar arquivo CSV
             </label>
           </form>
         </div>
@@ -396,103 +699,131 @@
       </div>
     </div>
 
-    {# Active Periodic Imports #}
-    <div class="bg-[#2a2f35] rounded-lg p-6">
-      <div class="flex items-center mb-4">
-        {% include "app/icons/clock.svg" with classes="w-6 h-6 text-indigo-400 mr-3" %}
-        <h2 class="text-xl font-semibold">Active Periodic Imports</h2>
+    <div class="yamtrack-import-card p-6">
+      <div class="yamtrack-import-heading">
+        <div class="yamtrack-import-heading-icon">
+          {% include "app/icons/clock.svg" with classes="w-6 h-6" %}
+        </div>
+        <h2 class="yamtrack-import-heading-title">Importações periódicas ativas</h2>
       </div>
-      <p class="text-gray-400 mb-5 text-sm">
-        Automated imports that run on a schedule. These will continue to sync your media until disabled.
+
+      <p class="yamtrack-import-description">
+        Importações automáticas executadas em uma agenda. Elas continuarão sincronizando suas mídias até serem desativadas.
       </p>
+
       <div class="space-y-3">
         {% for periodic_import in import_tasks.schedules %}
-          <div class="bg-[#39404b] rounded-lg p-4">
-            <div class="flex items-center justify-between mb-2">
+          <div class="yamtrack-import-row p-4">
+            <div class="flex items-center justify-between gap-4 mb-2">
               <div class="flex items-center gap-3">
                 {% source_display periodic_import.source %}
                 <span class="text-sm text-gray-400">{{ periodic_import.schedule }}</span>
               </div>
+
               <form action="{% url 'delete_import_schedule' %}" method="post">
                 {% csrf_token %}
                 <input type="hidden"
                        name="task_name"
                        value="{{ periodic_import.task.name }}">
-                <button class="text-red-400 hover:text-white p-2 rounded-md transition-all duration-200 hover:bg-red-500 cursor-pointer">
+                <button class="yamtrack-import-button !w-10 !h-10 !min-h-10 !p-0 text-red-300 hover:text-white"
+                        type="submit"
+                        title="Excluir importação periódica">
                   {% include "app/icons/trashcan.svg" with classes="w-4 h-4" %}
                 </button>
               </form>
             </div>
+
             <div class="text-sm text-gray-400 space-y-1">
-              <div>Username: {{ periodic_import.username }}</div>
-              <div>Mode: {{ periodic_import.mode }}</div>
-              <div>Last Import: {{ periodic_import.last_run|datetime_format:user }}</div>
-              <div>Next Import: {{ periodic_import.next_run|datetime_format:user }}</div>
+              <div>Usuário: {{ periodic_import.username }}</div>
+              <div>
+                Modo:
+                {% if periodic_import.mode == "new" %}
+                  sincronizar apenas novos itens
+                {% elif periodic_import.mode == "overwrite" %}
+                  sincronizar e sobrescrever existentes
+                {% else %}
+                  {{ periodic_import.mode }}
+                {% endif %}
+              </div>
+              <div>Última importação: {{ periodic_import.last_run|datetime_format:user }}</div>
+              <div>Próxima importação: {{ periodic_import.next_run|datetime_format:user }}</div>
             </div>
           </div>
         {% empty %}
-          <div class="bg-[#39404b] rounded-lg p-6 text-center">
-            <p class="text-gray-400 text-sm">No periodic imports configured</p>
-            <p class="text-gray-500 text-xs mt-1">Set up an import with a daily or 2-day frequency to see it here</p>
+          <div class="yamtrack-import-empty p-6 text-center">
+            <p class="text-gray-400 text-sm">Nenhuma importação periódica configurada.</p>
+            <p class="text-gray-500 text-xs mt-1">Configure uma importação diária ou a cada 2 dias para vê-la aqui.</p>
           </div>
         {% endfor %}
       </div>
     </div>
 
-    {# Import History #}
-    <div class="bg-[#2a2f35] rounded-lg p-6">
-      <div class="flex items-center mb-4">
-        {% include "app/icons/clock-reversing.svg" with classes="w-6 h-6 text-indigo-400 mr-3" %}
-        <h2 class="text-xl font-semibold">Import History</h2>
+    <div class="yamtrack-import-card p-6">
+      <div class="yamtrack-import-heading">
+        <div class="yamtrack-import-heading-icon">
+          {% include "app/icons/clock-reversing.svg" with classes="w-6 h-6" %}
+        </div>
+        <h2 class="yamtrack-import-heading-title">Histórico de importações</h2>
       </div>
 
-      <p class="text-gray-400 mb-5 text-sm">Showing import activity from the last 7 days.</p>
+      <p class="yamtrack-import-description">
+        Exibindo atividades de importação dos últimos 7 dias.
+      </p>
 
       <div class="space-y-3">
         {% for result in import_tasks.results %}
-          <div class="bg-[#39404b] rounded-lg p-4">
+          <div class="yamtrack-import-row p-4">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
               <div class="flex items-center gap-3">
                 {% if result.status == "SUCCESS" %}
                   {% if result.errors %}
-                    <span class="px-2 py-1 rounded text-xs font-medium text-emerald-400 bg-emerald-400/10">Finished</span>
+                    <span class="yamtrack-import-status yamtrack-import-status-finished">Finalizado</span>
                   {% else %}
-                    <span class="px-2 py-1 rounded text-xs font-medium text-green-400 bg-green-400/10">Success</span>
-
+                    <span class="yamtrack-import-status yamtrack-import-status-success">Sucesso</span>
                   {% endif %}
                 {% elif result.status == "STARTED" %}
-                  <span class="px-2 py-1 rounded text-xs font-medium text-blue-400 bg-blue-400/10">Started</span>
+                  <span class="yamtrack-import-status yamtrack-import-status-started">Iniciado</span>
                 {% elif result.status == "FAILURE" %}
-                  <span class="px-2 py-1 rounded text-xs font-medium text-red-400 bg-red-400/10">Failed</span>
+                  <span class="yamtrack-import-status yamtrack-import-status-failed">Falhou</span>
                 {% else %}
-                  <span class="px-2 py-1 rounded text-xs font-medium text-yellow-400 bg-yellow-400/10">Pending</span>
+                  <span class="yamtrack-import-status yamtrack-import-status-pending">Pendente</span>
                 {% endif %}
 
                 {% source_display result.source %}
               </div>
+
               <span class="text-xs text-gray-400">{{ result.date|datetime_format:user }}</span>
             </div>
 
             {% if result.status %}
-              {% if result.summary %}<div class="text-sm text-gray-200">{{ result.summary }}</div>{% endif %}
+              {% if result.summary %}
+                <div class="text-sm text-gray-200">{{ result.summary }}</div>
+              {% endif %}
 
               <div class="mt-2" x-data="{ showDetails: false }" x-cloak>
                 {% if result.errors %}
                   {% if result.status == "SUCCESS" %}
                     <button @click="showDetails = !showDetails"
-                            class="text-xs text-indigo-400 hover:text-indigo-300 transition-colors cursor-pointer"
-                            x-text="showDetails ? 'Hide failed items' : 'Show failed items'">Show failed items</button>
-
+                            class="text-xs text-indigo-300 hover:text-white transition-colors cursor-pointer"
+                            type="button"
+                            x-text="showDetails ? 'Ocultar itens com falha' : 'Mostrar itens com falha'">
+                      Mostrar itens com falha
+                    </button>
                   {% elif result.status == "FAILURE" %}
                     <button @click="showDetails = !showDetails"
-                            class="text-xs text-indigo-400 hover:text-indigo-300 transition-colors cursor-pointer"
-                            x-text="showDetails ? 'Hide traceback' : 'Show traceback'">Show traceback</button>
+                            class="text-xs text-indigo-300 hover:text-white transition-colors cursor-pointer"
+                            type="button"
+                            x-text="showDetails ? 'Ocultar traceback' : 'Mostrar traceback'">
+                      Mostrar traceback
+                    </button>
                   {% endif %}
 
-                  <div class="mt-2 space-y-1 text-sm bg-[#2a2f35] p-3 rounded overflow-x-auto break-words"
+                  <div class="yamtrack-import-error-box mt-2"
                        x-show="showDetails">
-                    <div class="text-xs space-y-1 text-red-400">
-                      {% for error in result.errors.splitlines %}<div>{{ error }}</div>{% endfor %}
+                    <div class="text-xs space-y-1 text-red-300">
+                      {% for error in result.errors.splitlines %}
+                        <div>{{ error }}</div>
+                      {% endfor %}
                     </div>
                   </div>
                 {% endif %}
@@ -500,9 +831,9 @@
             {% endif %}
           </div>
         {% empty %}
-          <div class="bg-[#39404b] rounded-lg p-6 text-center">
-            <p class="text-gray-400 text-sm">No imports in the last 7 days</p>
-            <p class="text-gray-500 text-xs mt-1">Import your media from any source to see the history here</p>
+          <div class="yamtrack-import-empty p-6 text-center">
+            <p class="text-gray-400 text-sm">Nenhuma importação nos últimos 7 dias.</p>
+            <p class="text-gray-500 text-xs mt-1">Importe suas mídias de qualquer fonte para ver o histórico aqui.</p>
           </div>
         {% endfor %}
       </div>

@@ -3,7 +3,7 @@
 {% load app_tags %}
 
 {% block title %}
-  Integrations - Yamtrack
+  Integrações - Yamtrack
 {% endblock title %}
 
 {% block settings_content %}
@@ -13,169 +13,526 @@
   {% absolute_app_url plex_webhook_path as plex_webhook_url %}
   {% url 'emby_webhook' request.user.token as emby_webhook_path %}
   {% absolute_app_url emby_webhook_path as emby_webhook_url %}
-  <div class="space-y-6">
-    <div class="bg-[#2a2f35] rounded-lg p-6">
-      <div class="flex items-center mb-4">
-        {% include "app/icons/padlock.svg" with classes="w-6 h-6 text-indigo-400 mr-3" %}
-        <h2 class="text-xl font-semibold">Token</h2>
+
+  <style>
+    [x-cloak] {
+      display: none !important;
+    }
+
+    .yamtrack-integrations-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .yamtrack-integrations-card {
+      border-radius: 30px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.12), transparent 38%),
+        linear-gradient(135deg, rgba(255,255,255,0.09), rgba(255,255,255,0.035)) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 18px 42px rgba(0,0,0,0.22);
+      backdrop-filter: blur(24px) saturate(155%);
+      -webkit-backdrop-filter: blur(24px) saturate(155%);
+    }
+
+    .yamtrack-integrations-heading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .yamtrack-integrations-heading-icon {
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.18), rgba(255,255,255,0.08) 44%, rgba(255,255,255,0.035) 100%);
+      color: rgba(160,168,255,0.98);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.14),
+        0 8px 18px rgba(0,0,0,0.14);
+      backdrop-filter: blur(18px) saturate(155%);
+      -webkit-backdrop-filter: blur(18px) saturate(155%);
+    }
+
+    .yamtrack-integrations-heading-title {
+      color: rgba(255,255,255,0.94);
+      font-size: 21px;
+      font-weight: 850;
+      line-height: 1.2;
+    }
+
+    .yamtrack-integrations-description {
+      color: rgba(255,255,255,0.54);
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    .yamtrack-integrations-box,
+    .yamtrack-integrations-inner-box,
+    .yamtrack-integration-row {
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.14), rgba(255,255,255,0.055) 52%, rgba(255,255,255,0.025) 100%) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.10),
+        0 10px 24px rgba(0,0,0,0.14);
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+    }
+
+    .yamtrack-integrations-inner-box {
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.10), transparent 42%),
+        linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025)) !important;
+    }
+
+    .yamtrack-integrations-input,
+    .yamtrack-integrations-textarea {
+      width: 100%;
+      border-radius: 18px !important;
+      border: 1px solid rgba(255,255,255,0.12) !important;
+      background: rgba(255,255,255,0.045) !important;
+      color: rgba(255,255,255,0.78) !important;
+      font-size: 13px;
+      outline: none;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08) !important;
+    }
+
+    .yamtrack-integrations-input {
+      min-height: 42px;
+      padding: 0 12px;
+    }
+
+    .yamtrack-integrations-textarea {
+      min-height: 280px;
+      padding: 14px;
+      resize: vertical;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    .yamtrack-integrations-input:focus,
+    .yamtrack-integrations-textarea:focus {
+      border-color: rgba(255,255,255,0.22) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        0 0 0 2px rgba(130,140,255,0.16) !important;
+    }
+
+    .yamtrack-integrations-copy {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      flex: 0 0 auto;
+      border-radius: 9999px;
+      color: rgba(255,255,255,0.52);
+      cursor: pointer;
+      transition: color 180ms ease, background 180ms ease;
+    }
+
+    .yamtrack-integrations-copy:hover {
+      color: #ffffff;
+      background: rgba(255,255,255,0.08);
+    }
+
+    .yamtrack-integrations-button,
+    .yamtrack-settings-content .yamtrack-integrations-button {
+      min-height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 9999px !important;
+      border: 1px solid rgba(255,255,255,0.14) !important;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.20), rgba(255,255,255,0.08) 44%, rgba(255,255,255,0.035) 100%) !important;
+      color: rgba(255,255,255,0.92) !important;
+      padding: 0 18px;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.14),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 8px 18px rgba(0,0,0,0.14);
+      backdrop-filter: blur(18px) saturate(155%);
+      -webkit-backdrop-filter: blur(18px) saturate(155%);
+      cursor: pointer;
+    }
+
+    .yamtrack-integrations-button:hover,
+    .yamtrack-settings-content .yamtrack-integrations-button:hover {
+      border-color: rgba(255,255,255,0.22) !important;
+      color: #ffffff !important;
+    }
+
+    .yamtrack-integrations-tab {
+      min-height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 9999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 0 16px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: border-color 180ms ease, color 180ms ease, background 180ms ease;
+    }
+
+    .yamtrack-integrations-tab.is-active {
+      color: #ffffff;
+      border-color: rgba(130,140,255,0.42);
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.24), rgba(99,102,241,0.38) 48%, rgba(255,255,255,0.06) 100%) !important;
+    }
+
+    .yamtrack-integrations-tab:not(.is-active) {
+      color: rgba(255,255,255,0.68);
+      background: rgba(255,255,255,0.055);
+    }
+
+    .yamtrack-integrations-tab:not(.is-active):hover {
+      color: #ffffff;
+      border-color: rgba(255,255,255,0.20);
+      background: rgba(255,255,255,0.09);
+    }
+
+    .yamtrack-integration-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px 16px;
+    }
+
+    .yamtrack-integration-row-title {
+      display: flex;
+      align-items: center;
+      color: rgba(255,255,255,0.90);
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+
+    .yamtrack-integration-row-help {
+      color: rgba(255,255,255,0.52);
+      font-size: 13px;
+      line-height: 1.45;
+      margin-left: 28px;
+    }
+
+    .yamtrack-integrations-switch {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      width: 44px;
+      height: 26px;
+      flex: 0 0 auto;
+      cursor: pointer;
+    }
+
+    .yamtrack-integrations-switch input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .yamtrack-integrations-switch-track {
+      position: absolute;
+      inset: 0;
+      border-radius: 9999px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.14);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        0 8px 18px rgba(0,0,0,0.14);
+      transition: background 180ms ease, border-color 180ms ease;
+    }
+
+    .yamtrack-integrations-switch-track::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 18px;
+      height: 18px;
+      border-radius: 9999px;
+      background: rgba(255,255,255,0.92);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+      transition: transform 180ms ease;
+    }
+
+    .yamtrack-integrations-switch input:checked + .yamtrack-integrations-switch-track {
+      background: rgba(130,140,255,0.58);
+      border-color: rgba(160,168,255,0.48);
+    }
+
+    .yamtrack-integrations-switch input:checked + .yamtrack-integrations-switch-track::after {
+      transform: translateX(18px);
+    }
+
+    .yamtrack-integrations-warning {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(251,191,36,0.92);
+      font-size: 14px;
+    }
+
+    .yamtrack-integrations-section-title {
+      color: rgba(255,255,255,0.92);
+      font-size: 15px;
+      font-weight: 850;
+      margin-bottom: 12px;
+    }
+
+    .yamtrack-integrations-steps {
+      color: rgba(255,255,255,0.72);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .yamtrack-integrations-steps a {
+      color: rgba(190,196,255,0.96);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .yamtrack-integrations-steps a:hover {
+      text-decoration: underline;
+    }
+
+    .yamtrack-integrations-steps ul {
+      color: rgba(255,255,255,0.58);
+    }
+
+    @media (max-width: 768px) {
+      .yamtrack-integration-row,
+      .yamtrack-integrations-card .flex.justify-between.items-center {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .yamtrack-integrations-button {
+        width: 100%;
+      }
+
+      .yamtrack-integrations-tab {
+        flex: 1 1 auto;
+      }
+    }
+  </style>
+
+  <div class="yamtrack-integrations-stack">
+    <div class="yamtrack-integrations-card p-6">
+      <div class="yamtrack-integrations-heading">
+        <div class="yamtrack-integrations-heading-icon">
+          {% include "app/icons/padlock.svg" with classes="w-6 h-6" %}
+        </div>
+        <h2 class="yamtrack-integrations-heading-title">Token</h2>
       </div>
-      <p class="text-gray-400 mb-5 text-sm">This token is used to authenticate webhook requests from your media servers.</p>
-      <div class="bg-[#39404b] p-2 rounded-md mb-4">
+
+      <p class="yamtrack-integrations-description">
+        Este token é usado para autenticar requisições de webhook dos seus servidores de mídia.
+      </p>
+
+      <div class="yamtrack-integrations-box p-2 mb-4">
         <div class="flex items-center gap-2">
-          <input readonly=""
+          <input readonly
                  id="token"
-                 class="flex-1 py-2 pr-2 pl-3 bg-[#39404b] rounded-md text-gray-300 text-sm border-0 focus:ring-0 outline-none font-mono"
+                 class="yamtrack-integrations-input flex-1 font-mono"
                  type="text"
                  value="{{ user.token|default_if_none:"" }}">
-          <span class="flex items-center cursor-pointer group pr-3"
-                title="Copy"
+          <span class="yamtrack-integrations-copy"
+                title="Copiar"
                 data-copy-target="#token">
-            {% include "app/icons/copy.svg" with classes="w-5 h-5 text-gray-400 group-hover:text-indigo-400 transition-colors" %}
+            {% include "app/icons/copy.svg" with classes="w-5 h-5" %}
           </span>
         </div>
       </div>
-      <div class="flex justify-between items-center">
-        <div class="flex items-center text-amber-400 text-sm">
-          {% include "app/icons/error.svg" with classes="w-4 h-4 mr-2 shrink-0" %}
-          <p>Regenerating will invalidate the previous token</p>
+
+      <div class="flex justify-between items-center gap-4">
+        <div class="yamtrack-integrations-warning">
+          {% include "app/icons/error.svg" with classes="w-4 h-4 shrink-0" %}
+          <p>Regenerar o token invalida o token anterior.</p>
         </div>
-        <div class="flex space-x-3">
-          <form method="post" action="{% url 'regenerate_token' %}">
-            {% csrf_token %}
-            <button type="submit"
-                    class="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-sm cursor-pointer">
-              {% include "app/icons/circle-spinning-counter-clockwise.svg" with classes="w-4 h-4 mr-2" %}
-              Regenerate
-            </button>
-          </form>
-        </div>
+
+        <form method="post" action="{% url 'regenerate_token' %}">
+          {% csrf_token %}
+          <button type="submit" class="yamtrack-integrations-button">
+            {% include "app/icons/circle-spinning-counter-clockwise.svg" with classes="w-4 h-4" %}
+            Regenerar
+          </button>
+        </form>
       </div>
     </div>
-    <div class="bg-[#2a2f35] rounded-lg p-6">
-      <div class="flex items-center mb-4">
-        {% include "app/icons/server.svg" with classes="w-6 h-6 text-indigo-400 mr-3" %}
-        <h2 class="text-xl font-semibold">Media Servers</h2>
+
+    <div class="yamtrack-integrations-card p-6">
+      <div class="yamtrack-integrations-heading">
+        <div class="yamtrack-integrations-heading-icon">
+          {% include "app/icons/server.svg" with classes="w-6 h-6" %}
+        </div>
+        <h2 class="yamtrack-integrations-heading-title">Servidores de mídia</h2>
       </div>
-      <p class="text-gray-400 mb-5 text-sm">Connect your media servers to automatically track your watching progress.</p>
+
+      <p class="yamtrack-integrations-description">
+        Conecte seus servidores de mídia para acompanhar automaticamente seu progresso.
+      </p>
+
       <div x-data="{ activeIntegration: 'jellyfin' }">
-        <div class="mb-4 flex gap-2 overflow-x-auto"
+        <div class="mb-5 flex gap-2 overflow-x-auto"
              role="tablist"
-             aria-label="Integration services">
+             aria-label="Serviços de integração">
           <button type="button"
-                  class="flex items-center px-4 py-2 rounded-md transition-colors text-sm cursor-pointer"
-                  :class="activeIntegration === 'jellyfin' ? 'bg-indigo-600 text-white' : 'bg-[#39404b] text-gray-300 hover:bg-[#454d59]'"
+                  class="yamtrack-integrations-tab"
+                  :class="{ 'is-active': activeIntegration === 'jellyfin' }"
                   @click="activeIntegration = 'jellyfin'"
                   role="tab"
                   :aria-selected="activeIntegration === 'jellyfin'">
-            {% include "app/icons/server.svg" with classes="w-4 h-4 mr-2" %}
+            {% include "app/icons/server.svg" with classes="w-4 h-4" %}
             Jellyfin
           </button>
+
           <button type="button"
-                  class="flex items-center px-4 py-2 rounded-md transition-colors text-sm cursor-pointer"
-                  :class="activeIntegration === 'plex' ? 'bg-indigo-600 text-white' : 'bg-[#39404b] text-gray-300 hover:bg-[#454d59]'"
+                  class="yamtrack-integrations-tab"
+                  :class="{ 'is-active': activeIntegration === 'plex' }"
                   @click="activeIntegration = 'plex'"
                   role="tab"
                   :aria-selected="activeIntegration === 'plex'">
-            {% include "app/icons/server.svg" with classes="w-4 h-4 mr-2" %}
+            {% include "app/icons/server.svg" with classes="w-4 h-4" %}
             Plex
           </button>
+
           <button type="button"
-                  class="flex items-center px-4 py-2 rounded-md transition-colors text-sm cursor-pointer"
-                  :class="activeIntegration === 'emby' ? 'bg-indigo-600 text-white' : 'bg-[#39404b] text-gray-300 hover:bg-[#454d59]'"
+                  class="yamtrack-integrations-tab"
+                  :class="{ 'is-active': activeIntegration === 'emby' }"
                   @click="activeIntegration = 'emby'"
                   role="tab"
                   :aria-selected="activeIntegration === 'emby'">
-            {% include "app/icons/server.svg" with classes="w-4 h-4 mr-2" %}
+            {% include "app/icons/server.svg" with classes="w-4 h-4" %}
             Emby
           </button>
         </div>
+
         <div x-cloak x-show="activeIntegration === 'jellyfin'" role="tabpanel">
-          <div class="bg-[#39404b] p-5 rounded-lg mb-6">
+          <div class="yamtrack-integrations-inner-box p-5 mb-6">
             <div class="flex items-center mb-3">
-              {% include "app/icons/server.svg" with classes="w-5 h-5 text-indigo-400 mr-2" %}
-              <h3 class="text-base font-medium">Jellyfin</h3>
+              {% include "app/icons/server.svg" with classes="w-5 h-5 text-gray-200 mr-2" %}
+              <h3 class="text-base font-bold">Jellyfin</h3>
             </div>
-            <p class="text-gray-400 mb-4 text-sm">Connect Jellyfin to automatically track your watching progress.</p>
-            <div class="bg-[#262a2f] p-4 rounded-md mb-4">
-              <h4 class="text-sm font-medium mb-3">Webhook Events</h4>
+
+            <p class="text-gray-400 mb-4 text-sm">
+              Conecte o Jellyfin para acompanhar automaticamente seu progresso.
+            </p>
+
+            <div class="yamtrack-integrations-box p-4 mb-4">
+              <h4 class="yamtrack-integrations-section-title">Eventos de webhook</h4>
               <p class="text-gray-400 mb-4 text-sm">
-                Play and Stop events are always processed. Enable these to sync manual watched changes from the unofficial Webhooks plugin.
+                Eventos de reprodução e parada são sempre processados. Ative as opções abaixo para sincronizar alterações manuais feitas pelo plugin não oficial de webhooks.
               </p>
+
               <form method="post"
                     action="{% url 'update_jellyfin_webhook_events' %}"
                     class="space-y-3">
                 {% csrf_token %}
-                <div class="flex items-center justify-between p-3 bg-[#39404b] rounded-md">
+
+                <div class="yamtrack-integration-row">
                   <div class="flex-1">
-                    <div class="flex items-center text-gray-200 mb-1">
-                      {% include "app/icons/circle-check.svg" with classes="w-5 h-5 mr-2" %}
-                      <span class="text-sm font-medium">Process MarkPlayed events</span>
+                    <div class="yamtrack-integration-row-title">
+                      {% include "app/icons/circle-check.svg" with classes="w-5 h-5 mr-2 text-gray-200" %}
+                      <span>Processar eventos MarkPlayed</span>
                     </div>
-                    <p class="text-xs text-gray-400 ml-7">Mark media as watched when it is manually marked played in Jellyfin.</p>
-                  </div>
-                  <label class="relative inline-flex items-center cursor-pointer ml-4">
-                    <input class="sr-only peer"
-                           type="checkbox"
-                           name="jellyfin_mark_played_enabled"
-                           {% if user.jellyfin_mark_played_enabled %}checked{% endif %}>
-                    <div class="w-9 h-5 bg-gray-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-px after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4.5 after:w-4.5 after:transition-all peer-checked:bg-indigo-600">
-                    </div>
-                  </label>
-                </div>
-                <div class="flex items-center justify-between p-3 bg-[#39404b] rounded-md">
-                  <div class="flex-1">
-                    <div class="flex items-center text-gray-200 mb-1">
-                      {% include "app/icons/error.svg" with classes="w-5 h-5 mr-2 text-amber-400" %}
-                      <span class="text-sm font-medium">Process MarkUnplayed events</span>
-                    </div>
-                    <p class="text-xs text-gray-400 ml-7">
-                      Remove watched progress when it is manually marked unplayed in Jellyfin. This event can delete media from Yamtrack.
+                    <p class="yamtrack-integration-row-help">
+                      Marca a mídia como assistida quando ela for marcada manualmente como reproduzida no Jellyfin.
                     </p>
                   </div>
-                  <label class="relative inline-flex items-center cursor-pointer ml-4">
-                    <input class="sr-only peer"
-                           type="checkbox"
-                           name="jellyfin_mark_unplayed_enabled"
-                           {% if user.jellyfin_mark_unplayed_enabled %}checked{% endif %}>
-                    <div class="w-9 h-5 bg-gray-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-px after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4.5 after:w-4.5 after:transition-all peer-checked:bg-indigo-600">
-                    </div>
+
+                  <label class="yamtrack-integrations-switch">
+                    <input type="checkbox"
+                           name="jellyfin_mark_played_enabled"
+                           {% if user.jellyfin_mark_played_enabled %}checked{% endif %}>
+                    <span class="yamtrack-integrations-switch-track"></span>
                   </label>
                 </div>
+
+                <div class="yamtrack-integration-row">
+                  <div class="flex-1">
+                    <div class="yamtrack-integration-row-title">
+                      {% include "app/icons/error.svg" with classes="w-5 h-5 mr-2 text-amber-400" %}
+                      <span>Processar eventos MarkUnplayed</span>
+                    </div>
+                    <p class="yamtrack-integration-row-help">
+                      Remove o progresso assistido quando a mídia for marcada manualmente como não reproduzida no Jellyfin. Esse evento pode remover mídia do Yamtrack.
+                    </p>
+                  </div>
+
+                  <label class="yamtrack-integrations-switch">
+                    <input type="checkbox"
+                           name="jellyfin_mark_unplayed_enabled"
+                           {% if user.jellyfin_mark_unplayed_enabled %}checked{% endif %}>
+                    <span class="yamtrack-integrations-switch-track"></span>
+                  </label>
+                </div>
+
                 <div class="pt-1">
-                  <button type="submit"
-                          class="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-sm cursor-pointer">
-                    {% include "app/icons/save.svg" with classes="w-4 h-4 mr-2" %}
-                    Save Changes
+                  <button type="submit" class="yamtrack-integrations-button">
+                    {% include "app/icons/save.svg" with classes="w-4 h-4" %}
+                    Salvar alterações
                   </button>
                 </div>
               </form>
             </div>
-            <div class="bg-[#262a2f] p-4 rounded-md mb-4">
-              <h4 class="text-sm font-medium mb-3">Official Webhook Plugin</h4>
-              <ol class="list-decimal list-inside space-y-2 text-sm text-gray-300">
-                <li>You will need to have TMDB and TVDB as metadata providers in Jellyfin.</li>
-                <li>Install the Webhook plugin from the 'Jellyfin Stable' repo via your server's Plugin Catalog.</li>
+
+            <div class="yamtrack-integrations-box p-4 mb-4">
+              <h4 class="yamtrack-integrations-section-title">Plugin oficial de webhook</h4>
+
+              <ol class="yamtrack-integrations-steps list-decimal list-inside space-y-2">
+                <li>Você precisa ter TMDB e TVDB como provedores de metadados no Jellyfin.</li>
+                <li>Instale o plugin Webhook pelo repositório “Jellyfin Stable” no catálogo de plugins do servidor.</li>
                 <li>
-                  Restart your server, then configure the plugin:
-                  <ul class="list-disc list-inside ml-6 mt-2 space-y-1 text-gray-400">
-                    <li>Click on the "Add Generic Destination" button to create a new webhook.</li>
-                    <li>Name: Yamtrack</li>
-                    {# djlint:off #}
+                  Reinicie o servidor e configure o plugin:
+                  <ul class="list-disc list-inside ml-6 mt-2 space-y-2">
+                    <li>Clique em “Add Generic Destination” para criar um novo webhook.</li>
+                    <li>Nome: Yamtrack</li>
                     <li>
-                      <div class="inline-flex items-center gap-2 w-[calc(100%-30px)]">URL:
-                        <input readonly id="jellyfin-webhook-url-official" class="w-full bg-[#262a2f] rounded-md text-gray-400 text-sm border-0 focus:ring-0 outline-none font-mono" type="text" value="{{ jellyfin_webhook_url }}">
-                        <span class="flex items-center cursor-pointer group" title="Copy" data-copy-target="#jellyfin-webhook-url-official">
-                          {% include "app/icons/copy.svg" with classes="w-5 h-5 text-gray-400 group-hover:text-indigo-400 transition-colors" %}
+                      <div class="inline-flex items-center gap-2 w-[calc(100%-30px)]">
+                        <span>URL:</span>
+                        <input readonly
+                               id="jellyfin-webhook-url-official"
+                               class="yamtrack-integrations-input font-mono"
+                               type="text"
+                               value="{{ jellyfin_webhook_url }}">
+                        <span class="yamtrack-integrations-copy"
+                              title="Copiar"
+                              data-copy-target="#jellyfin-webhook-url-official">
+                          {% include "app/icons/copy.svg" with classes="w-5 h-5" %}
                         </span>
                       </div>
                     </li>
-                    {# djlint:on #}
-                    <li>Notification Type: Playback Start and Playback Stop</li>
-                    <li>User Filter: Your Jellyfin User</li>
-                    <li>Finally, under the "Template" section, paste the following code.</li>
-                    <div class="relative mt-2">
-                      <textarea readonly id="jellyfin-json-template" class="w-full bg-[#39404b] rounded-md text-gray-300 text-sm border-0 focus:ring-0 outline-none font-mono p-3 resize-none overflow-auto max-h-72" rows="14">
-{% verbatim %}{
+                    <li>Tipo de notificação: Playback Start e Playback Stop</li>
+                    <li>Filtro de usuário: seu usuário do Jellyfin</li>
+                    <li>Por fim, na seção “Template”, cole o código abaixo.</li>
+                  </ul>
+
+                  <div class="relative mt-3">
+                    <textarea readonly
+                              id="jellyfin-json-template"
+                              class="yamtrack-integrations-textarea"
+                              rows="14">{% verbatim %}{
   "Event": "{{#if_equals NotificationType 'PlaybackStart'}}Play{{/if_equals}}{{#if_equals NotificationType 'PlaybackStop'}}Stop{{/if_equals}}",
   "Item": {
     "Type": "{{ItemType}}",
@@ -193,170 +550,188 @@
     {{/if_equals}}
   }
 }{% endverbatim %}</textarea>
-                      <span class="absolute top-3 right-3 flex items-center cursor-pointer group"
-                        title="Copy"
-                        data-copy-target="#jellyfin-json-template">
-                        {% include "app/icons/copy.svg" with classes="w-5 h-5 text-gray-400 group-hover:text-indigo-400 transition-colors" %}
-                      </span>
-                    </div>
+                    <span class="yamtrack-integrations-copy absolute top-3 right-3"
+                          title="Copiar"
+                          data-copy-target="#jellyfin-json-template">
+                      {% include "app/icons/copy.svg" with classes="w-5 h-5" %}
+                    </span>
+                  </div>
+                </li>
+              </ol>
+            </div>
+
+            <div class="yamtrack-integrations-box p-4">
+              <h4 class="yamtrack-integrations-section-title">Plugin não oficial de webhooks</h4>
+
+              <ol class="yamtrack-integrations-steps list-decimal list-inside space-y-2">
+                <li>Você precisa ter TMDB e TVDB como provedores de metadados no Jellyfin.</li>
+                <li>
+                  Adicione este
+                  <a href="https://raw.githubusercontent.com/shemanaev/jellyfin-plugin-repo/master/manifest.json"
+                     target="_blank"
+                     rel="noopener noreferrer">link de repositório</a>
+                  ao catálogo de plugins do Jellyfin.
+                </li>
+                <li>
+                  No catálogo de plugins, instale o
+                  <a href="https://github.com/shemanaev/jellyfin-plugin-webhooks"
+                     target="_blank"
+                     rel="noopener noreferrer">plugin não oficial de Webhooks</a>.
+                </li>
+                <li>
+                  Reinicie o servidor e configure o plugin:
+                  <ul class="list-disc list-inside ml-6 mt-2 space-y-2">
+                    <li>
+                      <div class="inline-flex items-center gap-2 w-[calc(100%-30px)]">
+                        <span>URL:</span>
+                        <input readonly
+                               id="jellyfin-webhook-url-unofficial"
+                               class="yamtrack-integrations-input font-mono"
+                               type="text"
+                               value="{{ jellyfin_webhook_url }}">
+                        <span class="yamtrack-integrations-copy"
+                              title="Copiar"
+                              data-copy-target="#jellyfin-webhook-url-unofficial">
+                          {% include "app/icons/copy.svg" with classes="w-5 h-5" %}
+                        </span>
+                      </div>
+                    </li>
+                    <li>Formato do payload: Default</li>
+                    <li>Ouvir eventos apenas de: seu usuário do Jellyfin</li>
+                    <li>Eventos: Play, Stop, MarkPlayed e MarkUnplayed</li>
                   </ul>
                 </li>
               </ol>
             </div>
-            <div class="bg-[#262a2f] p-4 rounded-md">
-              <h4 class="text-sm font-medium mb-3">Unofficial Webhooks Plugin</h4>
-              <ol class="list-decimal list-inside space-y-2 text-sm text-gray-300">
-                <li>You will need to have TMDB and TVDB as metadata providers in Jellyfin.</li>
+          </div>
+        </div>
+
+        <div x-cloak x-show="activeIntegration === 'plex'" role="tabpanel">
+          <div class="yamtrack-integrations-inner-box p-5 mb-6">
+            <div class="flex items-center mb-3">
+              {% include "app/icons/server.svg" with classes="w-5 h-5 text-gray-200 mr-2" %}
+              <h3 class="text-base font-bold">Plex</h3>
+            </div>
+
+            <p class="text-gray-400 mb-4 text-sm">
+              Conecte o Plex para acompanhar automaticamente seu progresso.
+            </p>
+
+            <div class="yamtrack-integrations-box p-4 mb-4">
+              <h4 class="yamtrack-integrations-section-title">Usuários do Plex</h4>
+
+              <form method="post"
+                    action="{% url 'update_plex_usernames' %}"
+                    class="space-y-3">
+                {% csrf_token %}
+
+                <div>
+                  <p class="text-gray-400 mb-4 text-sm">
+                    Estes usuários, separados por vírgula quando houver mais de um, serão usados para filtrar quais eventos serão enviados ao webhook.
+                  </p>
+
+                  <input name="plex_usernames"
+                         class="yamtrack-integrations-input"
+                         type="text"
+                         placeholder="usuario1, usuario2, usuario3"
+                         value="{{ request.user.plex_usernames }}">
+                </div>
+
+                <div class="pt-1">
+                  <button type="submit" class="yamtrack-integrations-button">
+                    {% include "app/icons/save.svg" with classes="w-4 h-4" %}
+                    Salvar alterações
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <div class="yamtrack-integrations-box p-4">
+              <h4 class="yamtrack-integrations-section-title">Instruções de configuração</h4>
+
+              <ol class="yamtrack-integrations-steps list-decimal list-inside space-y-2">
+                <li>Você precisa ter Plex Pass para usar webhooks.</li>
+                <li>Vá em Settings &gt; Server &gt; Network e ative Webhooks.</li>
                 <li>
-                  Add this repository
-                  <a href="https://raw.githubusercontent.com/shemanaev/jellyfin-plugin-repo/master/manifest.json"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  class="text-indigo-400 hover:underline">link</a>
-                  to your "Plugins Catalog" in Jellyfin settings.
+                  Nas configurações do Plex, acesse
+                  <a href="https://app.plex.tv/desktop/#!/settings/webhooks"
+                     target="_blank"
+                     rel="noopener noreferrer">Webhooks</a>.
                 </li>
                 <li>
-                  From your "Plugins Catalog", install the
-                  <a href="https://github.com/shemanaev/jellyfin-plugin-webhooks"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="text-indigo-400 hover:underline">Unofficial Webhooks plugin</a>.
-                  </li>
-                  <li>
-                    Restart your server, then configure the plugin:
-                    <ul class="list-disc list-inside ml-6 mt-2 space-y-1 text-gray-400">
-                      {# djlint:off #}
-                  <li>
-                    <div class="inline-flex items-center gap-2 w-[calc(100%-30px)]">URL:
-                      <input readonly id="jellyfin-webhook-url-unofficial" class="w-full bg-[#262a2f] rounded-md text-gray-400 text-sm border-0 focus:ring-0 outline-none font-mono" type="text" value="{{ jellyfin_webhook_url }}">
-                      <span class="flex items-center cursor-pointer group" title="Copy" data-copy-target="#jellyfin-webhook-url-unofficial">
-                        {% include "app/icons/copy.svg" with classes="w-5 h-5 text-gray-400 group-hover:text-indigo-400 transition-colors" %}
-                      </span>
-                    </div>
-                  </li>
-                      {# djlint:on #}
-                      <li>Payload format: Default</li>
-                      <li>Listen to events only for: Your Jellyfin User</li>
-                      <li>Events: Play, Stop, MarkPlayed and MarkUnplayed</li>
-                    </ul>
-                  </li>
-                </ol>
-              </div>
+                  Na seção de Webhooks, clique em “Add Webhook” e insira a URL abaixo:
+                  <ul class="list-disc list-inside ml-6 mt-2 space-y-2">
+                    <li>
+                      <div class="inline-flex items-center gap-2 w-[calc(100%-30px)]">
+                        <input readonly
+                               id="plex-webhook-url"
+                               class="yamtrack-integrations-input font-mono"
+                               type="text"
+                               value="{{ plex_webhook_url }}">
+                        <span class="yamtrack-integrations-copy"
+                              title="Copiar"
+                              data-copy-target="#plex-webhook-url">
+                          {% include "app/icons/copy.svg" with classes="w-5 h-5" %}
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                </li>
+              </ol>
             </div>
           </div>
-          <div x-cloak x-show="activeIntegration === 'plex'" role="tabpanel">
-            <div class="bg-[#39404b] p-5 rounded-lg mb-6">
-              <div class="flex items-center mb-3">
-                {% include "app/icons/server.svg" with classes="w-5 h-5 text-indigo-400 mr-2" %}
-                <h3 class="text-base font-medium">Plex</h3>
-              </div>
-              <p class="text-gray-400 mb-4 text-sm">Connect Plex to automatically track your watching progress.</p>
-              <div class="bg-[#262a2f] p-3 rounded-md mb-4">
-                <h4 class="text-sm font-medium mb-3">Plex Usernames</h4>
-                <form method="post"
-                      action="{% url 'update_plex_usernames' %}"
-                      class="space-y-2">
-                  {% csrf_token %}
-                  <div>
-                    <p class="text-gray-400 mb-4 text-sm">
-                      This username (or several, comma separated) will be used to filter which events are sent to your webhook.
-                    </p>
-                    <input name="plex_usernames"
-                           class="w-full py-2 px-3 bg-[#39404b] rounded-md text-white text-sm border {% if user.plex_usernames.errors %}border-red-500{% else %}border-gray-600{% endif %} focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                           type="text"
-                           placeholder="username1, username2, username3"
-                           value="{{ request.user.plex_usernames }}">
-                  </div>
-                  <div class="pt-2">
-                    <button type="submit"
-                            class="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-sm cursor-pointer">
-                      {% include "app/icons/save.svg" with classes="w-4 h-4 mr-2" %}
-                      Save Changes
-                    </button>
-                  </div>
-                </form>
-              </div>
-              <div class="bg-[#262a2f] p-4 rounded-md">
-                <h4 class="text-sm font-medium mb-3">Setup Instructions</h4>
-                <ol class="list-decimal list-inside space-y-2 text-sm text-gray-300">
-                  <li>You will need to have a PlexPass in order to have webhooks enabled</li>
-                  <li>Go to Settings > Server > Network and enable Webhooks</li>
-                  <li>
-                    In Plex settings, go to
-                    <a href="https://app.plex.tv/desktop/#!/settings/webhooks"
-                       target="_blank"
-                       rel="noopener noreferrer"
-                       class="text-indigo-400 hover:underline">Webhooks</a>.
-                  </li>
-                  <li>
-                    In the Webhooks section, click on "Add Webhook" and enter the following URL:
-                    <ul class="list-disc list-inside ml-6 mt-2 space-y-1 text-gray-400">
-                      <li>
-                        <div class="inline-flex items-center gap-2 w-[calc(100%-30px)]">
-                          <input readonly
-                                 id="plex-webhook-url"
-                                 class="w-full bg-[#262a2f] rounded-md text-gray-400 text-sm border-0 focus:ring-0 outline-none font-mono"
-                                 type="text"
-                                 value="{{ plex_webhook_url }}">
-                          <span class="flex items-center cursor-pointer group"
-                                title="Copy"
-                                data-copy-target="#plex-webhook-url">
-                            {% include "app/icons/copy.svg" with classes="w-5 h-5 text-gray-400 group-hover:text-indigo-400 transition-colors" %}
-                          </span>
-                        </div>
-                      </li>
-                    </ul>
-                  </li>
-                </ol>
-              </div>
+        </div>
+
+        <div x-cloak x-show="activeIntegration === 'emby'" role="tabpanel">
+          <div class="yamtrack-integrations-inner-box p-5 mb-6">
+            <div class="flex items-center mb-3">
+              {% include "app/icons/server.svg" with classes="w-5 h-5 text-gray-200 mr-2" %}
+              <h3 class="text-base font-bold">Emby</h3>
             </div>
-          </div>
-          <div x-cloak x-show="activeIntegration === 'emby'" role="tabpanel">
-            <div class="bg-[#39404b] p-5 rounded-lg mb-6">
-              <div class="flex items-center mb-3">
-                {% include "app/icons/server.svg" with classes="w-5 h-5 text-indigo-400 mr-2" %}
-                <h3 class="text-base font-medium">Emby</h3>
-              </div>
-              <p class="text-gray-400 mb-4 text-sm">Connect Emby to automatically track your watching progress.</p>
-              <div class="bg-[#262a2f] p-4 rounded-md">
-                <h4 class="text-sm font-medium mb-3">Setup Instructions</h4>
-                <ol class="list-decimal list-inside space-y-2 text-sm text-gray-300">
-                  <li>In Emby, go to Settings > Notifications</li>
-                  <li>In the Notifications section, click on "Add Notification"</li>
-                  <li>
-                    In the Notification settings:
-                    <ul class="list-disc list-inside ml-6 mt-2 space-y-2 text-gray-400">
-                      {# djlint:off #}
-                  <li>
-                    <div class="inline-flex items-center gap-2 w-[calc(100%-30px)]">URL:
-                      <input readonly
-                             id="emby-webhook-url"
-                             class="w-full bg-[#262a2f] rounded-md text-gray-400 text-sm border-0 focus:ring-0 outline-none font-mono"
-                             type="text"
-                             value="{{ emby_webhook_url }}">
-                      <span class="flex items-center cursor-pointer group"
-                            title="Copy"
-                            data-copy-target="#emby-webhook-url">
-                        {% include "app/icons/copy.svg" with classes="w-5 h-5 text-gray-400 group-hover:text-indigo-400 transition-colors" %}
-                      </span>
-                    </div>
-                  </li>
-                      {# djlint:on #}
-                      <li>Request content type: multipart/form-data</li>
-                      <li>Events: Play and Stop</li>
-                      <li>Limit user events to: Your Emby User</li>
-                      <li>"Limit library events to" and "Limit devices events to" are optional</li>
-                    </ul>
-                  </li>
-                </ol>
-              </div>
+
+            <p class="text-gray-400 mb-4 text-sm">
+              Conecte o Emby para acompanhar automaticamente seu progresso.
+            </p>
+
+            <div class="yamtrack-integrations-box p-4">
+              <h4 class="yamtrack-integrations-section-title">Instruções de configuração</h4>
+
+              <ol class="yamtrack-integrations-steps list-decimal list-inside space-y-2">
+                <li>No Emby, vá em Settings &gt; Notifications.</li>
+                <li>Na seção Notifications, clique em “Add Notification”.</li>
+                <li>
+                  Nas configurações de notificação:
+                  <ul class="list-disc list-inside ml-6 mt-2 space-y-2">
+                    <li>
+                      <div class="inline-flex items-center gap-2 w-[calc(100%-30px)]">
+                        <span>URL:</span>
+                        <input readonly
+                               id="emby-webhook-url"
+                               class="yamtrack-integrations-input font-mono"
+                               type="text"
+                               value="{{ emby_webhook_url }}">
+                        <span class="yamtrack-integrations-copy"
+                              title="Copiar"
+                              data-copy-target="#emby-webhook-url">
+                          {% include "app/icons/copy.svg" with classes="w-5 h-5" %}
+                        </span>
+                      </div>
+                    </li>
+                    <li>Tipo de conteúdo da requisição: multipart/form-data</li>
+                    <li>Eventos: Play e Stop</li>
+                    <li>Limitar eventos de usuário para: seu usuário do Emby</li>
+                    <li>“Limit library events to” e “Limit devices events to” são opcionais.</li>
+                  </ul>
+                </li>
+              </ol>
             </div>
           </div>
         </div>
       </div>
     </div>
-  {% endblock settings_content %}
+  </div>
+{% endblock settings_content %}
 
-  {% block js %}
-    <script src="{% static 'js/copy-item.js' %}{% get_static_file_mtime 'js/copy-item.js' %}"></script>
-  {% endblock js %}
+{% block js %}
+  <script src="{% static 'js/copy-item.js' %}{% get_static_file_mtime 'js/copy-item.js' %}"></script>
+{% endblock js %}

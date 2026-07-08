@@ -4,43 +4,159 @@
 {% load static %}
 
 {% block title %}
-  Advanced - Yamtrack
+  Avançado - Yamtrack
 {% endblock title %}
 
 {% block settings_content %}
+  <style>
+    .yamtrack-advanced-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
 
-  <div class="space-y-6">
-    <div class="bg-[#2a2f35] rounded-lg p-6">
-      <div class="flex items-center mb-5">
-        {% include "app/icons/vertical-sliders.svg" with classes="w-6 h-6 text-indigo-400 mr-3" %}
-        <h2 class="text-xl font-semibold">Advanced</h2>
+    .yamtrack-advanced-card,
+    .yamtrack-advanced-panel {
+      border-radius: 30px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.12), transparent 38%),
+        linear-gradient(135deg, rgba(255,255,255,0.09), rgba(255,255,255,0.035)) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 18px 42px rgba(0,0,0,0.22);
+      backdrop-filter: blur(24px) saturate(155%);
+      -webkit-backdrop-filter: blur(24px) saturate(155%);
+    }
+
+    .yamtrack-advanced-panel {
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.14), rgba(255,255,255,0.055) 52%, rgba(255,255,255,0.025) 100%) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.10),
+        0 10px 24px rgba(0,0,0,0.14);
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+    }
+
+    .yamtrack-advanced-heading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .yamtrack-advanced-heading-icon,
+    .yamtrack-advanced-panel-icon {
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.18), rgba(255,255,255,0.08) 44%, rgba(255,255,255,0.035) 100%);
+      color: rgba(160,168,255,0.98);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.14),
+        0 8px 18px rgba(0,0,0,0.14);
+      backdrop-filter: blur(18px) saturate(155%);
+      -webkit-backdrop-filter: blur(18px) saturate(155%);
+    }
+
+    .yamtrack-advanced-panel-icon {
+      width: 36px;
+      height: 36px;
+      color: rgba(252,165,165,0.95);
+    }
+
+    .yamtrack-advanced-heading-title {
+      color: rgba(255,255,255,0.94);
+      font-size: 21px;
+      font-weight: 850;
+      line-height: 1.2;
+    }
+
+    .yamtrack-advanced-panel-title {
+      color: rgba(255,255,255,0.92);
+      font-size: 16px;
+      font-weight: 850;
+    }
+
+    .yamtrack-advanced-description {
+      color: rgba(255,255,255,0.56);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .yamtrack-advanced-danger-button,
+    .yamtrack-settings-content .yamtrack-advanced-danger-button {
+      min-height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 9999px !important;
+      border: 1px solid rgba(248,113,113,0.30) !important;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(248,113,113,0.22), rgba(127,29,29,0.36) 52%, rgba(255,255,255,0.025) 100%) !important;
+      color: rgba(254,226,226,0.96) !important;
+      padding: 0 18px;
+      font-size: 14px;
+      font-weight: 850;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.10),
+        inset 0 -1px 0 rgba(255,255,255,0.02),
+        0 8px 18px rgba(0,0,0,0.18);
+      backdrop-filter: blur(18px) saturate(155%);
+      -webkit-backdrop-filter: blur(18px) saturate(155%);
+      cursor: pointer;
+    }
+
+    .yamtrack-advanced-danger-button:hover,
+    .yamtrack-settings-content .yamtrack-advanced-danger-button:hover {
+      border-color: rgba(248,113,113,0.48) !important;
+      color: #ffffff !important;
+    }
+  </style>
+
+  <div class="yamtrack-advanced-stack">
+    <div class="yamtrack-advanced-card p-6">
+      <div class="yamtrack-advanced-heading">
+        <div class="yamtrack-advanced-heading-icon">
+          {% include "app/icons/vertical-sliders.svg" with classes="w-6 h-6" %}
+        </div>
+        <h2 class="yamtrack-advanced-heading-title">Avançado</h2>
       </div>
 
-      <div class="bg-[#39404b] p-5 rounded-lg mb-6">
-        <div class="flex items-center mb-3">
-          {% include "app/icons/trashcan.svg" with classes="w-5 h-5 text-indigo-400 mr-2" %}
-          <h3 class="text-base font-medium">Clear Search Cache</h3>
+      <div class="yamtrack-advanced-panel p-5">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="yamtrack-advanced-panel-icon">
+            {% include "app/icons/trashcan.svg" with classes="w-5 h-5" %}
+          </div>
+          <h3 class="yamtrack-advanced-panel-title">Limpar cache de busca</h3>
         </div>
-        <p class="text-gray-400 mb-4 text-sm">
-          Yamtrack stores your search results in a cache to speed up performance and reduce API calls.
+
+        <p class="yamtrack-advanced-description mb-5">
+          O Yamtrack armazena seus resultados de busca em cache para melhorar o desempenho e reduzir chamadas à API.
           <br>
-          Normally, these cached results expire automatically after 24 hours.
-          If your search results appear outdated, you can clear the cache manually.
+          Normalmente, esses resultados expiram automaticamente após 24 horas. Se os resultados parecerem desatualizados, você pode limpar o cache manualmente.
           <br>
-          Your next search may be slightly slower as fresh data is retrieved.
+          A próxima busca pode ficar um pouco mais lenta enquanto novos dados são carregados.
         </p>
-        <div class="flex space-x-3">
-          <form method="post" action="{% url 'clear_search_cache' %}">
-            {% csrf_token %}
-            <button type="submit"
-                    class="flex items-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm cursor-pointer">
-              {% include "app/icons/trashcan.svg" with classes="w-4 h-4 mr-2" %}
-              Clear Search Cache
-            </button>
-          </form>
-        </div>
+
+        <form method="post" action="{% url 'clear_search_cache' %}">
+          {% csrf_token %}
+          <button type="submit"
+                  class="yamtrack-advanced-danger-button">
+            {% include "app/icons/trashcan.svg" with classes="w-4 h-4" %}
+            Limpar cache de busca
+          </button>
+        </form>
       </div>
     </div>
   </div>
-
 {% endblock settings_content %}
