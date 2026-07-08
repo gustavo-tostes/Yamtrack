@@ -8,7 +8,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="keywords" content="FlexiHub, Media Tracker, Yamtrack">
-    <meta name="description" content="Pesquise e acompanhe séries, temporadas e filmes no FlexiHub.">
+    <meta name="description" content="Pesquise e acompanhe séries, temporadas, filmes, animes, mangás, jogos, livros e quadrinhos no FlexiHub.">
 
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-status-bar-style" content="black-translucent">
@@ -96,12 +96,24 @@
                          class="flex items-center space-x-3 px-4 py-2 rounded-md transition-colors duration-200 text-sm {% if media_type == item.media_type %}text-white bg-[#2c3136]{% else %}text-gray-400 hover:text-white hover:bg-[#23272b]{% endif %}">
                         {% icon item.media_type is_active=media_type|str_equals:item.media_type %}
                         <span>
-                          {% if item.display_name == "TV Shows" %}
+                          {% if item.display_name == "TV Shows" or item.display_name == "TV Show" %}
                             Séries
-                          {% elif item.display_name == "TV Seasons" %}
+                          {% elif item.display_name == "TV Seasons" or item.display_name == "TV Season" %}
                             Temporadas
-                          {% elif item.display_name == "Movies" %}
+                          {% elif item.display_name == "Movies" or item.display_name == "Movie" %}
                             Filmes
+                          {% elif item.display_name == "Anime" or item.display_name == "Animes" %}
+                            Animes
+                          {% elif item.display_name == "Manga" or item.display_name == "Mangas" %}
+                            Mangás
+                          {% elif item.display_name == "Games" or item.display_name == "Game" %}
+                            Jogos
+                          {% elif item.display_name == "Books" or item.display_name == "Book" %}
+                            Livros
+                          {% elif item.display_name == "Comics" or item.display_name == "Comic" %}
+                            Quadrinhos
+                          {% elif item.display_name == "Boardgames" or item.display_name == "Boardgame" or item.display_name == "Board Games" or item.display_name == "Board Game" %}
+                            Jogos de tabuleiro
                           {% else %}
                             {{ item.display_name }}
                           {% endif %}
@@ -112,12 +124,24 @@
                          class="flex items-center space-x-3 px-4 py-2 rounded-md transition-colors duration-200 text-sm text-gray-400 hover:text-white hover:bg-[#23272b]">
                         {% icon item.media_type is_active=False %}
                         <span>
-                          {% if item.display_name == "TV Shows" %}
+                          {% if item.display_name == "TV Shows" or item.display_name == "TV Show" %}
                             Séries
-                          {% elif item.display_name == "TV Seasons" %}
+                          {% elif item.display_name == "TV Seasons" or item.display_name == "TV Season" %}
                             Temporadas
-                          {% elif item.display_name == "Movies" %}
+                          {% elif item.display_name == "Movies" or item.display_name == "Movie" %}
                             Filmes
+                          {% elif item.display_name == "Anime" or item.display_name == "Animes" %}
+                            Animes
+                          {% elif item.display_name == "Manga" or item.display_name == "Mangas" %}
+                            Mangás
+                          {% elif item.display_name == "Games" or item.display_name == "Game" %}
+                            Jogos
+                          {% elif item.display_name == "Books" or item.display_name == "Book" %}
+                            Livros
+                          {% elif item.display_name == "Comics" or item.display_name == "Comic" %}
+                            Quadrinhos
+                          {% elif item.display_name == "Boardgames" or item.display_name == "Boardgame" or item.display_name == "Board Games" or item.display_name == "Board Game" %}
+                            Jogos de tabuleiro
                           {% else %}
                             {{ item.display_name }}
                           {% endif %}
@@ -261,12 +285,25 @@
                             translateMediaDisplay(display) {
                               const translations = {
                                 'TV Shows': 'Séries',
+                                'TV Show': 'Séries',
                                 'TV Seasons': 'Temporadas',
+                                'TV Season': 'Temporadas',
                                 'Movies': 'Filmes',
+                                'Movie': 'Filmes',
                                 'Games': 'Jogos',
+                                'Game': 'Jogos',
                                 'Books': 'Livros',
+                                'Book': 'Livros',
                                 'Anime': 'Animes',
-                                'Manga': 'Mangás'
+                                'Animes': 'Animes',
+                                'Manga': 'Mangás',
+                                'Mangas': 'Mangás',
+                                'Comics': 'Quadrinhos',
+                                'Comic': 'Quadrinhos',
+                                'Boardgames': 'Jogos de tabuleiro',
+                                'Boardgame': 'Jogos de tabuleiro',
+                                'Board Games': 'Jogos de tabuleiro',
+                                'Board Game': 'Jogos de tabuleiro'
                               };
                               return translations[display] || display;
                             },
@@ -309,7 +346,7 @@
                             x-transition:leave="transition ease-in duration-75"
                             x-transition:leave-start="transform opacity-100 scale-100"
                             x-transition:leave-end="transform opacity-0 scale-95"
-                            class="absolute z-20 py-1 mt-12 overflow-auto text-sm text-gray-300 bg-[#2a2e33] rounded-md shadow-lg right-0 w-32">
+                            class="absolute z-20 py-1 mt-12 overflow-auto text-sm text-gray-300 bg-[#2a2e33] rounded-md shadow-lg right-0 w-44">
                           <template x-for="type in mediaTypes" :key="type.value">
                             <li @click="selectedType = type; isOpen = false"
                                 class="px-4 py-2 cursor-pointer hover:bg-[#343a40] transition duration-150 ease-in-out"
