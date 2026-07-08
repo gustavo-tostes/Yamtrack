@@ -17,7 +17,55 @@ logger = logging.getLogger(__name__)
 
 base_url = "https://openlibrary.org/api"
 search_url = "https://openlibrary.org/search.json"
-headers = {"User-Agent": "Yamtrack/1.0 (github@fuzzygrim.com)"}
+headers = {"User-Agent": "FlexiHub/1.0"}
+
+OPENLIBRARY_LANG = "pt"
+OPENLIBRARY_LANGUAGE_CODES = {
+    "por",
+    "pt",
+    "/languages/por",
+    "/languages/pt",
+    "portuguese",
+    "português",
+}
+
+NO_SYNOPSIS = "Sinopse não disponível."
+
+PHYSICAL_FORMAT_TRANSLATIONS = {
+    "Hardcover": "Capa dura",
+    "Paperback": "Capa comum",
+    "Mass Market Paperback": "Livro de bolso",
+    "Ebook": "E-book",
+    "E-Book": "E-book",
+    "Audio Cassette": "Audiocassete",
+    "Audio CD": "Audiolivro em CD",
+    "Board Book": "Livro cartonado",
+    "Library Binding": "Encadernação de biblioteca",
+    "Spiral-Bound": "Espiral",
+    "Unknown": "Desconhecido",
+}
+
+SUBJECT_TRANSLATIONS = {
+    "Fiction": "Ficção",
+    "Juvenile Fiction": "Ficção juvenil",
+    "Young Adult Fiction": "Ficção jovem adulta",
+    "Fantasy": "Fantasia",
+    "Science Fiction": "Ficção científica",
+    "Science Fiction & Fantasy": "Ficção científica e fantasia",
+    "Magic": "Magia",
+    "Adventure": "Aventura",
+    "Classics": "Clássicos",
+    "Mystery": "Mistério",
+    "Romance": "Romance",
+    "Horror": "Terror",
+    "Thriller": "Suspense",
+    "Biography": "Biografia",
+    "History": "História",
+    "Children's stories": "Histórias infantis",
+    "Children's fiction": "Ficção infantil",
+    "Literature": "Literatura",
+    "Comics & Graphic Novels": "Quadrinhos e graphic novels",
+}
 
 
 def handle_error(error):
@@ -29,18 +77,23 @@ def handle_error(error):
 
 
 def search(query, page):
-    """Search for books on Open Library."""
+    """Search for books on Open Library, prioritizing Portuguese editions."""
     cache_key = (
-        f"search_{Sources.OPENLIBRARY.value}_{MediaTypes.BOOK.value}_{query}_{page}"
+        f"search_{Sources.OPENLIBRARY.value}_{MediaTypes.BOOK.value}_"
+        f"{OPENLIBRARY_LANG}_{query}_{page}"
     )
     data = cache.get(cache_key)
 
     if data is None:
         params = {
             "q": query,
-            "fields": "title,key,editions,editions.key,editions.cover_i,editions.title",
+            "fields": (
+                "title,key,editions,"
+                "editions.key,editions.cover_i,editions.title,editions.language"
+            ),
             "limit": settings.PER_PAGE,
             "page": page,
+            "lang": OPENLIBRARY_LANG,
         }
 
         try:
@@ -56,13 +109,17 @@ def search(query, page):
 
         results = []
         for doc in response.get("docs", []):
-            if doc["editions"]["docs"] == []:
+            edition_docs = doc.get("editions", {}).get("docs", [])
+            if edition_docs == []:
                 continue
 
-            top_edition = doc["editions"]["docs"][0]
-            media_id = extract_openlibrary_id(top_edition["key"])
-            title = doc["title"]
-            edition_title = top_edition["title"]
+            top_edition = pick_preferred_edition(edition_docs)
+            media_id = extract_openlibrary_id(top_edition.get("key"))
+            title = doc.get("title")
+            edition_title = top_edition.get("title") or title
+
+            if not media_id or not title:
+                continue
 
             if edition_title != title:
                 result_title = f"{edition_title}: {title}"
@@ -89,6 +146,38 @@ def search(query, page):
 
         cache.set(cache_key, data)
     return data
+
+
+def pick_preferred_edition(editions):
+    """Pick a Portuguese edition when Open Library provides one."""
+    for edition in editions:
+        if edition_has_portuguese_language(edition):
+            return edition
+    return editions[0]
+
+
+def edition_has_portuguese_language(edition):
+    """Return True when an edition looks like it is in Portuguese."""
+    languages = edition.get("language", [])
+
+    if not languages:
+        return False
+
+    for language in languages:
+        if isinstance(language, dict):
+            language_value = (
+                language.get("key")
+                or language.get("name")
+                or language.get("code")
+                or ""
+            )
+        else:
+            language_value = str(language)
+
+        if language_value.strip().lower() in OPENLIBRARY_LANGUAGE_CODES:
+            return True
+
+    return False
 
 
 def extract_openlibrary_id(path):
@@ -118,6 +207,8 @@ def get_image_url(doc):
     except KeyError:
         return settings.IMG_NONE
 
+    return settings.IMG_NONE
+
 
 def book(media_id):
     """Get metadata for a book from Open Library."""
@@ -126,7 +217,10 @@ def book(media_id):
 
 async def async_book(media_id):
     """Asynchronous implementation of book metadata retrieval."""
-    cache_key = f"{Sources.OPENLIBRARY.value}_{MediaTypes.BOOK.value}_{media_id}"
+    cache_key = (
+        f"{Sources.OPENLIBRARY.value}_{MediaTypes.BOOK.value}_"
+        f"{OPENLIBRARY_LANG}_{media_id}"
+    )
     data = cache.get(cache_key)
 
     if data is None:
@@ -217,14 +311,14 @@ def get_description(response_book, response_work):
     elif "description" in response_work:
         description = response_work["description"]
     else:
-        description = "No synopsis available."
+        description = NO_SYNOPSIS
 
     # sometimes the description is a dict
     # like {'type': '/type/text', 'value': '...'}
     if isinstance(description, dict):
         description = description["value"]
 
-    if description != "No synopsis available.":
+    if description != NO_SYNOPSIS:
         soup = BeautifulSoup(description, "html.parser")
         text = soup.get_text(separator=" ")
         description = " ".join(text.split())
@@ -236,7 +330,8 @@ def get_physical_format(response):
     """Get the physical format of the book."""
     format_value = response.get("physical_format")
     if format_value:
-        return format_value.title()
+        normalized = format_value.title()
+        return PHYSICAL_FORMAT_TRANSLATIONS.get(normalized, normalized)
     return None
 
 
@@ -278,7 +373,7 @@ async def get_authors(response):
 
         author_data_list = await asyncio.gather(*tasks)
         authors = [
-            data.get("name", "Unknown Author") for data in author_data_list if data
+            data.get("name", "Autor desconhecido") for data in author_data_list if data
         ]
 
     return authors or None
@@ -296,7 +391,11 @@ async def fetch_author_data(session, url):
 def get_subjects(response):
     """Get list of subjects/genres."""
     if "subjects" in response:
-        return response["subjects"][:5]
+        subjects = response["subjects"][:5]
+        return [
+            SUBJECT_TRANSLATIONS.get(subject, subject)
+            for subject in subjects
+        ]
     return None
 
 
@@ -318,7 +417,7 @@ def get_isbns(response):
 
 
 async def get_editions(response_book, response_work):
-    """Get list of editions asynchronously."""
+    """Get list of editions asynchronously, prioritizing Portuguese editions."""
     book_id = extract_openlibrary_id(response_book.get("key", ""))
     work_id = extract_openlibrary_id(response_work.get("key", ""))
 
@@ -334,18 +433,35 @@ async def get_editions(response_book, response_work):
     ):
         if response.status == requests.codes.ok:
             data = await response.json()
+            entries = data.get("entries", [])
+
+            filtered_entries = [
+                edition
+                for edition in entries
+                if extract_openlibrary_id(edition.get("key")) != book_id
+                and edition.get("title")
+            ]
+
+            filtered_entries.sort(
+                key=lambda edition: (
+                    0 if edition_has_portuguese_language(edition) else 1,
+                    edition.get("title") or "",
+                ),
+            )
+
             return [
                 {
                     "source": Sources.OPENLIBRARY.value,
-                    "source_url": f"https://openlibrary.org/books/{extract_openlibrary_id(edition['key'])}",
+                    "source_url": (
+                        "https://openlibrary.org/books/"
+                        f"{extract_openlibrary_id(edition['key'])}"
+                    ),
                     "media_id": extract_openlibrary_id(edition["key"]),
                     "media_type": MediaTypes.BOOK.value,
                     "title": edition.get("title"),
                     "image": get_cover_image_url(edition),
                 }
-                for edition in data["entries"]
-                if extract_openlibrary_id(edition["key"]) != book_id
-                and edition.get("title")
+                for edition in filtered_entries
             ]
     return []
 
