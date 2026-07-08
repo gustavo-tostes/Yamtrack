@@ -1,77 +1,552 @@
 {% extends "base.html" %}
 {% load static %}
+{% load app_tags %}
+
+{% block title %}
+  Configurações - Yamtrack
+{% endblock title %}
+
+{% block extra_head %}
+  <style>
+    [x-cloak] {
+      display: none !important;
+    }
+
+    html,
+    body {
+      background:
+        radial-gradient(circle at 50% -10%, rgba(255, 255, 255, 0.08), transparent 28%),
+        radial-gradient(circle at 72% 20%, rgba(110, 124, 255, 0.10), transparent 22%),
+        radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.04), transparent 20%),
+        linear-gradient(180deg, #17181b 0%, #111214 50%, #0d0e10 100%) !important;
+    }
+
+    body > div.flex.min-h-screen,
+    main {
+      background: transparent !important;
+    }
+
+    body > div.flex.min-h-screen > aside {
+      background:
+        linear-gradient(180deg, rgba(28, 29, 32, 0.82), rgba(16, 17, 19, 0.90)) !important;
+      border-right: 1px solid rgba(255, 255, 255, 0.10) !important;
+      box-shadow:
+        inset -1px 0 0 rgba(255, 255, 255, 0.04),
+        18px 0 40px rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(26px) saturate(150%);
+      -webkit-backdrop-filter: blur(26px) saturate(150%);
+    }
+
+    body > div.flex.min-h-screen > aside > div:first-child {
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    }
+
+    body > div.flex.min-h-screen > aside nav a,
+    body > div.flex.min-h-screen > aside form button {
+      border: 1px solid transparent;
+      transition: background 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    body > div.flex.min-h-screen > aside nav a:hover,
+    body > div.flex.min-h-screen > aside form button:hover {
+      background: rgba(255, 255, 255, 0.06) !important;
+      border-color: rgba(255, 255, 255, 0.08);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 8px 18px rgba(0, 0, 0, 0.15);
+    }
+
+    body > div.flex.min-h-screen > aside a[class*="bg-[#2c3136]"] {
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.05)) !important;
+      border-color: rgba(255, 255, 255, 0.14);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.14),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.03),
+        0 10px 24px rgba(0, 0, 0, 0.18);
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+    }
+
+    body > div.flex.min-h-screen > aside .border-t {
+      border-color: rgba(255, 255, 255, 0.08) !important;
+    }
+
+    div.sticky.top-0.z-10 {
+      background:
+        linear-gradient(180deg, rgba(26, 27, 30, 0.78), rgba(18, 19, 21, 0.64)) !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+      box-shadow:
+        inset 0 -1px 0 rgba(255, 255, 255, 0.035),
+        0 14px 32px rgba(0, 0, 0, 0.18);
+      backdrop-filter: blur(28px) saturate(160%);
+      -webkit-backdrop-filter: blur(28px) saturate(160%);
+    }
+
+    .yamtrack-settings-top-search {
+      position: relative;
+      width: min(680px, 100%);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px;
+      border-radius: 9999px;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.16), rgba(255,255,255,0.055) 52%, rgba(255,255,255,0.025) 100%);
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 8px 18px rgba(0,0,0,0.14);
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+    }
+
+    .yamtrack-settings-search-field {
+      position: relative;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .yamtrack-settings-page {
+      max-width: 1180px;
+      margin: -22px auto 0;
+    }
+
+    .yamtrack-settings-title-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      padding: 9px 26px;
+      color: rgba(255,255,255,0.94);
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.26), rgba(255,255,255,0.10) 44%, rgba(255,255,255,0.04) 100%);
+      border: 1px solid rgba(255,255,255,0.20);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.20),
+        inset 0 -1px 0 rgba(255,255,255,0.04),
+        0 10px 24px rgba(0,0,0,0.18);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.32);
+      backdrop-filter: blur(20px) saturate(165%);
+      -webkit-backdrop-filter: blur(20px) saturate(165%);
+    }
+
+    .yamtrack-settings-subtitle {
+      margin-top: 14px;
+      color: rgba(255,255,255,0.58);
+      font-size: 15px;
+      text-align: center;
+    }
+
+    .yamtrack-glass-input {
+      min-height: 44px;
+      border-radius: 9999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.16), rgba(255,255,255,0.055) 52%, rgba(255,255,255,0.025) 100%) !important;
+      color: rgba(255,255,255,0.92);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 8px 18px rgba(0,0,0,0.14);
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+    }
+
+    .yamtrack-settings-top-search .yamtrack-glass-input {
+      min-height: 38px;
+      border: none !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    .yamtrack-glass-input::placeholder {
+      color: rgba(255,255,255,0.42);
+    }
+
+    .yamtrack-glass-input:focus {
+      outline: none;
+      border-color: rgba(255,255,255,0.24);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.16),
+        0 0 0 2px rgba(130,140,255,0.20),
+        0 12px 24px rgba(0,0,0,0.18);
+    }
+
+    .yamtrack-settings-top-search .yamtrack-glass-input:focus {
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    .yamtrack-glass-button {
+      min-height: 38px;
+      border-radius: 9999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.18), rgba(255,255,255,0.08) 44%, rgba(255,255,255,0.035) 100%) !important;
+      color: rgba(255,255,255,0.84);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.14),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 8px 18px rgba(0,0,0,0.14);
+      backdrop-filter: blur(18px) saturate(155%);
+      -webkit-backdrop-filter: blur(18px) saturate(155%);
+    }
+
+    .yamtrack-glass-button:hover {
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.26), rgba(255,255,255,0.10) 44%, rgba(255,255,255,0.04) 100%) !important;
+      border-color: rgba(255,255,255,0.22);
+      color: #ffffff;
+    }
+
+    .yamtrack-glass-menu {
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.13);
+      background:
+        linear-gradient(135deg, rgba(33,35,40,0.88), rgba(18,19,22,0.86)) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.10),
+        0 18px 36px rgba(0,0,0,0.30);
+      backdrop-filter: blur(24px) saturate(155%);
+      -webkit-backdrop-filter: blur(24px) saturate(155%);
+    }
+
+    .yamtrack-settings-shell {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    @media (min-width: 768px) {
+      .yamtrack-settings-shell {
+        flex-direction: row;
+        align-items: flex-start;
+      }
+    }
+
+    .yamtrack-settings-nav-wrap {
+      width: 100%;
+    }
+
+    @media (min-width: 768px) {
+      .yamtrack-settings-nav-wrap {
+        width: 260px;
+        flex: 0 0 260px;
+      }
+    }
+
+    .yamtrack-settings-nav {
+      position: sticky;
+      top: 92px;
+      overflow: hidden;
+      border-radius: 26px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.11), transparent 38%),
+        linear-gradient(135deg, rgba(255,255,255,0.075), rgba(255,255,255,0.03)) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.11),
+        inset 0 -1px 0 rgba(255,255,255,0.025),
+        0 18px 42px rgba(0,0,0,0.20);
+      backdrop-filter: blur(24px) saturate(155%);
+      -webkit-backdrop-filter: blur(24px) saturate(155%);
+    }
+
+    .yamtrack-settings-nav-link {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 42px;
+      padding: 10px 13px;
+      border-radius: 9999px;
+      color: rgba(255,255,255,0.56);
+      font-size: 14px;
+      font-weight: 700;
+      border: 1px solid transparent;
+      transition:
+        color 180ms ease,
+        background 180ms ease,
+        border-color 180ms ease,
+        box-shadow 180ms ease;
+    }
+
+    .yamtrack-settings-nav-link:hover {
+      color: rgba(255,255,255,0.92);
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.09);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.08),
+        0 8px 18px rgba(0,0,0,0.14);
+    }
+
+    .yamtrack-settings-nav-link.is-active {
+      color: #ffffff;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.20), rgba(255,255,255,0.08) 44%, rgba(255,255,255,0.035) 100%) !important;
+      border-color: rgba(255,255,255,0.16);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.14),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 10px 24px rgba(0,0,0,0.18);
+    }
+
+    .yamtrack-settings-nav-link.is-active::before {
+      content: "";
+      width: 3px;
+      height: 20px;
+      border-radius: 9999px;
+      background: rgba(130,140,255,0.95);
+      box-shadow: 0 0 14px rgba(130,140,255,0.45);
+    }
+
+    .yamtrack-settings-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .yamtrack-settings-content :is(.bg-[#2a2f35], .bg-[#39404b], .bg-[#262a2f]) {
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.12), transparent 38%),
+        linear-gradient(135deg, rgba(255,255,255,0.09), rgba(255,255,255,0.035)) !important;
+      border-color: rgba(255,255,255,0.14) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 18px 42px rgba(0,0,0,0.22);
+      backdrop-filter: blur(24px) saturate(155%);
+      -webkit-backdrop-filter: blur(24px) saturate(155%);
+    }
+
+    .yamtrack-settings-content :is(.rounded-lg, .rounded-md) {
+      border-radius: 26px;
+    }
+
+    .yamtrack-settings-content :is(input, select, textarea) {
+      border-radius: 18px !important;
+      border: 1px solid rgba(255,255,255,0.14) !important;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.16), rgba(255,255,255,0.055) 52%, rgba(255,255,255,0.025) 100%) !important;
+      color: rgba(255,255,255,0.92) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 8px 18px rgba(0,0,0,0.14) !important;
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+    }
+
+    .yamtrack-settings-content :is(input, select) {
+      min-height: 44px;
+    }
+
+    .yamtrack-settings-content textarea {
+      min-height: 120px;
+    }
+
+    .yamtrack-settings-content :is(input, textarea)::placeholder {
+      color: rgba(255,255,255,0.42) !important;
+    }
+
+    .yamtrack-settings-content :is(input, select, textarea):focus {
+      outline: none !important;
+      border-color: rgba(255,255,255,0.24) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.16),
+        0 0 0 2px rgba(130,140,255,0.20),
+        0 12px 24px rgba(0,0,0,0.18) !important;
+    }
+
+    .yamtrack-settings-content :is(button, a[class*="bg-indigo"], button[class*="bg-indigo"]) {
+      border-radius: 9999px !important;
+      border: 1px solid rgba(255,255,255,0.14) !important;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.20), rgba(255,255,255,0.08) 44%, rgba(255,255,255,0.035) 100%) !important;
+      color: rgba(255,255,255,0.92) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.14),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 8px 18px rgba(0,0,0,0.14);
+      backdrop-filter: blur(18px) saturate(155%);
+      -webkit-backdrop-filter: blur(18px) saturate(155%);
+    }
+
+    .yamtrack-settings-content :is(button, a[class*="bg-indigo"], button[class*="bg-indigo"]):hover {
+      border-color: rgba(255,255,255,0.22) !important;
+      color: #ffffff !important;
+    }
+
+    @media (max-width: 768px) {
+      .yamtrack-settings-page {
+        margin-top: -12px;
+      }
+
+      .yamtrack-settings-title-pill {
+        font-size: 13px;
+        padding: 8px 20px;
+      }
+
+      .yamtrack-settings-nav {
+        position: relative;
+        top: 0;
+      }
+
+      .yamtrack-settings-top-search {
+        width: 100%;
+      }
+    }
+  </style>
+{% endblock extra_head %}
+
+{% block search_bar %}
+  {% if request.user.is_authenticated %}
+    <form method="get"
+          action="{% url 'search' %}"
+          class="yamtrack-settings-top-search"
+          x-data="{ 
+            isOpen: false, 
+            selectedType: { display: '{{ user.last_search_type|media_type_readable_plural }}', value: '{{ user.last_search_type }}' }, 
+            mediaTypes: {% get_search_media_types user as search_types %}{{ search_types }},
+            translateMediaDisplay(display) {
+              const translations = {
+                'TV Shows': 'Séries',
+                'TV Seasons': 'Temporadas',
+                'Movies': 'Filmes',
+                'Games': 'Jogos',
+                'Books': 'Livros',
+                'Anime': 'Animes',
+                'Manga': 'Mangás'
+              };
+              return translations[display] || display;
+            },
+            getPlaceholder() {
+              return `Buscar ${this.translateMediaDisplay(this.selectedType.display).toLowerCase()}...`;
+            }
+          }">
+      <div class="yamtrack-settings-search-field">
+        <input type="search"
+               id="global-search"
+               name="q"
+               value="{{ request.GET.q }}"
+               :placeholder="getPlaceholder()"
+               class="yamtrack-glass-input w-full py-2 pl-10 pr-4 text-sm appearance-none">
+
+        <button type="submit"
+                class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200 focus:outline-none cursor-pointer">
+          {% include "app/icons/magnifying-glass.svg" with classes="w-5 h-5" %}
+        </button>
+      </div>
+
+      <input type="hidden" name="media_type" :value="selectedType.value">
+
+      <button type="button"
+              @click="isOpen = !isOpen"
+              @click.away="isOpen = false"
+              class="yamtrack-glass-button flex items-center justify-between px-4 py-2 text-sm font-semibold cursor-pointer min-w-32">
+        <span class="truncate" x-text="translateMediaDisplay(selectedType.display)"></span>
+        {% include "app/icons/chevron-down.svg" with classes="w-4 h-4 ml-2" %}
+      </button>
+
+      <ul x-cloak
+          x-show="isOpen"
+          @keydown.escape.window="isOpen = false"
+          x-transition:enter="transition ease-out duration-100"
+          x-transition:enter-start="transform opacity-0 scale-95"
+          x-transition:enter-end="transform opacity-100 scale-100"
+          x-transition:leave="transition ease-in duration-75"
+          x-transition:leave-start="transform opacity-100 scale-100"
+          x-transition:leave-end="transform opacity-0 scale-95"
+          class="yamtrack-glass-menu absolute z-20 py-1 mt-12 overflow-hidden text-sm text-gray-300 right-0 w-36">
+        <template x-for="type in mediaTypes" :key="type.value">
+          <li @click="selectedType = type; isOpen = false"
+              class="px-4 py-2 cursor-pointer hover:bg-white/10 hover:text-white transition duration-150 ease-in-out"
+              x-text="translateMediaDisplay(type.display)"></li>
+        </template>
+      </ul>
+    </form>
+  {% endif %}
+{% endblock search_bar %}
 
 {% block content %}
-  <div class="mx-auto max-w-6xl">
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold">Settings</h1>
-      <p class="text-gray-400 mt-2 text-sm">Configure your account and preferences</p>
+  <div class="yamtrack-settings-page">
+    <div class="flex flex-col items-center justify-center mb-8">
+      <h1 class="yamtrack-settings-title-pill">Configurações</h1>
+      <p class="yamtrack-settings-subtitle">Configure sua conta e preferências.</p>
     </div>
-    <div class="flex flex-col md:flex-row gap-8">
-      <div class="md:w-64 shrink-0">
-        <div class="bg-[#2a2f35] rounded-lg overflow-hidden sticky top-20">
+
+    <div class="yamtrack-settings-shell">
+      <div class="yamtrack-settings-nav-wrap">
+        <div class="yamtrack-settings-nav">
           <nav class="p-2 space-y-1">
             {% url 'account' as account_url %}
             <a href="{{ account_url }}"
-               class="w-full flex items-center space-x-3 px-2 py-2 rounded-md transition-colors text-left border-l-2 cursor-pointer text-sm {% if request.path == account_url %}bg-[#39404b] text-white border-indigo-500{% else %}text-gray-400 border-transparent hover:bg-[#313842] hover:text-white{% endif %}">
+               class="yamtrack-settings-nav-link {% if request.path == account_url %}is-active{% endif %}">
               {% include "app/icons/person.svg" with classes="w-5 h-5" %}
-              <span>Account</span>
+              <span>Conta</span>
             </a>
 
             {% url 'preferences' as preferences_url %}
             <a href="{{ preferences_url }}"
-               class="w-full flex items-center space-x-3 px-2 py-2 rounded-md transition-colors text-left border-l-2 cursor-pointer text-sm {% if request.path == preferences_url %}bg-[#39404b] text-white border-indigo-500{% else %}text-gray-400 border-transparent hover:bg-[#313842] hover:text-white{% endif %}">
+               class="yamtrack-settings-nav-link {% if request.path == preferences_url %}is-active{% endif %}">
               {% include "app/icons/vertical-sliders.svg" with classes="w-5 h-5" %}
-              <span>Preferences</span>
+              <span>Preferências</span>
             </a>
 
             {% url 'notifications' as notifications_url %}
             <a href="{{ notifications_url }}"
-               class="w-full flex items-center space-x-3 px-2 py-2 rounded-md transition-colors text-left border-l-2 cursor-pointer text-sm {% if request.path == notifications_url %}bg-[#39404b] text-white border-indigo-500{% else %}text-gray-400 border-transparent hover:bg-[#313842] hover:text-white{% endif %}">
+               class="yamtrack-settings-nav-link {% if request.path == notifications_url %}is-active{% endif %}">
               {% include "app/icons/bell.svg" with classes="w-5 h-5" %}
-              <span>Notifications</span>
+              <span>Notificações</span>
             </a>
 
             {% url 'integrations' as integrations_url %}
             <a href="{{ integrations_url }}"
-               class="w-full flex items-center space-x-3 px-2 py-2 rounded-md transition-colors text-left border-l-2 cursor-pointer text-sm {% if request.path == integrations_url %}bg-[#39404b] text-white border-indigo-500{% else %}text-gray-400 border-transparent hover:bg-[#313842] hover:text-white{% endif %}">
+               class="yamtrack-settings-nav-link {% if request.path == integrations_url %}is-active{% endif %}">
               {% include "app/icons/database.svg" with classes="w-5 h-5" %}
-              <span>Integrations</span>
+              <span>Integrações</span>
             </a>
 
             {% url 'import_data' as import_url %}
             <a href="{{ import_url }}"
-               class="w-full flex items-center space-x-3 px-2 py-2 rounded-md transition-colors text-left border-l-2 cursor-pointer text-sm {% if request.path == import_url %}bg-[#39404b] text-white border-indigo-500{% else %}text-gray-400 border-transparent hover:bg-[#313842] hover:text-white{% endif %}">
+               class="yamtrack-settings-nav-link {% if request.path == import_url %}is-active{% endif %}">
               {% include "app/icons/import.svg" with classes="w-5 h-5" %}
-              <span>Import Data</span>
+              <span>Importar dados</span>
             </a>
 
             {% url 'export_data' as export_url %}
             <a href="{{ export_url }}"
-               class="w-full flex items-center space-x-3 px-2 py-2 rounded-md transition-colors text-left border-l-2 cursor-pointer text-sm {% if request.path == export_url %}bg-[#39404b] text-white border-indigo-500{% else %}text-gray-400 border-transparent hover:bg-[#313842] hover:text-white{% endif %}">
+               class="yamtrack-settings-nav-link {% if request.path == export_url %}is-active{% endif %}">
               {% include "app/icons/export.svg" with classes="w-5 h-5" %}
-              <span>Export Data</span>
+              <span>Exportar dados</span>
             </a>
 
             {% url 'advanced' as advanced_url %}
             <a href="{{ advanced_url }}"
-               class="w-full flex items-center space-x-3 px-2 py-2 rounded-md transition-colors text-left border-l-2 cursor-pointer text-sm {% if request.path == advanced_url %}bg-[#39404b] text-white border-indigo-500{% else %}text-gray-400 border-transparent hover:bg-[#313842] hover:text-white{% endif %}">
+               class="yamtrack-settings-nav-link {% if request.path == advanced_url %}is-active{% endif %}">
               {% include "app/icons/shield-alert.svg" with classes="w-5 h-5" %}
-              <span>Advanced</span>
+              <span>Avançado</span>
             </a>
 
             {% url 'about' as about_url %}
             <a href="{{ about_url }}"
-               class="w-full flex items-center space-x-3 px-2 py-2 rounded-md transition-colors text-left border-l-2 cursor-pointer text-sm {% if request.path == about_url %}bg-[#39404b] text-white border-indigo-500{% else %}text-gray-400 border-transparent hover:bg-[#313842] hover:text-white{% endif %}">
+               class="yamtrack-settings-nav-link {% if request.path == about_url %}is-active{% endif %}">
               {% include "app/icons/info.svg" with classes="w-5 h-5" %}
-              <span>About</span>
+              <span>Sobre</span>
             </a>
           </nav>
         </div>
       </div>
 
-      <!-- min-w-0 prevents flex item overflow, happens when creating periodic import for Simkl -->
-      <div class="flex-1 min-w-0">
+      <div class="yamtrack-settings-content">
         {% block settings_content %}
         {% endblock settings_content %}
       </div>
