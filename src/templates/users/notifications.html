@@ -3,148 +3,470 @@
 {% load widget_tweaks %}
 
 {% block title %}
-  Notifications - Yamtrack
+  Notificações - Yamtrack
 {% endblock title %}
 
 {% block settings_content %}
-  <div class="space-y-6">
+  <style>
+    .yamtrack-notifications-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
 
-    <div class="bg-[#2a2f35] rounded-lg p-6">
-      <div class="flex items-center mb-4">
-        {% include "app/icons/bell.svg" with classes="w-6 h-6 text-indigo-400 mr-3" %}
-        <h2 class="text-xl font-semibold">Notifications</h2>
+    .yamtrack-notifications-card {
+      border-radius: 30px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.12), transparent 38%),
+        linear-gradient(135deg, rgba(255,255,255,0.09), rgba(255,255,255,0.035)) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 18px 42px rgba(0,0,0,0.22);
+      backdrop-filter: blur(24px) saturate(155%);
+      -webkit-backdrop-filter: blur(24px) saturate(155%);
+    }
+
+    .yamtrack-notifications-heading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .yamtrack-notifications-heading-icon {
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.18), rgba(255,255,255,0.08) 44%, rgba(255,255,255,0.035) 100%);
+      color: rgba(160,168,255,0.98);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.14),
+        0 8px 18px rgba(0,0,0,0.14);
+      backdrop-filter: blur(18px) saturate(155%);
+      -webkit-backdrop-filter: blur(18px) saturate(155%);
+    }
+
+    .yamtrack-notifications-heading-title {
+      color: rgba(255,255,255,0.94);
+      font-size: 21px;
+      font-weight: 850;
+      line-height: 1.2;
+    }
+
+    .yamtrack-notifications-description {
+      color: rgba(255,255,255,0.54);
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    .yamtrack-notifications-label {
+      display: block;
+      color: rgba(255,255,255,0.78);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .yamtrack-notifications-info-toggle,
+    .yamtrack-settings-content .yamtrack-notifications-info-toggle {
+      width: 34px;
+      height: 34px;
+      min-height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px !important;
+      border: 1px solid rgba(255,255,255,0.10) !important;
+      background: rgba(255,255,255,0.05) !important;
+      color: rgba(255,255,255,0.56) !important;
+      box-shadow: none !important;
+      backdrop-filter: blur(12px) saturate(140%) !important;
+      -webkit-backdrop-filter: blur(12px) saturate(140%) !important;
+      cursor: pointer;
+      transition: color 180ms ease, background 180ms ease, border-color 180ms ease;
+    }
+
+    .yamtrack-notifications-info-toggle:hover,
+    .yamtrack-settings-content .yamtrack-notifications-info-toggle:hover {
+      color: #ffffff !important;
+      background: rgba(255,255,255,0.09) !important;
+      border-color: rgba(255,255,255,0.18) !important;
+    }
+
+    .yamtrack-notifications-info-box {
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.14), rgba(255,255,255,0.055) 52%, rgba(255,255,255,0.025) 100%) !important;
+      color: rgba(255,255,255,0.74);
+      padding: 14px 16px;
+      font-size: 14px;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.10),
+        0 10px 24px rgba(0,0,0,0.14);
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+    }
+
+    .yamtrack-notifications-info-box a {
+      color: rgba(190,196,255,0.96);
+      font-weight: 700;
+    }
+
+    .yamtrack-notifications-info-box code {
+      border-radius: 8px;
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.88);
+      padding: 2px 6px;
+    }
+
+    .yamtrack-notifications-textarea,
+    .yamtrack-notifications-input {
+      width: 100%;
+      border-radius: 18px !important;
+      border: 1px solid rgba(255,255,255,0.14) !important;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.16), rgba(255,255,255,0.055) 52%, rgba(255,255,255,0.025) 100%) !important;
+      color: rgba(255,255,255,0.92) !important;
+      padding: 13px 15px;
+      font-size: 14px;
+      outline: none;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 8px 18px rgba(0,0,0,0.14) !important;
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+    }
+
+    .yamtrack-notifications-textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+
+    .yamtrack-notifications-input {
+      min-height: 48px;
+      padding-left: 42px;
+    }
+
+    .yamtrack-notifications-textarea::placeholder,
+    .yamtrack-notifications-input::placeholder {
+      color: rgba(255,255,255,0.42) !important;
+    }
+
+    .yamtrack-notifications-textarea:focus,
+    .yamtrack-notifications-input:focus {
+      border-color: rgba(255,255,255,0.24) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.16),
+        0 0 0 2px rgba(130,140,255,0.20),
+        0 12px 24px rgba(0,0,0,0.18) !important;
+    }
+
+    .yamtrack-notification-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px 16px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.14), rgba(255,255,255,0.055) 52%, rgba(255,255,255,0.025) 100%) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.10),
+        0 10px 24px rgba(0,0,0,0.14);
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+    }
+
+    .yamtrack-notification-title {
+      display: flex;
+      align-items: center;
+      color: rgba(255,255,255,0.90);
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+
+    .yamtrack-notification-help {
+      color: rgba(255,255,255,0.52);
+      font-size: 13px;
+      line-height: 1.45;
+      margin-left: 28px;
+    }
+
+    .yamtrack-notifications-switch {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      width: 44px;
+      height: 26px;
+      flex: 0 0 auto;
+      cursor: pointer;
+    }
+
+    .yamtrack-notifications-switch input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .yamtrack-notifications-switch-track {
+      position: absolute;
+      inset: 0;
+      border-radius: 9999px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.14);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        0 8px 18px rgba(0,0,0,0.14);
+      transition: background 180ms ease, border-color 180ms ease;
+    }
+
+    .yamtrack-notifications-switch-track::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 18px;
+      height: 18px;
+      border-radius: 9999px;
+      background: rgba(255,255,255,0.92);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+      transition: transform 180ms ease;
+    }
+
+    .yamtrack-notifications-switch input:checked + .yamtrack-notifications-switch-track {
+      background: rgba(130,140,255,0.58);
+      border-color: rgba(160,168,255,0.48);
+    }
+
+    .yamtrack-notifications-switch input:checked + .yamtrack-notifications-switch-track::after {
+      transform: translateX(18px);
+    }
+
+    .yamtrack-notifications-divider {
+      height: 1px;
+      margin: 8px 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.14), transparent);
+    }
+
+    .yamtrack-notifications-button {
+      min-height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 9999px !important;
+      border: 1px solid rgba(255,255,255,0.14) !important;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.20), rgba(255,255,255,0.08) 44%, rgba(255,255,255,0.035) 100%) !important;
+      color: rgba(255,255,255,0.92) !important;
+      padding: 0 18px;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.14),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 8px 18px rgba(0,0,0,0.14);
+      backdrop-filter: blur(18px) saturate(155%);
+      -webkit-backdrop-filter: blur(18px) saturate(155%);
+      cursor: pointer;
+    }
+
+    .yamtrack-notifications-button:hover {
+      border-color: rgba(255,255,255,0.22) !important;
+      color: #ffffff !important;
+    }
+
+    .yamtrack-notifications-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-top: 22px;
+      border-top: 1px solid rgba(255,255,255,0.10);
+    }
+
+    #search-results,
+    #excluded-items-container {
+      color: rgba(255,255,255,0.82);
+    }
+
+    #excluded-items-container :is(.bg-[#2a2f35], .bg-[#39404b], .bg-[#262a2f]) {
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.12), rgba(255,255,255,0.045) 52%, rgba(255,255,255,0.02) 100%) !important;
+      border-color: rgba(255,255,255,0.12) !important;
+    }
+
+    @media (max-width: 768px) {
+      .yamtrack-notification-row,
+      .yamtrack-notifications-footer {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .yamtrack-notifications-button {
+        width: 100%;
+      }
+    }
+  </style>
+
+  <div class="yamtrack-notifications-stack">
+
+    <div class="yamtrack-notifications-card p-6">
+      <div class="yamtrack-notifications-heading">
+        <div class="yamtrack-notifications-heading-icon">
+          {% include "app/icons/bell.svg" with classes="w-6 h-6" %}
+        </div>
+        <h2 class="yamtrack-notifications-heading-title">Notificações</h2>
       </div>
 
-      <p class="text-gray-400 mb-5 text-sm">Configure how you want to receive notifications about your media.</p>
+      <p class="yamtrack-notifications-description">
+        Configure como você quer receber notificações sobre suas mídias.
+      </p>
 
       <form class="space-y-6" method="post">
         {% csrf_token %}
 
-        {# Notification URLS #}
         <div x-data="{ showInfo: false }">
           <div class="flex items-center justify-between mb-2">
-            <label for="apprise-urls" class="block text-sm font-medium text-gray-300">Apprise URLs</label>
+            <label for="apprise-urls" class="yamtrack-notifications-label">URLs do Apprise</label>
             <button type="button"
-                    class="text-gray-400 hover:text-gray-300 cursor-pointer"
-                    @click="showInfo = !showInfo">{% include "app/icons/info.svg" with classes="w-4 h-4" %}</button>
+                    class="yamtrack-notifications-info-toggle"
+                    @click="showInfo = !showInfo"
+                    title="Ver informações sobre Apprise">
+              {% include "app/icons/info.svg" with classes="w-4 h-4" %}
+            </button>
           </div>
 
-          <div class="mb-4 p-3 bg-[#39404b] rounded-md text-sm text-gray-300"
-               x-show="showInfo">
+          <div class="yamtrack-notifications-info-box mb-4"
+               x-show="showInfo"
+               x-cloak>
             <p class="mb-2">
               <a href="https://github.com/caronc/apprise"
                  target="_blank"
-                 rel="noopener noreferrer"
-                 class="text-indigo-400 hover:underline">Apprise</a> is a notification service that supports
+                 rel="noopener noreferrer">Apprise</a>
+              é um serviço de notificações compatível com
               <a href="https://github.com/caronc/apprise/wiki"
                  target="_blank"
-                 rel="noopener noreferrer"
-                 class="text-indigo-400 hover:underline">many platforms</a> including:
+                 rel="noopener noreferrer">várias plataformas</a>, incluindo:
             </p>
             <ul class="list-disc pl-5 space-y-1 text-gray-400">
               <li>Discord</li>
               <li>Telegram</li>
               <li>Slack</li>
-              <li>Email</li>
+              <li>E-mail</li>
               <li>Pushover</li>
               <li>ntfy</li>
-              <li>And many more...</li>
+              <li>E muitas outras...</li>
             </ul>
             <p class="mt-2">
-              Enter one URL per line. Example: <code class="bg-[#2a2f35] px-1 py-0.5 rounded">discord://webhook_id/webhook_token</code>
+              Insira uma URL por linha. Exemplo:
+              <code>discord://webhook_id/webhook_token</code>
             </p>
           </div>
 
-          {{ form.notification_urls|add_class:"w-full p-3 bg-[#39404b] rounded-md text-white text-sm border border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 min-h-[150px]" }}
-          <p class="mt-1 text-xs text-gray-400">
-            Enter each Apprise URL on a separate line to send notifications to multiple services.
+          {{ form.notification_urls|add_class:"yamtrack-notifications-textarea"|attr:"placeholder:Insira uma URL do Apprise por linha" }}
+          <p class="mt-2 text-xs text-gray-400">
+            Insira cada URL do Apprise em uma linha separada para enviar notificações a vários serviços.
           </p>
         </div>
 
         <div>
-          <h3 class="text-sm font-medium text-gray-300 mb-2">Notification Settings</h3>
+          <h3 class="text-sm font-bold text-gray-300 mb-3">Configurações de notificação</h3>
 
-          {# Notification Settings #}
-          <div class="bg-[#39404b] p-4 rounded-md space-y-4">
-            <div class="flex items-center justify-between">
-              <div>
+          <div class="space-y-4">
+            <div class="yamtrack-notification-row">
+              <div class="flex-1">
                 <label for="id_daily_digest_enabled"
-                       class="text-sm font-medium text-gray-200 flex items-center">
-                  {% include "app/icons/alarm-clock.svg" with classes="w-4 h-4 mr-2 text-indigo-400" %}
-                  Enable Daily Digest
+                       class="yamtrack-notification-title">
+                  {% include "app/icons/alarm-clock.svg" with classes="w-4 h-4 mr-2 text-gray-200" %}
+                  Ativar resumo diário
                 </label>
-                <p class="text-xs text-gray-400 mt-1 ml-6">
-                  Receive a single notification each day with all media scheduled to release that day
+                <p class="yamtrack-notification-help">
+                  Receba uma única notificação por dia com todas as mídias programadas para lançamento naquele dia.
                 </p>
               </div>
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input class="sr-only peer"
-                       type="checkbox"
+
+              <label class="yamtrack-notifications-switch">
+                <input type="checkbox"
                        name="daily_digest_enabled"
                        id="id_daily_digest_enabled"
                        {% if form.daily_digest_enabled.value %}checked{% endif %}>
-                <div class="w-9 h-5 bg-gray-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-px after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4.5 after:w-4.5 after:transition-all peer-checked:bg-indigo-600">
-                </div>
+                <span class="yamtrack-notifications-switch-track"></span>
               </label>
             </div>
 
-            <div class="flex items-center justify-between pt-3 border-t border-gray-600">
-              <div>
+            <div class="yamtrack-notification-row">
+              <div class="flex-1">
                 <label for="id_release_notifications_enabled"
-                       class="text-sm font-medium text-gray-200 flex items-center">
-                  {% include "app/icons/bell-ringing.svg" with classes="w-4 h-4 mr-2 text-indigo-400" %}
-                  Receive notifications for recently released media
+                       class="yamtrack-notification-title">
+                  {% include "app/icons/bell-ringing.svg" with classes="w-4 h-4 mr-2 text-gray-200" %}
+                  Receber notificações de lançamentos recentes
                 </label>
-                <p class="text-xs text-gray-400 mt-1 ml-6">Get notified when new episodes, chapters, or other media are released</p>
+                <p class="yamtrack-notification-help">
+                  Receba avisos quando novos episódios, capítulos ou outras mídias forem lançados.
+                </p>
               </div>
 
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input class="sr-only peer"
-                       type="checkbox"
+              <label class="yamtrack-notifications-switch">
+                <input type="checkbox"
                        name="release_notifications_enabled"
                        id="id_release_notifications_enabled"
                        {% if form.release_notifications_enabled.value %}checked{% endif %}>
-                <div class="w-9 h-5 bg-gray-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-px after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4.5 after:w-4.5 after:transition-all peer-checked:bg-indigo-600">
-                </div>
+                <span class="yamtrack-notifications-switch-track"></span>
               </label>
             </div>
           </div>
         </div>
 
-        <div class="pt-4 border-t border-gray-700 flex justify-between">
+        <div class="yamtrack-notifications-footer">
           <a href="{% url 'test_notification' %}"
-             class="flex items-center px-4 py-2 bg-[#39404b] text-white rounded-md hover:bg-[#454d5a] transition-colors text-sm cursor-pointer">
-            {% include "app/icons/bell.svg" with classes="w-4 h-4 mr-2" %}
-            Test Notifications
+             class="yamtrack-notifications-button">
+            {% include "app/icons/bell.svg" with classes="w-4 h-4" %}
+            Testar notificações
           </a>
+
           <button type="submit"
-                  class="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-sm cursor-pointer">
-            {% include "app/icons/save.svg" with classes="w-4 h-4 mr-2" %}
-            Save Settings
+                  class="yamtrack-notifications-button">
+            {% include "app/icons/save.svg" with classes="w-4 h-4" %}
+            Salvar configurações
           </button>
         </div>
       </form>
     </div>
 
-    {# Excluded Media Items #}
-    <div class="bg-[#2a2f35] rounded-lg p-6">
-      <div class="flex items-center mb-5">
-        {% include "app/icons/funnel.svg" with classes="lucide lucide-user w-6 h-6 text-indigo-400 mr-3" %}
-        <h2 class="text-xl font-semibold">Excluded Media Items</h2>
+    <div class="yamtrack-notifications-card p-6">
+      <div class="yamtrack-notifications-heading">
+        <div class="yamtrack-notifications-heading-icon">
+          {% include "app/icons/funnel.svg" with classes="w-6 h-6" %}
+        </div>
+        <h2 class="yamtrack-notifications-heading-title">Mídias excluídas</h2>
       </div>
 
-      <p class="text-sm text-gray-300 mb-3">Exclude specific media items from notifications:</p>
+      <p class="yamtrack-notifications-description">
+        Exclua mídias específicas das notificações.
+      </p>
 
       <div class="relative mb-4">
-        <input placeholder="Search for media to exclude..."
-               class="w-full p-2 pl-8 bg-[#39404b] rounded-md text-white border border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm"
+        <input placeholder="Buscar mídia para excluir..."
+               class="yamtrack-notifications-input"
                name="q"
                type="text"
                autocomplete="off"
                hx-get="{% url 'search_notification_items' %}"
                hx-trigger="keyup changed delay:300ms"
                hx-target="#search-results">
-        {% include "app/icons/magnifying-glass.svg" with classes="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" %}
+        {% include "app/icons/magnifying-glass.svg" with classes="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" %}
       </div>
 
       <div id="search-results"></div>

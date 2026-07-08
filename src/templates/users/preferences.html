@@ -3,275 +3,540 @@
 {% load app_tags %}
 
 {% block title %}
-  Preferences - Yamtrack
+  Preferências - Yamtrack
 {% endblock title %}
 
 {% block settings_content %}
-  <div class="bg-[#2a2f35] rounded-lg p-6">
-    <div class="flex items-center mb-4">
-      {% include "app/icons/vertical-sliders.svg" with classes="w-6 h-6 text-indigo-400 mr-3" %}
-      <h2 class="text-xl font-semibold">Preferences</h2>
+  <style>
+    .yamtrack-preferences-card {
+      border-radius: 30px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.12), transparent 38%),
+        linear-gradient(135deg, rgba(255,255,255,0.09), rgba(255,255,255,0.035)) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 18px 42px rgba(0,0,0,0.22);
+      backdrop-filter: blur(24px) saturate(155%);
+      -webkit-backdrop-filter: blur(24px) saturate(155%);
+    }
+
+    .yamtrack-preferences-heading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .yamtrack-preferences-heading-icon,
+    .yamtrack-preferences-section-icon {
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.18), rgba(255,255,255,0.08) 44%, rgba(255,255,255,0.035) 100%);
+      color: rgba(160,168,255,0.98);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.14),
+        0 8px 18px rgba(0,0,0,0.14);
+      backdrop-filter: blur(18px) saturate(155%);
+      -webkit-backdrop-filter: blur(18px) saturate(155%);
+    }
+
+    .yamtrack-preferences-heading-title {
+      color: rgba(255,255,255,0.94);
+      font-size: 21px;
+      font-weight: 850;
+      line-height: 1.2;
+    }
+
+    .yamtrack-preferences-description {
+      color: rgba(255,255,255,0.54);
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    .yamtrack-preference-row,
+    .yamtrack-media-type-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px 16px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.14), rgba(255,255,255,0.055) 52%, rgba(255,255,255,0.025) 100%) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.10),
+        0 10px 24px rgba(0,0,0,0.14);
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+    }
+
+    .yamtrack-preference-title {
+      display: flex;
+      align-items: center;
+      color: rgba(255,255,255,0.90);
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+
+    .yamtrack-preference-help {
+      color: rgba(255,255,255,0.52);
+      font-size: 13px;
+      line-height: 1.45;
+      margin-left: 28px;
+    }
+
+    .yamtrack-preferences-select {
+      min-width: 190px;
+      min-height: 42px;
+      border-radius: 9999px !important;
+      border: 1px solid rgba(255,255,255,0.14) !important;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.16), rgba(255,255,255,0.055) 52%, rgba(255,255,255,0.025) 100%) !important;
+      color: rgba(255,255,255,0.92) !important;
+      padding: 0 14px;
+      font-size: 14px;
+      outline: none;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 8px 18px rgba(0,0,0,0.14) !important;
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+    }
+
+    .yamtrack-preferences-select:focus {
+      border-color: rgba(255,255,255,0.24) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.16),
+        0 0 0 2px rgba(130,140,255,0.20),
+        0 12px 24px rgba(0,0,0,0.18) !important;
+    }
+
+    .yamtrack-preferences-switch {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      width: 44px;
+      height: 26px;
+      flex: 0 0 auto;
+      cursor: pointer;
+    }
+
+    .yamtrack-preferences-switch input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .yamtrack-preferences-switch-track {
+      position: absolute;
+      inset: 0;
+      border-radius: 9999px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.14);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        0 8px 18px rgba(0,0,0,0.14);
+      transition: background 180ms ease, border-color 180ms ease;
+    }
+
+    .yamtrack-preferences-switch-track::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 18px;
+      height: 18px;
+      border-radius: 9999px;
+      background: rgba(255,255,255,0.92);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+      transition: transform 180ms ease;
+    }
+
+    .yamtrack-preferences-switch input:checked + .yamtrack-preferences-switch-track {
+      background: rgba(130,140,255,0.58);
+      border-color: rgba(160,168,255,0.48);
+    }
+
+    .yamtrack-preferences-switch input:checked + .yamtrack-preferences-switch-track::after {
+      transform: translateX(18px);
+    }
+
+    .yamtrack-preferences-divider {
+      height: 1px;
+      margin: 26px 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.14), transparent);
+    }
+
+    .yamtrack-preferences-section-heading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .yamtrack-preferences-section-icon {
+      width: 36px;
+      height: 36px;
+    }
+
+    .yamtrack-preferences-section-title {
+      color: rgba(255,255,255,0.94);
+      font-size: 18px;
+      font-weight: 850;
+    }
+
+    .yamtrack-preferences-button {
+      min-height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 9999px !important;
+      border: 1px solid rgba(255,255,255,0.14) !important;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.20), rgba(255,255,255,0.08) 44%, rgba(255,255,255,0.035) 100%) !important;
+      color: rgba(255,255,255,0.92) !important;
+      padding: 0 18px;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.14),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 8px 18px rgba(0,0,0,0.14);
+      backdrop-filter: blur(18px) saturate(155%);
+      -webkit-backdrop-filter: blur(18px) saturate(155%);
+      cursor: pointer;
+    }
+
+    .yamtrack-preferences-button:hover {
+      border-color: rgba(255,255,255,0.22) !important;
+      color: #ffffff !important;
+    }
+
+    @media (max-width: 768px) {
+      .yamtrack-preference-row,
+      .yamtrack-media-type-row {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .yamtrack-preferences-select {
+        width: 100%;
+        min-width: 0;
+      }
+    }
+  </style>
+
+  <div class="yamtrack-preferences-card p-6">
+    <div class="yamtrack-preferences-heading">
+      <div class="yamtrack-preferences-heading-icon">
+        {% include "app/icons/vertical-sliders.svg" with classes="w-6 h-6" %}
+      </div>
+      <h2 class="yamtrack-preferences-heading-title">Preferências</h2>
     </div>
-    <p class="text-gray-400 mb-5 text-sm">Customize the look and behavior of the application.</p>
+
+    <p class="yamtrack-preferences-description">
+      Personalize a aparência e o comportamento do aplicativo.
+    </p>
+
     <form method="post">
       {% csrf_token %}
 
-      {# Media Card Overlay #}
-      <div class="mb-5">
-        <div class="flex items-center justify-between p-3 bg-[#39404b] rounded-md">
+      <div class="space-y-5">
+        <div class="yamtrack-preference-row">
           <div class="flex-1">
-            <div class="flex items-center text-gray-200 mb-1">
-              {% include "app/icons/image.svg" with classes="w-5 h-5 mr-2" %}
-              <span class="text-sm font-medium">Hide Hover Overlay on Touch Devices</span>
+            <div class="yamtrack-preference-title">
+              {% include "app/icons/image.svg" with classes="w-5 h-5 mr-2 text-gray-200" %}
+              <span>Ocultar sobreposição em dispositivos de toque</span>
             </div>
-            <p class="text-xs text-gray-400 ml-7">
-              Hide the media card hover overlay with action buttons on touch devices for a cleaner mobile experience.
-              On desktop, the overlay will still appear when you hover your mouse over media cards.
+            <p class="yamtrack-preference-help">
+              Oculta os botões de ação sobre os cards em celulares e tablets. No desktop, eles continuam aparecendo ao passar o mouse.
             </p>
           </div>
-          <label class="relative inline-flex items-center cursor-pointer ml-4">
-            <input class="sr-only peer"
-                   type="checkbox"
+          <label class="yamtrack-preferences-switch">
+            <input type="checkbox"
                    name="clickable_media_cards"
                    {% if user.clickable_media_cards %}checked{% endif %}>
-            <div class="w-9 h-5 bg-gray-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-px after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4.5 after:w-4.5 after:transition-all peer-checked:bg-indigo-600">
-            </div>
+            <span class="yamtrack-preferences-switch-track"></span>
           </label>
         </div>
-      </div>
 
-      {# Obfuscate Unseen Episodes #}
-      <div class="mb-5">
-        <div class="flex items-center justify-between p-3 bg-[#39404b] rounded-md">
+        <div class="yamtrack-preference-row">
           <div class="flex-1">
-            <div class="flex items-center text-gray-200 mb-1">
-              {% include "app/icons/eye.svg" with classes="w-5 h-5 mr-2" %}
-              <span class="text-sm font-medium">Obfuscate Unseen Episodes</span>
+            <div class="yamtrack-preference-title">
+              {% include "app/icons/eye.svg" with classes="w-5 h-5 mr-2 text-gray-200" %}
+              <span>Ocultar episódios não vistos</span>
             </div>
-            <p class="text-xs text-gray-400 ml-7">When enabled, unseen episode images and descriptions will be blurred.</p>
-          </div>
-          <label class="relative inline-flex items-center cursor-pointer ml-4">
-            <input class="sr-only peer"
-                   type="checkbox"
-                   name="obfuscate_unseen_episodes"
-                   {% if user.obfuscate_unseen_episodes %}checked{% endif %}>
-            <div class="w-9 h-5 bg-gray-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-px after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4.5 after:w-4.5 after:transition-all peer-checked:bg-indigo-600">
-            </div>
-          </label>
-        </div>
-      </div>
-
-      {# Quick Watch Date #}
-      <div class="mb-5">
-        <div class="flex items-center justify-between p-3 bg-[#39404b] rounded-md">
-          <div class="flex-1">
-            <div class="flex items-center text-gray-200 mb-1">
-              {% include "app/icons/clock.svg" with classes="w-5 h-5 mr-2" %}
-              <span class="text-sm font-medium">Bulk Completion Date</span>
-            </div>
-            <p class="text-xs text-gray-400 ml-7">
-              When marking a TV show or season as completed, its episodes will be marked as completed with this date.
+            <p class="yamtrack-preference-help">
+              Quando ativado, imagens e descrições de episódios ainda não vistos ficam desfocadas.
             </p>
           </div>
-          <select name="quick_watch_date"
-                  class="ml-4 p-2 bg-[#39404b] rounded-md text-white text-sm border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+          <label class="yamtrack-preferences-switch">
+            <input type="checkbox"
+                   name="obfuscate_unseen_episodes"
+                   {% if user.obfuscate_unseen_episodes %}checked{% endif %}>
+            <span class="yamtrack-preferences-switch-track"></span>
+          </label>
+        </div>
+
+        <div class="yamtrack-preference-row">
+          <div class="flex-1">
+            <div class="yamtrack-preference-title">
+              {% include "app/icons/clock.svg" with classes="w-5 h-5 mr-2 text-gray-200" %}
+              <span>Data de conclusão em massa</span>
+            </div>
+            <p class="yamtrack-preference-help">
+              Ao marcar uma série ou temporada como concluída, os episódios serão marcados com esta data.
+            </p>
+          </div>
+          <select name="quick_watch_date" class="yamtrack-preferences-select">
             {% for choice in quick_watch_date_choices %}
               <option value="{{ choice.0 }}"
-                      {% if user.quick_watch_date == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
+                      {% if user.quick_watch_date == choice.0 %}selected{% endif %}>
+                {% if choice.1 == "Today" %}
+                  Hoje
+                {% elif choice.1 == "Yesterday" %}
+                  Ontem
+                {% elif choice.1 == "Release date" %}
+                  Data de lançamento
+                {% elif choice.1 == "Now" %}
+                  Agora
+                {% else %}
+                  {{ choice.1 }}
+                {% endif %}
+              </option>
             {% endfor %}
           </select>
         </div>
-      </div>
 
-      {# Progress bar #}
-      <div class="mb-5">
-        <div class="flex items-center justify-between p-3 bg-[#39404b] rounded-md">
+        <div class="yamtrack-preference-row">
           <div class="flex-1">
-            <div class="flex items-center text-gray-200 mb-1">
-              {% include "app/icons/minus.svg" with classes="w-5 h-5 mr-2" %}
-              <span class="text-sm font-medium">Show progress bar on media items</span>
+            <div class="yamtrack-preference-title">
+              {% include "app/icons/minus.svg" with classes="w-5 h-5 mr-2 text-gray-200" %}
+              <span>Mostrar barra de progresso nos itens</span>
             </div>
-            <p class="text-xs text-gray-400 ml-7">
-              Display a progress bar on media items. Items which don't have max progress will be using a dotted line.
+            <p class="yamtrack-preference-help">
+              Exibe uma barra de progresso nos cards. Itens sem progresso máximo usam uma linha pontilhada.
             </p>
           </div>
-          <label class="relative inline-flex items-center cursor-pointer ml-4">
-            <input class="sr-only peer"
-                   type="checkbox"
+          <label class="yamtrack-preferences-switch">
+            <input type="checkbox"
                    name="progress_bar"
                    {% if user.progress_bar %}checked{% endif %}>
-            <div class="w-9 h-5 bg-gray-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-px after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4.5 after:w-4.5 after:transition-all peer-checked:bg-indigo-600">
-            </div>
+            <span class="yamtrack-preferences-switch-track"></span>
           </label>
         </div>
-      </div>
 
-      {# Hide Completed Recommendations #}
-      <div class="mb-5">
-        <div class="flex items-center justify-between p-3 bg-[#39404b] rounded-md">
+        <div class="yamtrack-preference-row">
           <div class="flex-1">
-            <div class="flex items-center text-gray-200 mb-1">
-              {% include "app/icons/circle-check.svg" with classes="w-5 h-5 mr-2" %}
-              <span class="text-sm font-medium">Hide completed media in recommendations</span>
+            <div class="yamtrack-preference-title">
+              {% include "app/icons/circle-check.svg" with classes="w-5 h-5 mr-2 text-gray-200" %}
+              <span>Ocultar mídias concluídas nas recomendações</span>
             </div>
-            <p class="text-xs text-gray-400 ml-7">
-              Hide media you've already completed from the recommendations section on detail pages.
+            <p class="yamtrack-preference-help">
+              Oculta mídias já concluídas da seção de recomendações nas páginas de detalhes.
             </p>
           </div>
-          <label class="relative inline-flex items-center cursor-pointer ml-4">
-            <input class="sr-only peer"
-                   type="checkbox"
+          <label class="yamtrack-preferences-switch">
+            <input type="checkbox"
                    name="hide_completed_recommendations"
                    {% if user.hide_completed_recommendations %}checked{% endif %}>
-            <div class="w-9 h-5 bg-gray-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-px after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4.5 after:w-4.5 after:transition-all peer-checked:bg-indigo-600">
-            </div>
+            <span class="yamtrack-preferences-switch-track"></span>
           </label>
         </div>
-      </div>
 
-      {# Hide Zero Ratings #}
-      <div class="mb-5">
-        <div class="flex items-center justify-between p-3 bg-[#39404b] rounded-md">
+        <div class="yamtrack-preference-row">
           <div class="flex-1">
-            <div class="flex items-center text-gray-200 mb-1">
-              {% include "app/icons/star.svg" with classes="w-5 h-5 mr-2" %}
-              <span class="text-sm font-medium">Hide zero ratings</span>
+            <div class="yamtrack-preference-title">
+              {% include "app/icons/star.svg" with classes="w-5 h-5 mr-2 text-gray-200" %}
+              <span>Ocultar notas zeradas</span>
             </div>
-            <p class="text-xs text-gray-400 ml-7">Hide the rating badge from media cards when the rating is zero.</p>
+            <p class="yamtrack-preference-help">
+              Oculta o marcador de nota dos cards quando a avaliação for zero.
+            </p>
           </div>
-          <label class="relative inline-flex items-center cursor-pointer ml-4">
-            <input class="sr-only peer"
-                   type="checkbox"
+          <label class="yamtrack-preferences-switch">
+            <input type="checkbox"
                    name="hide_zero_rating"
                    {% if user.hide_zero_rating %}checked{% endif %}>
-            <div class="w-9 h-5 bg-gray-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-px after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4.5 after:w-4.5 after:transition-all peer-checked:bg-indigo-600">
-            </div>
+            <span class="yamtrack-preferences-switch-track"></span>
           </label>
         </div>
-      </div>
 
-      {# Date Format #}
-      <div class="mb-5">
-        <div class="flex items-center justify-between p-3 bg-[#39404b] rounded-md">
+        <div class="yamtrack-preference-row">
           <div class="flex-1">
-            <div class="flex items-center text-gray-200 mb-1">
-              {% include "app/icons/calendar.svg" with classes="w-5 h-5 mr-2" %}
-              <span class="text-sm font-medium">Date Format</span>
+            <div class="yamtrack-preference-title">
+              {% include "app/icons/calendar.svg" with classes="w-5 h-5 mr-2 text-gray-200" %}
+              <span>Formato de data</span>
             </div>
-            <p class="text-xs text-gray-400 ml-7">Choose how dates are displayed throughout the application.</p>
+            <p class="yamtrack-preference-help">
+              Escolha como as datas serão exibidas pelo aplicativo.
+            </p>
           </div>
-          <select name="date_format"
-                  class="ml-4 p-2 bg-[#39404b] rounded-md text-white text-sm border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+          <select name="date_format" class="yamtrack-preferences-select">
             {% for choice in date_format_choices %}
               <option value="{{ choice.0 }}"
                       {% if user.date_format == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
             {% endfor %}
           </select>
         </div>
-      </div>
 
-      {# Time Format #}
-      <div class="mb-5">
-        <div class="flex items-center justify-between p-3 bg-[#39404b] rounded-md">
+        <div class="yamtrack-preference-row">
           <div class="flex-1">
-            <div class="flex items-center text-gray-200 mb-1">
-              {% include "app/icons/clock.svg" with classes="w-5 h-5 mr-2" %}
-              <span class="text-sm font-medium">Time Format</span>
+            <div class="yamtrack-preference-title">
+              {% include "app/icons/clock.svg" with classes="w-5 h-5 mr-2 text-gray-200" %}
+              <span>Formato de hora</span>
             </div>
-            <p class="text-xs text-gray-400 ml-7">Choose between 12-hour or 24-hour clock display.</p>
-          </div>
-          <select name="time_format"
-                  class="ml-4 p-2 bg-[#39404b] rounded-md text-white text-sm border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-400">
-            {% for choice in time_format_choices %}
-              <option value="{{ choice.0 }}"
-                      {% if user.time_format == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
-            {% endfor %}
-          </select>
-        </div>
-      </div>
-
-      {# Week Start Day #}
-      <div class="mb-5">
-        <div class="flex items-center justify-between p-3 bg-[#39404b] rounded-md">
-          <div class="flex-1">
-            <div class="flex items-center text-gray-200 mb-1">
-              {% include "app/icons/week.svg" with classes="w-5 h-5 mr-2" %}
-              <span class="text-sm font-medium">Week Start Day</span>
-            </div>
-            <p class="text-xs text-gray-400 ml-7">Choose which day the week starts on for calendars and statistics.</p>
-          </div>
-          <select name="week_start_day"
-                  class="ml-4 p-2 bg-[#39404b] rounded-md text-white text-sm border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-400">
-            {% for choice in week_start_day_choices %}
-              <option value="{{ choice.0 }}"
-                      {% if user.week_start_day == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
-            {% endfor %}
-          </select>
-        </div>
-      </div>
-
-      {# Watch Provider Region #}
-      <div class="mb-5">
-        <div class="flex items-center justify-between p-3 bg-[#39404b] rounded-md">
-          <div class="flex-1">
-            <div class="flex items-center text-gray-200 mb-1">
-              {% include "app/icons/globe.svg" with classes="w-5 h-5 mr-2" %}
-              <span class="text-sm font-medium">Watch provider region</span>
-            </div>
-            <p class="text-xs text-gray-400 ml-7">
-              Choose the region to show watch providers for. Setting this to disabled will hide the box from the media page.
+            <p class="yamtrack-preference-help">
+              Escolha entre exibição em relógio de 12 ou 24 horas.
             </p>
           </div>
-          <select name="watch_provider_region"
-                  class="ml-4 p-2 bg-[#39404b] rounded-md text-white text-sm border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+          <select name="time_format" class="yamtrack-preferences-select">
+            {% for choice in time_format_choices %}
+              <option value="{{ choice.0 }}"
+                      {% if user.time_format == choice.0 %}selected{% endif %}>
+                {% if choice.1 == "12-hour" %}
+                  12 horas
+                {% elif choice.1 == "24-hour" %}
+                  24 horas
+                {% else %}
+                  {{ choice.1 }}
+                {% endif %}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="yamtrack-preference-row">
+          <div class="flex-1">
+            <div class="yamtrack-preference-title">
+              {% include "app/icons/week.svg" with classes="w-5 h-5 mr-2 text-gray-200" %}
+              <span>Dia inicial da semana</span>
+            </div>
+            <p class="yamtrack-preference-help">
+              Escolha em qual dia a semana começa nos calendários e estatísticas.
+            </p>
+          </div>
+          <select name="week_start_day" class="yamtrack-preferences-select">
+            {% for choice in week_start_day_choices %}
+              <option value="{{ choice.0 }}"
+                      {% if user.week_start_day == choice.0 %}selected{% endif %}>
+                {% if choice.1 == "Sunday" %}
+                  Domingo
+                {% elif choice.1 == "Monday" %}
+                  Segunda-feira
+                {% elif choice.1 == "Saturday" %}
+                  Sábado
+                {% else %}
+                  {{ choice.1 }}
+                {% endif %}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="yamtrack-preference-row">
+          <div class="flex-1">
+            <div class="yamtrack-preference-title">
+              {% include "app/icons/globe.svg" with classes="w-5 h-5 mr-2 text-gray-200" %}
+              <span>Região dos provedores de streaming</span>
+            </div>
+            <p class="yamtrack-preference-help">
+              Escolha a região usada para exibir provedores de streaming. Ao desativar, essa caixa será ocultada da página da mídia.
+            </p>
+          </div>
+          <select name="watch_provider_region" class="yamtrack-preferences-select">
             {% for choice in watch_provider_choices %}
               <option value="{{ choice.0 }}"
-                      {% if user.watch_provider_region == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
+                      {% if user.watch_provider_region == choice.0 %}selected{% endif %}>
+                {% if choice.1 == "Disabled" %}
+                  Desativado
+                {% else %}
+                  {{ choice.1 }}
+                {% endif %}
+              </option>
             {% endfor %}
           </select>
         </div>
       </div>
 
-      <div class="border-t border-gray-600 my-5"></div>
+      <div class="yamtrack-preferences-divider"></div>
 
-      {# Media Types Settings #}
       <div class="mb-5">
-        <div class="flex items-center mb-4">
-          {% include "app/icons/four-square.svg" with classes="w-5 h-5 text-indigo-400 mr-2" %}
-          <h3 class="text-lg font-semibold">Media Types</h3>
+        <div class="yamtrack-preferences-section-heading">
+          <div class="yamtrack-preferences-section-icon">
+            {% include "app/icons/four-square.svg" with classes="w-5 h-5" %}
+          </div>
+          <h3 class="yamtrack-preferences-section-title">Tipos de mídia</h3>
         </div>
-        <p class="text-gray-400 mb-4 text-sm">
-          Control which media types are visible throughout the app (sidebar, search, calendar, notifications).
+
+        <p class="yamtrack-preferences-description">
+          Controle quais tipos de mídia aparecem no app, incluindo menu lateral, busca, calendário e notificações.
         </p>
 
         <div class="grid gap-3 md:grid-cols-3">
           {% for media_type in media_types %}
-            <div class="flex items-center justify-between p-3 bg-[#39404b] rounded-md">
+            <div class="yamtrack-media-type-row">
               <div class="flex items-center text-gray-400">
                 {% icon media_type is_active=False %}
-                <span class="text-gray-200 text-sm ml-2">{{ media_type|media_type_readable_plural }}</span>
+                <span class="text-gray-100 text-sm font-bold ml-2">
+                  {% if media_type == "tv" %}
+                    Séries
+                  {% elif media_type == "season" %}
+                    Temporadas
+                  {% elif media_type == "episode" %}
+                    Episódios
+                  {% elif media_type == "movie" %}
+                    Filmes
+                  {% elif media_type == "game" %}
+                    Jogos
+                  {% elif media_type == "book" %}
+                    Livros
+                  {% elif media_type == "anime" %}
+                    Animes
+                  {% elif media_type == "manga" %}
+                    Mangás
+                  {% elif media_type == "comic" %}
+                    Quadrinhos
+                  {% elif media_type == "boardgame" %}
+                    Jogos de tabuleiro
+                  {% else %}
+                    {{ media_type|media_type_readable_plural }}
+                  {% endif %}
+                </span>
               </div>
-              <label class="relative inline-flex items-center cursor-pointer">
+
+              <label class="yamtrack-preferences-switch">
                 {% with enabled_field=media_type|add:"_enabled" %}
-                  <input class="sr-only peer"
-                         type="checkbox"
+                  <input type="checkbox"
                          name="media_types_checkboxes"
                          value="{{ media_type }}"
                          {% if user|get_attr:enabled_field %}checked{% endif %}>
                 {% endwith %}
-                <div class="w-9 h-5 bg-gray-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-px after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4.5 after:w-4.5 after:transition-all peer-checked:bg-indigo-600">
-                </div>
+                <span class="yamtrack-preferences-switch-track"></span>
               </label>
             </div>
           {% endfor %}
         </div>
       </div>
 
-      <div class="mt-5 pt-4 border-gray-600">
+      <div class="pt-2">
         <button type="submit"
-                class="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-sm cursor-pointer">
-          {% include "app/icons/save.svg" with classes="w-4 h-4 mr-2" %}
-          Save Preferences
+                class="yamtrack-preferences-button">
+          {% include "app/icons/save.svg" with classes="w-4 h-4" %}
+          Salvar preferências
         </button>
       </div>
     </form>
