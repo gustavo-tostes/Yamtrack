@@ -1,4 +1,5 @@
 {% extends "account/base_entrance.html" %}
+{% load static %}
 {% load allauth account %}
 {% load socialaccount %}
 
@@ -41,6 +42,15 @@
     .yamtrack-auth-brand {
       text-align: center;
       margin-bottom: 26px;
+    }
+
+    .yamtrack-auth-logo {
+      display: block;
+      width: auto;
+      height: 54px;
+      max-width: 240px;
+      object-fit: contain;
+      margin: 0 auto 22px;
     }
 
     .yamtrack-auth-title-pill {
@@ -121,6 +131,14 @@
       color: rgba(255,255,255,0.42);
     }
 
+    .yamtrack-auth-input:focus {
+      border-color: rgba(255,255,255,0.24);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.16),
+        0 0 0 2px rgba(130,140,255,0.20),
+        0 12px 24px rgba(0,0,0,0.18);
+    }
+
     .yamtrack-auth-button {
       width: 100%;
       min-height: 44px;
@@ -166,6 +184,9 @@
 
   <div class="yamtrack-auth-shell">
     <div class="yamtrack-auth-brand">
+      <img src="{% static 'img/flexihub/Logo.png' %}"
+           alt="FlexiHub"
+           class="yamtrack-auth-logo">
       <div class="yamtrack-auth-title-pill">Criar conta</div>
       <p class="yamtrack-auth-subtitle">Cadastre-se para começar sua coleção.</p>
     </div>
