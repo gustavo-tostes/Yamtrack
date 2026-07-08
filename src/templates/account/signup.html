@@ -37,21 +37,22 @@
     .yamtrack-auth-shell {
       width: min(460px, calc(100vw - 32px));
       margin: 0 auto;
+      transform: translateY(-22px);
     }
 
     .yamtrack-auth-brand {
       text-align: center;
-      margin-bottom: 32px;
+      margin-bottom: 22px;
     }
 
     .yamtrack-auth-logo {
       display: block;
       width: auto;
-      height: 118px;
-      max-width: 430px;
+      height: 126px;
+      max-width: 450px;
       object-fit: contain;
-      margin: 0 auto 18px;
-      transform: scale(1.22);
+      margin: 0 auto 8px;
+      transform: scale(1.24);
       transform-origin: center;
     }
 
@@ -78,7 +79,7 @@
     }
 
     .yamtrack-auth-subtitle {
-      margin: 16px 0 0;
+      margin: 12px 0 0;
       color: rgba(255,255,255,0.58);
       font-size: 15px;
     }
@@ -184,10 +185,19 @@
     }
 
     @media (max-width: 640px) {
+      .yamtrack-auth-shell {
+        transform: translateY(-16px);
+      }
+
       .yamtrack-auth-logo {
-        height: 104px;
-        max-width: 370px;
-        transform: scale(1.18);
+        height: 110px;
+        max-width: 390px;
+        margin-bottom: 6px;
+        transform: scale(1.20);
+      }
+
+      .yamtrack-auth-brand {
+        margin-bottom: 20px;
       }
     }
   </style>
