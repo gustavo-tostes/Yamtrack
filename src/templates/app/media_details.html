@@ -5,7 +5,7 @@
 {% block title %}
   {{ media.title }}
   {% if media.media_type == MediaTypes.SEASON.value %}S{{ media.season_number }}{% endif %}
-  - Yamtrack
+  - FlexiHub
 {% endblock title %}
 
 {% block extra_head %}
@@ -798,11 +798,69 @@
           {% if media.details.items %}
             {% for key, value in media.details.items %}
               <div class="mb-4">
-                <h3 class="text-sm font-bold text-gray-400">{{ key|no_underscore|upper }}</h3>
+                <h3 class="text-sm font-bold text-gray-400">
+                  {% if key == "format" %}
+                    FORMATO
+                  {% elif key == "start_date" %}
+                    DATA DE INÍCIO
+                  {% elif key == "end_date" %}
+                    DATA DE TÉRMINO
+                  {% elif key == "release_date" %}
+                    DATA DE LANÇAMENTO
+                  {% elif key == "publish_date" or key == "published_date" %}
+                    DATA DE PUBLICAÇÃO
+                  {% elif key == "number_of_pages" or key == "pages" %}
+                    NÚMERO DE PÁGINAS
+                  {% elif key == "publisher" %}
+                    EDITORA
+                  {% elif key == "publishers" %}
+                    EDITORAS
+                  {% elif key == "issues_count" %}
+                    QUANTIDADE DE EDIÇÕES
+                  {% elif key == "year" %}
+                    ANO
+                  {% elif key == "players" %}
+                    JOGADORES
+                  {% elif key == "playtime" %}
+                    TEMPO DE JOGO
+                  {% elif key == "min_age" %}
+                    IDADE MÍNIMA
+                  {% elif key == "designers" %}
+                    DESIGNERS
+                  {% elif key == "developers" %}
+                    DESENVOLVEDORES
+                  {% elif key == "platforms" %}
+                    PLATAFORMAS
+                  {% elif key == "themes" %}
+                    TEMAS
+                  {% elif key == "genres" %}
+                    GÊNEROS
+                  {% elif key == "status" %}
+                    STATUS
+                  {% elif key == "source" %}
+                    FONTE
+                  {% else %}
+                    {{ key|no_underscore|upper }}
+                  {% endif %}
+                </h3>
                 {% if value|is_list %}
-                  {% for item in value %}<p class="text-gray-200">{{ item|iso_date_format:request.user }}</p>{% endfor %}
+                  {% for item in value %}
+                    <p class="text-gray-200">
+                      {% if item == "Unknown" %}
+                        Desconhecido
+                      {% else %}
+                        {{ item|iso_date_format:request.user }}
+                      {% endif %}
+                    </p>
+                  {% endfor %}
                 {% else %}
-                  <p class="text-gray-200">{{ value|default_if_none:"Unknown"|iso_date_format:request.user }}</p>
+                  <p class="text-gray-200">
+                    {% if value == "Unknown" or value == None %}
+                      Desconhecido
+                    {% else %}
+                      {{ value|iso_date_format:request.user }}
+                    {% endif %}
+                  </p>
                 {% endif %}
               </div>
             {% endfor %}
@@ -891,6 +949,30 @@
                       Recomendações
                     {% elif name == "similar" %}
                       Similares
+                    {% elif name == "related_anime" or name == "anime" or name == "animes" %}
+                      Animes relacionados
+                    {% elif name == "related_manga" or name == "manga" or name == "mangas" %}
+                      Mangás relacionados
+                    {% elif name == "related_games" or name == "games" %}
+                      Jogos relacionados
+                    {% elif name == "related_books" or name == "books" %}
+                      Livros relacionados
+                    {% elif name == "related_comics" or name == "comics" %}
+                      Quadrinhos relacionados
+                    {% elif name == "related_boardgames" or name == "boardgames" or name == "board_games" %}
+                      Jogos de tabuleiro relacionados
+                    {% elif name == "expansions" %}
+                      Expansões
+                    {% elif name == "collections" %}
+                      Coleções
+                    {% elif name == "franchises" %}
+                      Franquias
+                    {% elif name == "prequels" %}
+                      Prequelas
+                    {% elif name == "sequels" %}
+                      Continuações
+                    {% elif name == "spin_offs" or name == "spinoffs" %}
+                      Spin-offs
                     {% else %}
                       {{ name|no_underscore|title }}
                     {% endif %}
