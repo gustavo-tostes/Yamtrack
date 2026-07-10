@@ -193,8 +193,12 @@
     }
 
     .yamtrack-icon-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       min-width: 42px;
       min-height: 38px;
+      line-height: 1;
       border-radius: 9999px;
       border: 1px solid rgba(255,255,255,0.15);
       background:
@@ -205,6 +209,11 @@
         0 10px 22px rgba(0,0,0,0.18);
       backdrop-filter: blur(18px) saturate(155%);
       -webkit-backdrop-filter: blur(18px) saturate(155%);
+    }
+
+    .yamtrack-icon-button svg {
+      display: block;
+      flex-shrink: 0;
     }
 
     .yamtrack-icon-button:hover {
@@ -321,6 +330,27 @@
       -webkit-backdrop-filter: blur(22px) saturate(155%);
     }
 
+    .yamtrack-episode-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .yamtrack-episode-action-button {
+      width: 54px;
+      height: 54px;
+      min-width: 54px;
+      min-height: 54px;
+      padding: 0 !important;
+    }
+
+    .yamtrack-episode-action-button svg {
+      width: 20px;
+      height: 20px;
+    }
+
     @media (max-width: 768px) {
       .yamtrack-detail-page {
         margin-top: -10px;
@@ -329,6 +359,22 @@
       .yamtrack-section-pill {
         font-size: 12px;
         padding: 7px 18px;
+      }
+
+      .yamtrack-episode-actions {
+        gap: 8px;
+      }
+
+      .yamtrack-episode-action-button {
+        width: 46px;
+        height: 46px;
+        min-width: 46px;
+        min-height: 46px;
+      }
+
+      .yamtrack-episode-action-button svg {
+        width: 18px;
+        height: 18px;
       }
     }
   </style>
@@ -1048,12 +1094,12 @@
                               {% if episode.runtime %}• {{ episode.runtime }}{% endif %}
                             </p>
                           </div>
-                          <div class="flex space-x-2">
+                          <div class="yamtrack-episode-actions">
                             {# Track Episode #}
                             <div x-data="{ trackOpen: false }">
                               <button @click="trackOpen = true"
                                       title="Marcar episódio"
-                                      class="yamtrack-icon-button p-2 text-white transition duration-300 cursor-pointer">
+                                      class="yamtrack-icon-button yamtrack-episode-action-button text-white transition duration-300 cursor-pointer">
                                 {% if episode.history %}
                                   {% include "app/icons/eye.svg" with classes="w-4 h-4" %}
                                 {% else %}
@@ -1066,7 +1112,7 @@
 
                             {# Lists #}
                             <div x-data="{ listsOpen: false }">
-                              <button class="yamtrack-icon-button p-2 text-white transition duration-300 cursor-pointer"
+                              <button class="yamtrack-icon-button yamtrack-episode-action-button text-white transition duration-300 cursor-pointer"
                                       title="Adicionar a listas"
                                       hx-get="{% media_view_url 'lists_modal' episode %}"
                                       hx-vals='{"return_url": "{{ request.get_full_path|urlencode }}"}'
@@ -1088,7 +1134,7 @@
 
                             {# History #}
                             <div x-data="{ historyOpen: false }">
-                              <button class="yamtrack-icon-button p-2 text-white transition duration-300 cursor-pointer"
+                              <button class="yamtrack-icon-button yamtrack-episode-action-button text-white transition duration-300 cursor-pointer"
                                       title="Ver histórico"
                                       hx-get="{% media_view_url 'history_modal' episode %}"
                                       hx-vals='{"return_url": "{{ request.get_full_path|urlencode }}"}'
