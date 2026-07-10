@@ -3,7 +3,7 @@
 {% load app_tags %}
 
 {% block title %}
-  Importar dados - Yamtrack
+  Importar dados - FlexiHub
 {% endblock title %}
 
 {% block settings_content %}
@@ -197,13 +197,82 @@
       margin-bottom: 14px;
     }
 
-    .yamtrack-import-checkbox {
-      width: 16px;
-      height: 16px;
-      border-radius: 5px;
-      border: 1px solid rgba(255,255,255,0.20);
-      background: rgba(255,255,255,0.08);
-      accent-color: rgb(130, 140, 255);
+    .yamtrack-import-checkbox,
+    .yamtrack-settings-content input[type="checkbox"].yamtrack-import-checkbox,
+    .yamtrack-import-stack input[type="checkbox"].yamtrack-import-checkbox {
+      appearance: none !important;
+      -webkit-appearance: none !important;
+      width: 16px !important;
+      height: 16px !important;
+      min-width: 16px !important;
+      min-height: 16px !important;
+      max-width: 16px !important;
+      max-height: 16px !important;
+      flex: 0 0 16px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      position: relative !important;
+      padding: 0 !important;
+      margin: 0 8px 0 0 !important;
+      border-radius: 5px !important;
+      border: 1px solid rgba(255,255,255,0.24) !important;
+      background: rgba(255,255,255,0.06) !important;
+      background-image: none !important;
+      box-shadow: none !important;
+      filter: none !important;
+      outline: none !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      cursor: pointer;
+      vertical-align: middle !important;
+    }
+
+    .yamtrack-import-checkbox::after,
+    .yamtrack-settings-content input[type="checkbox"].yamtrack-import-checkbox::after,
+    .yamtrack-import-stack input[type="checkbox"].yamtrack-import-checkbox::after {
+      content: "";
+      width: 8px;
+      height: 5px;
+      border-left: 2px solid rgba(255,255,255,0.96);
+      border-bottom: 2px solid rgba(255,255,255,0.96);
+      opacity: 0;
+      transform: rotate(-45deg) translate(1px, -1px);
+      transform-origin: center;
+    }
+
+    .yamtrack-import-checkbox:checked,
+    .yamtrack-settings-content input[type="checkbox"].yamtrack-import-checkbox:checked,
+    .yamtrack-import-stack input[type="checkbox"].yamtrack-import-checkbox:checked {
+      border-color: rgba(160,168,255,0.86) !important;
+      background: rgba(130,140,255,0.72) !important;
+      background-image: none !important;
+      box-shadow: none !important;
+      filter: none !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+
+    .yamtrack-import-checkbox:checked::after,
+    .yamtrack-settings-content input[type="checkbox"].yamtrack-import-checkbox:checked::after,
+    .yamtrack-import-stack input[type="checkbox"].yamtrack-import-checkbox:checked::after {
+      opacity: 1;
+    }
+
+    .yamtrack-import-checkbox:hover,
+    .yamtrack-settings-content input[type="checkbox"].yamtrack-import-checkbox:hover,
+    .yamtrack-import-stack input[type="checkbox"].yamtrack-import-checkbox:hover {
+      border-color: rgba(255,255,255,0.34) !important;
+      background-image: none !important;
+      box-shadow: none !important;
+      filter: none !important;
+    }
+
+    .yamtrack-import-checkbox:focus,
+    .yamtrack-settings-content input[type="checkbox"].yamtrack-import-checkbox:focus,
+    .yamtrack-import-stack input[type="checkbox"].yamtrack-import-checkbox:focus {
+      outline: none !important;
+      box-shadow: 0 0 0 2px rgba(130,140,255,0.22) !important;
     }
 
     .yamtrack-import-info-link,
