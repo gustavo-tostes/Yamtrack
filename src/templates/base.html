@@ -8,7 +8,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="keywords" content="FlexiHub, Media Tracker, Yamtrack">
-    <meta name="description" content="Pesquise e acompanhe séries, temporadas, filmes, animes, mangás, jogos, livros e quadrinhos no FlexiHub.">
+    <meta name="description" content="Pesquise e acompanhe séries, temporadas e filmes no FlexiHub.">
 
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-status-bar-style" content="black-translucent">
@@ -19,6 +19,94 @@
         FlexiHub
       {% endblock title %}
     </title>
+
+    <style>
+      [x-cloak] {
+        display: none !important;
+      }
+
+      div.sticky.top-0.z-10 {
+        z-index: 80 !important;
+        overflow: visible !important;
+      }
+
+      div.sticky.top-0.z-10 > div,
+      div.sticky.top-0.z-10 .h-16 {
+        overflow: visible !important;
+      }
+
+      main {
+        position: relative;
+        z-index: 0;
+      }
+
+      .flexihub-global-search-wrapper,
+      .flexihub-global-search-form {
+        position: relative;
+        z-index: 1000;
+        overflow: visible;
+      }
+
+      .flexihub-global-search-row {
+        position: relative;
+        overflow: visible;
+      }
+
+      .flexihub-global-search-dropdown {
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        width: 160px;
+        max-height: min(70vh, 420px);
+        overflow-y: auto;
+        padding: 6px;
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background:
+          linear-gradient(135deg, rgba(36, 38, 43, 0.96), rgba(18, 19, 22, 0.96)) !important;
+        color: rgba(255, 255, 255, 0.84);
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.10),
+          0 18px 36px rgba(0, 0, 0, 0.34);
+        backdrop-filter: blur(24px) saturate(155%);
+        -webkit-backdrop-filter: blur(24px) saturate(155%);
+        z-index: 9999 !important;
+      }
+
+      .flexihub-global-search-dropdown li {
+        border-radius: 12px;
+        padding: 9px 12px;
+        color: rgba(255, 255, 255, 0.82);
+        transition:
+          background 160ms ease,
+          color 160ms ease;
+      }
+
+      .flexihub-global-search-dropdown li:hover {
+        background: rgba(255, 255, 255, 0.09);
+        color: #ffffff;
+      }
+
+      .flexihub-global-search-dropdown::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      .flexihub-global-search-dropdown::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .flexihub-global-search-dropdown::-webkit-scrollbar-thumb {
+        border-radius: 9999px;
+        background: rgba(255, 255, 255, 0.18);
+      }
+
+      @media (max-width: 640px) {
+        .flexihub-global-search-dropdown {
+          width: 150px;
+          right: 0;
+        }
+      }
+    </style>
 
     {% block extra_head %}
     {% endblock extra_head %}
@@ -96,11 +184,11 @@
                          class="flex items-center space-x-3 px-4 py-2 rounded-md transition-colors duration-200 text-sm {% if media_type == item.media_type %}text-white bg-[#2c3136]{% else %}text-gray-400 hover:text-white hover:bg-[#23272b]{% endif %}">
                         {% icon item.media_type is_active=media_type|str_equals:item.media_type %}
                         <span>
-                          {% if item.display_name == "TV Shows" or item.display_name == "TV Show" %}
+                          {% if item.display_name == "TV Shows" %}
                             Séries
-                          {% elif item.display_name == "TV Seasons" or item.display_name == "TV Season" %}
+                          {% elif item.display_name == "TV Seasons" %}
                             Temporadas
-                          {% elif item.display_name == "Movies" or item.display_name == "Movie" %}
+                          {% elif item.display_name == "Movies" %}
                             Filmes
                           {% elif item.display_name == "Anime" or item.display_name == "Animes" %}
                             Animes
@@ -112,7 +200,7 @@
                             Livros
                           {% elif item.display_name == "Comics" or item.display_name == "Comic" %}
                             Quadrinhos
-                          {% elif item.display_name == "Boardgames" or item.display_name == "Boardgame" or item.display_name == "Board Games" or item.display_name == "Board Game" %}
+                          {% elif item.display_name == "Boardgames" or item.display_name == "Board Games" or item.display_name == "Boardgame" or item.display_name == "Board Game" %}
                             Jogos de tabuleiro
                           {% else %}
                             {{ item.display_name }}
@@ -124,11 +212,11 @@
                          class="flex items-center space-x-3 px-4 py-2 rounded-md transition-colors duration-200 text-sm text-gray-400 hover:text-white hover:bg-[#23272b]">
                         {% icon item.media_type is_active=False %}
                         <span>
-                          {% if item.display_name == "TV Shows" or item.display_name == "TV Show" %}
+                          {% if item.display_name == "TV Shows" %}
                             Séries
-                          {% elif item.display_name == "TV Seasons" or item.display_name == "TV Season" %}
+                          {% elif item.display_name == "TV Seasons" %}
                             Temporadas
-                          {% elif item.display_name == "Movies" or item.display_name == "Movie" %}
+                          {% elif item.display_name == "Movies" %}
                             Filmes
                           {% elif item.display_name == "Anime" or item.display_name == "Animes" %}
                             Animes
@@ -140,7 +228,7 @@
                             Livros
                           {% elif item.display_name == "Comics" or item.display_name == "Comic" %}
                             Quadrinhos
-                          {% elif item.display_name == "Boardgames" or item.display_name == "Boardgame" or item.display_name == "Board Games" or item.display_name == "Board Game" %}
+                          {% elif item.display_name == "Boardgames" or item.display_name == "Board Games" or item.display_name == "Boardgame" or item.display_name == "Board Game" %}
                             Jogos de tabuleiro
                           {% else %}
                             {{ item.display_name }}
@@ -275,9 +363,10 @@
 
                 {# Search bar #}
                 {% block search_bar %}
-                  <div class="relative w-full max-w-2xl">
+                  <div class="flexihub-global-search-wrapper relative w-full max-w-2xl">
                     <form method="get"
                           action="{% url 'search' %}"
+                          class="flexihub-global-search-form"
                           x-data="{ 
                             isOpen: false, 
                             selectedType: { display: '{{ search_type|media_type_readable_plural }}', value: '{{ search_type }}' }, 
@@ -311,7 +400,7 @@
                               return `Buscar ${this.translateMediaDisplay(this.selectedType.display).toLowerCase()}...`;
                             }
                           }">
-                      <div class="flex">
+                      <div class="flexihub-global-search-row flex">
                         <div class="relative grow">
                           {# Search input #}
                           <input type="search"
@@ -332,13 +421,14 @@
                         <button type="button"
                                 @click="isOpen = !isOpen"
                                 @click.away="isOpen = false"
-                                class="flex items-center justify-between max-w-[110px] sm:max-w-none sm:w-32 px-2 sm:px-4 py-2 text-sm text-gray-300 bg-[#272c31] rounded-r-md focus:outline-none focus:ring-2 focus:ring-[#4a9eff] focus:ring-inset hover:bg-[#2a2e33] transition-colors duration-200 cursor-pointer">
+                                class="flex items-center justify-between max-w-[120px] sm:max-w-none sm:w-40 px-2 sm:px-4 py-2 text-sm text-gray-300 bg-[#272c31] rounded-r-md focus:outline-none focus:ring-2 focus:ring-[#4a9eff] focus:ring-inset hover:bg-[#2a2e33] transition-colors duration-200 cursor-pointer">
                           <span class="truncate sm:whitespace-normal" x-text="translateMediaDisplay(selectedType.display)"></span>
-                          {% include "app/icons/chevron-down.svg" with classes="w-4 h-4 ml-2" %}
+                          {% include "app/icons/chevron-down.svg" with classes="w-4 h-4 ml-2 shrink-0" %}
                         </button>
 
                         <ul x-cloak
                             x-show="isOpen"
+                            @click.outside="isOpen = false"
                             @keydown.escape.window="isOpen = false"
                             x-transition:enter="transition ease-out duration-100"
                             x-transition:enter-start="transform opacity-0 scale-95"
@@ -346,10 +436,10 @@
                             x-transition:leave="transition ease-in duration-75"
                             x-transition:leave-start="transform opacity-100 scale-100"
                             x-transition:leave-end="transform opacity-0 scale-95"
-                            class="absolute z-20 py-1 mt-12 overflow-auto text-sm text-gray-300 bg-[#2a2e33] rounded-md shadow-lg right-0 w-44">
+                            class="flexihub-global-search-dropdown text-sm text-gray-300">
                           <template x-for="type in mediaTypes" :key="type.value">
                             <li @click="selectedType = type; isOpen = false"
-                                class="px-4 py-2 cursor-pointer hover:bg-[#343a40] transition duration-150 ease-in-out"
+                                class="cursor-pointer transition duration-150 ease-in-out"
                                 x-text="translateMediaDisplay(type.display)"></li>
                           </template>
                         </ul>
