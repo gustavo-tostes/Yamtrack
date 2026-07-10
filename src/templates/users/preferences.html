@@ -3,7 +3,7 @@
 {% load app_tags %}
 
 {% block title %}
-  Preferências - Yamtrack
+  Preferências - FlexiHub
 {% endblock title %}
 
 {% block settings_content %}
@@ -309,8 +309,10 @@
                   Hoje
                 {% elif choice.1 == "Yesterday" %}
                   Ontem
-                {% elif choice.1 == "Release date" %}
+                {% elif choice.1 == "Release date" or choice.1 == "Release Date" %}
                   Data de lançamento
+                {% elif choice.1 == "Current Date" or choice.1 == "Current date" %}
+                  Data atual
                 {% elif choice.1 == "Now" %}
                   Agora
                 {% else %}
@@ -388,7 +390,19 @@
           <select name="date_format" class="yamtrack-preferences-select">
             {% for choice in date_format_choices %}
               <option value="{{ choice.0 }}"
-                      {% if user.date_format == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
+                      {% if user.date_format == choice.0 %}selected{% endif %}>
+                {% if choice.1 == "18/01/2026 (EU)" %}
+                  18/01/2026 (BR)
+                {% elif choice.1 == "01/18/2026 (US)" %}
+                  01/18/2026 (EUA)
+                {% elif choice.1 == "January 18, 2026 (US)" %}
+                  18 de janeiro de 2026 (BR)
+                {% elif choice.1 == "18 January 2026 (EU)" %}
+                  18 de janeiro de 2026 (BR)
+                {% else %}
+                  {{ choice.1 }}
+                {% endif %}
+              </option>
             {% endfor %}
           </select>
         </div>
@@ -411,6 +425,10 @@
                   12 horas
                 {% elif choice.1 == "24-hour" %}
                   24 horas
+                {% elif choice.1 == "2:30 PM (12-hour)" %}
+                  14:30 (12 horas)
+                {% elif choice.1 == "14:30 (24-hour)" %}
+                  14:30 (24 horas)
                 {% else %}
                   {{ choice.1 }}
                 {% endif %}
@@ -463,6 +481,36 @@
                       {% if user.watch_provider_region == choice.0 %}selected{% endif %}>
                 {% if choice.1 == "Disabled" %}
                   Desativado
+                {% elif choice.1 == "Brazil" %}
+                  Brasil
+                {% elif choice.1 == "United States" %}
+                  Estados Unidos
+                {% elif choice.1 == "United Kingdom" %}
+                  Reino Unido
+                {% elif choice.1 == "Portugal" %}
+                  Portugal
+                {% elif choice.1 == "Argentina" %}
+                  Argentina
+                {% elif choice.1 == "Canada" %}
+                  Canadá
+                {% elif choice.1 == "Spain" %}
+                  Espanha
+                {% elif choice.1 == "France" %}
+                  França
+                {% elif choice.1 == "Germany" %}
+                  Alemanha
+                {% elif choice.1 == "Italy" %}
+                  Itália
+                {% elif choice.1 == "Japan" %}
+                  Japão
+                {% elif choice.1 == "Mexico" %}
+                  México
+                {% elif choice.1 == "Australia" %}
+                  Austrália
+                {% elif choice.1 == "Chile" %}
+                  Chile
+                {% elif choice.1 == "Colombia" %}
+                  Colômbia
                 {% else %}
                   {{ choice.1 }}
                 {% endif %}
