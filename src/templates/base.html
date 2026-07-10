@@ -26,7 +26,7 @@
       }
 
       div.sticky.top-0.z-10 {
-        z-index: 80 !important;
+        z-index: 5000 !important;
         overflow: visible !important;
       }
 
@@ -41,22 +41,40 @@
       }
 
       .flexihub-global-search-wrapper,
-      .flexihub-global-search-form {
+      .flexihub-global-search-form,
+      .flexihub-global-search-row,
+      .flexihub-global-search-type-wrapper {
         position: relative;
-        z-index: 1000;
-        overflow: visible;
+        overflow: visible !important;
+      }
+
+      .flexihub-global-search-wrapper {
+        z-index: 6000;
+      }
+
+      .flexihub-global-search-form {
+        z-index: 7000;
       }
 
       .flexihub-global-search-row {
-        position: relative;
-        overflow: visible;
+        z-index: 8000;
+      }
+
+      .flexihub-global-search-type-wrapper {
+        flex: 0 0 auto;
+        z-index: 9000;
+      }
+
+      .flexihub-global-search-type-button {
+        width: 176px;
+        min-width: 176px;
       }
 
       .flexihub-global-search-dropdown {
         position: absolute;
-        top: calc(100% + 8px);
+        top: calc(100% + 10px);
         right: 0;
-        width: 160px;
+        width: 220px;
         max-height: min(70vh, 420px);
         overflow-y: auto;
         padding: 6px;
@@ -70,7 +88,7 @@
           0 18px 36px rgba(0, 0, 0, 0.34);
         backdrop-filter: blur(24px) saturate(155%);
         -webkit-backdrop-filter: blur(24px) saturate(155%);
-        z-index: 9999 !important;
+        z-index: 99999 !important;
       }
 
       .flexihub-global-search-dropdown li {
@@ -101,8 +119,13 @@
       }
 
       @media (max-width: 640px) {
+        .flexihub-global-search-type-button {
+          width: 132px;
+          min-width: 132px;
+        }
+
         .flexihub-global-search-dropdown {
-          width: 150px;
+          width: 210px;
           right: 0;
         }
       }
@@ -369,35 +392,61 @@
                           class="flexihub-global-search-form"
                           x-data="{ 
                             isOpen: false, 
-                            selectedType: { display: '{{ search_type|media_type_readable_plural }}', value: '{{ search_type }}' }, 
+                            selectedType: { display: '{{ search_type|media_type_readable_plural|escapejs }}', value: '{{ search_type }}' }, 
                             mediaTypes: {% get_search_media_types user as search_types %}{{ search_types }},
+                            getRawDisplay(type) {
+                              if (!type) return '';
+                              return type.display || type.display_name || type.label || type.name || type.title || '';
+                            },
+                            getTypeValue(type) {
+                              if (!type) return '';
+                              return type.value || type.media_type || type.type || type.id || '';
+                            },
                             translateMediaDisplay(display) {
+                              const raw = String(display || '').trim();
+                              const key = raw.toLowerCase();
                               const translations = {
-                                'TV Shows': 'Séries',
-                                'TV Show': 'Séries',
-                                'TV Seasons': 'Temporadas',
-                                'TV Season': 'Temporadas',
-                                'Movies': 'Filmes',
-                                'Movie': 'Filmes',
-                                'Games': 'Jogos',
-                                'Game': 'Jogos',
-                                'Books': 'Livros',
-                                'Book': 'Livros',
-                                'Anime': 'Animes',
-                                'Animes': 'Animes',
-                                'Manga': 'Mangás',
-                                'Mangas': 'Mangás',
-                                'Comics': 'Quadrinhos',
-                                'Comic': 'Quadrinhos',
-                                'Boardgames': 'Jogos de tabuleiro',
-                                'Boardgame': 'Jogos de tabuleiro',
-                                'Board Games': 'Jogos de tabuleiro',
-                                'Board Game': 'Jogos de tabuleiro'
+                                'tv shows': 'Séries',
+                                'tv show': 'Séries',
+                                'series': 'Séries',
+                                'seasons': 'Temporadas',
+                                'tv seasons': 'Temporadas',
+                                'tv season': 'Temporadas',
+                                'movies': 'Filmes',
+                                'movie': 'Filmes',
+                                'games': 'Jogos',
+                                'game': 'Jogos',
+                                'books': 'Livros',
+                                'book': 'Livros',
+                                'anime': 'Animes',
+                                'animes': 'Animes',
+                                'manga': 'Mangás',
+                                'mangas': 'Mangás',
+                                'comics': 'Quadrinhos',
+                                'comic': 'Quadrinhos',
+                                'boardgames': 'Jogos de tabuleiro',
+                                'boardgame': 'Jogos de tabuleiro',
+                                'board games': 'Jogos de tabuleiro',
+                                'board game': 'Jogos de tabuleiro'
                               };
-                              return translations[display] || display;
+                              return translations[key] || raw;
+                            },
+                            getTypeDisplay(type) {
+                              return this.translateMediaDisplay(this.getRawDisplay(type));
+                            },
+                            getSelectedDisplay() {
+                              return this.translateMediaDisplay(this.getRawDisplay(this.selectedType));
+                            },
+                            selectType(type) {
+                              this.selectedType = {
+                                ...type,
+                                display: this.getRawDisplay(type),
+                                value: this.getTypeValue(type)
+                              };
+                              this.isOpen = false;
                             },
                             getPlaceholder() {
-                              return `Buscar ${this.translateMediaDisplay(this.selectedType.display).toLowerCase()}...`;
+                              return `Buscar ${this.getSelectedDisplay().toLowerCase()}...`;
                             }
                           }">
                       <div class="flexihub-global-search-row flex">
@@ -415,34 +464,35 @@
                           </button>
                         </div>
 
-                        <input type="hidden" name="media_type" :value="selectedType.value">
+                        <input type="hidden" name="media_type" :value="getTypeValue(selectedType)">
 
                         {# Media type dropdown #}
-                        <button type="button"
-                                @click="isOpen = !isOpen"
-                                @click.away="isOpen = false"
-                                class="flex items-center justify-between max-w-[120px] sm:max-w-none sm:w-40 px-2 sm:px-4 py-2 text-sm text-gray-300 bg-[#272c31] rounded-r-md focus:outline-none focus:ring-2 focus:ring-[#4a9eff] focus:ring-inset hover:bg-[#2a2e33] transition-colors duration-200 cursor-pointer">
-                          <span class="truncate sm:whitespace-normal" x-text="translateMediaDisplay(selectedType.display)"></span>
-                          {% include "app/icons/chevron-down.svg" with classes="w-4 h-4 ml-2 shrink-0" %}
-                        </button>
+                        <div class="flexihub-global-search-type-wrapper"
+                             @click.outside="isOpen = false">
+                          <button type="button"
+                                  @click="isOpen = !isOpen"
+                                  class="flexihub-global-search-type-button flex items-center justify-between px-2 sm:px-4 py-2 text-sm text-gray-300 bg-[#272c31] rounded-r-md focus:outline-none focus:ring-2 focus:ring-[#4a9eff] focus:ring-inset hover:bg-[#2a2e33] transition-colors duration-200 cursor-pointer">
+                            <span class="truncate" x-text="getSelectedDisplay()"></span>
+                            {% include "app/icons/chevron-down.svg" with classes="w-4 h-4 ml-2 shrink-0" %}
+                          </button>
 
-                        <ul x-cloak
-                            x-show="isOpen"
-                            @click.outside="isOpen = false"
-                            @keydown.escape.window="isOpen = false"
-                            x-transition:enter="transition ease-out duration-100"
-                            x-transition:enter-start="transform opacity-0 scale-95"
-                            x-transition:enter-end="transform opacity-100 scale-100"
-                            x-transition:leave="transition ease-in duration-75"
-                            x-transition:leave-start="transform opacity-100 scale-100"
-                            x-transition:leave-end="transform opacity-0 scale-95"
-                            class="flexihub-global-search-dropdown text-sm text-gray-300">
-                          <template x-for="type in mediaTypes" :key="type.value">
-                            <li @click="selectedType = type; isOpen = false"
-                                class="cursor-pointer transition duration-150 ease-in-out"
-                                x-text="translateMediaDisplay(type.display)"></li>
-                          </template>
-                        </ul>
+                          <ul x-cloak
+                              x-show="isOpen"
+                              @keydown.escape.window="isOpen = false"
+                              x-transition:enter="transition ease-out duration-100"
+                              x-transition:enter-start="transform opacity-0 scale-95"
+                              x-transition:enter-end="transform opacity-100 scale-100"
+                              x-transition:leave="transition ease-in duration-75"
+                              x-transition:leave-start="transform opacity-100 scale-100"
+                              x-transition:leave-end="transform opacity-0 scale-95"
+                              class="flexihub-global-search-dropdown text-sm text-gray-300">
+                            <template x-for="type in mediaTypes" :key="getTypeValue(type)">
+                              <li @click="selectType(type)"
+                                  class="cursor-pointer transition duration-150 ease-in-out"
+                                  x-text="getTypeDisplay(type)"></li>
+                            </template>
+                          </ul>
+                        </div>
                       </div>
                     </form>
                   </div>
