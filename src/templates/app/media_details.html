@@ -801,6 +801,10 @@
                 <h3 class="text-sm font-bold text-gray-400">
                   {% if key == "format" %}
                     FORMATO
+                  {% elif key == "first_air_date" %}
+                    DATA DE ESTREIA
+                  {% elif key == "last_air_date" %}
+                    DATA DO ÚLTIMO EPISÓDIO
                   {% elif key == "start_date" %}
                     DATA DE INÍCIO
                   {% elif key == "end_date" %}
@@ -811,10 +815,22 @@
                     DATA DE PUBLICAÇÃO
                   {% elif key == "number_of_pages" or key == "pages" %}
                     NÚMERO DE PÁGINAS
+                  {% elif key == "episodes" or key == "episode_count" or key == "number_of_episodes" %}
+                    EPISÓDIOS
+                  {% elif key == "seasons" or key == "season_count" or key == "number_of_seasons" %}
+                    TEMPORADAS
+                  {% elif key == "runtime" %}
+                    DURAÇÃO
+                  {% elif key == "total_runtime" %}
+                    DURAÇÃO TOTAL
                   {% elif key == "publisher" %}
                     EDITORA
                   {% elif key == "publishers" %}
                     EDITORAS
+                  {% elif key == "author" %}
+                    AUTOR
+                  {% elif key == "authors" %}
+                    AUTORES
                   {% elif key == "issues_count" %}
                     QUANTIDADE DE EDIÇÕES
                   {% elif key == "year" %}
