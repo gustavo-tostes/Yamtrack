@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="keywords" content="FlexiHub, Media Tracker, Yamtrack">
     <meta name="description" content="Pesquise e acompanhe séries, temporadas e filmes no FlexiHub.">
+    <meta name="flexihub-base-version" content="dropdown-v4-fixed-teleport-2026-07-10">
 
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-status-bar-style" content="black-translucent">
@@ -93,7 +94,7 @@
         backdrop-filter: blur(24px) saturate(155%);
         -webkit-backdrop-filter: blur(24px) saturate(155%);
         transform-origin: top right;
-        z-index: 99999 !important;
+        z-index: 2147483647 !important;
       }
 
       .flexihub-global-search-dropdown li {
@@ -164,6 +165,7 @@
   </head>
 
   <body>
+    <!-- FLEXIHUB_BASE_DROPDOWN_V4_ACTIVE -->
     {% block body %}
       {# Main container for the layout #}
       <div class="flex min-h-screen bg-[#212529] text-gray-100"
@@ -399,6 +401,13 @@
                             dropdownStyle: '',
                             selectedType: { display: '{{ search_type|media_type_readable_plural|escapejs }}', value: '{{ search_type }}' },
                             mediaTypes: {% get_search_media_types user as search_types %}{{ search_types }},
+                            init() {
+                              this.selectedType = {
+                                ...this.selectedType,
+                                display: this.getSelectedDisplay(),
+                                value: this.getTypeValue(this.selectedType)
+                              };
+                            },
                             normalizeKey(value) {
                               return String(value || '')
                                 .trim()
@@ -487,7 +496,7 @@
                             selectType(type) {
                               this.selectedType = {
                                 ...type,
-                                display: this.getRawDisplay(type),
+                                display: this.getTypeDisplay(type),
                                 value: this.getTypeValue(type)
                               };
                               this.isOpen = false;
@@ -502,7 +511,7 @@
                               const left = Math.max(12, Math.min(rect.right - width, viewportWidth - width - 12));
                               const top = Math.round(rect.bottom + 10);
 
-                              this.dropdownStyle = 'position: fixed; top: ' + top + 'px; left: ' + Math.round(left) + 'px; width: ' + width + 'px;';
+                              this.dropdownStyle = 'position: fixed !important; top: ' + top + 'px !important; left: ' + Math.round(left) + 'px !important; width: ' + width + 'px !important; z-index: 2147483647 !important;';
                             },
                             toggleDropdown() {
                               this.isOpen = !this.isOpen;
