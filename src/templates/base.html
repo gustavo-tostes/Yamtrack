@@ -71,13 +71,17 @@
       }
 
       .flexihub-global-search-dropdown {
-        position: absolute;
-        top: calc(100% + 10px);
-        right: 0;
-        width: 220px;
+        position: fixed;
+        top: auto;
+        left: auto;
+        right: auto;
+        width: 240px;
         max-height: min(70vh, 420px);
         overflow-y: auto;
+        overflow-x: hidden;
         padding: 6px;
+        margin: 0;
+        list-style: none;
         border-radius: 18px;
         border: 1px solid rgba(255, 255, 255, 0.14);
         background:
@@ -88,6 +92,7 @@
           0 18px 36px rgba(0, 0, 0, 0.34);
         backdrop-filter: blur(24px) saturate(155%);
         -webkit-backdrop-filter: blur(24px) saturate(155%);
+        transform-origin: top right;
         z-index: 99999 !important;
       }
 
@@ -126,7 +131,6 @@
 
         .flexihub-global-search-dropdown {
           width: 210px;
-          right: 0;
         }
       }
     </style>
@@ -390,25 +394,65 @@
                     <form method="get"
                           action="{% url 'search' %}"
                           class="flexihub-global-search-form"
-                          x-data="{ 
-                            isOpen: false, 
-                            selectedType: { display: '{{ search_type|media_type_readable_plural|escapejs }}', value: '{{ search_type }}' }, 
+                          x-data="{
+                            isOpen: false,
+                            dropdownStyle: '',
+                            selectedType: { display: '{{ search_type|media_type_readable_plural|escapejs }}', value: '{{ search_type }}' },
                             mediaTypes: {% get_search_media_types user as search_types %}{{ search_types }},
+                            normalizeKey(value) {
+                              return String(value || '')
+                                .trim()
+                                .toLowerCase()
+                                .replace(/_/g, ' ')
+                                .replace(/-/g, ' ')
+                                .replace(/\s+/g, ' ');
+                            },
                             getRawDisplay(type) {
                               if (!type) return '';
-                              return type.display || type.display_name || type.label || type.name || type.title || '';
+                              if (typeof type === 'string') return type;
+                              return type.display || type.display_name || type.label || type.name || type.title || type.value || type.media_type || type.type || type.id || '';
                             },
                             getTypeValue(type) {
                               if (!type) return '';
+                              if (typeof type === 'string') return type;
                               return type.value || type.media_type || type.type || type.id || '';
                             },
-                            translateMediaDisplay(display) {
+                            translateMediaValue(value) {
+                              const translations = {
+                                'tv': 'Séries',
+                                'show': 'Séries',
+                                'shows': 'Séries',
+                                'season': 'Temporadas',
+                                'seasons': 'Temporadas',
+                                'movie': 'Filmes',
+                                'movies': 'Filmes',
+                                'anime': 'Animes',
+                                'animes': 'Animes',
+                                'manga': 'Mangás',
+                                'mangas': 'Mangás',
+                                'game': 'Jogos',
+                                'games': 'Jogos',
+                                'book': 'Livros',
+                                'books': 'Livros',
+                                'comic': 'Quadrinhos',
+                                'comics': 'Quadrinhos',
+                                'boardgame': 'Jogos de tabuleiro',
+                                'boardgames': 'Jogos de tabuleiro',
+                                'board game': 'Jogos de tabuleiro',
+                                'board games': 'Jogos de tabuleiro'
+                              };
+                              return translations[this.normalizeKey(value)] || '';
+                            },
+                            translateMediaDisplay(display, type = null) {
+                              const byValue = this.translateMediaValue(this.getTypeValue(type));
+                              if (byValue) return byValue;
+
                               const raw = String(display || '').trim();
-                              const key = raw.toLowerCase();
                               const translations = {
                                 'tv shows': 'Séries',
                                 'tv show': 'Séries',
                                 'series': 'Séries',
+                                'séries': 'Séries',
                                 'seasons': 'Temporadas',
                                 'tv seasons': 'Temporadas',
                                 'tv season': 'Temporadas',
@@ -422,20 +466,23 @@
                                 'animes': 'Animes',
                                 'manga': 'Mangás',
                                 'mangas': 'Mangás',
+                                'mangás': 'Mangás',
                                 'comics': 'Quadrinhos',
                                 'comic': 'Quadrinhos',
+                                'quadrinhos': 'Quadrinhos',
                                 'boardgames': 'Jogos de tabuleiro',
                                 'boardgame': 'Jogos de tabuleiro',
                                 'board games': 'Jogos de tabuleiro',
-                                'board game': 'Jogos de tabuleiro'
+                                'board game': 'Jogos de tabuleiro',
+                                'jogos de tabuleiro': 'Jogos de tabuleiro'
                               };
-                              return translations[key] || raw;
+                              return translations[this.normalizeKey(raw)] || raw;
                             },
                             getTypeDisplay(type) {
-                              return this.translateMediaDisplay(this.getRawDisplay(type));
+                              return this.translateMediaDisplay(this.getRawDisplay(type), type);
                             },
                             getSelectedDisplay() {
-                              return this.translateMediaDisplay(this.getRawDisplay(this.selectedType));
+                              return this.translateMediaDisplay(this.getRawDisplay(this.selectedType), this.selectedType);
                             },
                             selectType(type) {
                               this.selectedType = {
@@ -445,10 +492,30 @@
                               };
                               this.isOpen = false;
                             },
+                            positionDropdown() {
+                              const button = this.$refs.typeButton;
+                              if (!button) return;
+
+                              const rect = button.getBoundingClientRect();
+                              const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+                              const width = viewportWidth < 640 ? 210 : 240;
+                              const left = Math.max(12, Math.min(rect.right - width, viewportWidth - width - 12));
+                              const top = Math.round(rect.bottom + 10);
+
+                              this.dropdownStyle = 'position: fixed; top: ' + top + 'px; left: ' + Math.round(left) + 'px; width: ' + width + 'px;';
+                            },
+                            toggleDropdown() {
+                              this.isOpen = !this.isOpen;
+                              if (this.isOpen) {
+                                this.$nextTick(() => this.positionDropdown());
+                              }
+                            },
                             getPlaceholder() {
-                              return `Buscar ${this.getSelectedDisplay().toLowerCase()}...`;
+                              return 'Buscar ' + this.getSelectedDisplay().toLowerCase() + '...';
                             }
-                          }">
+                          }"
+                          @resize.window="isOpen && positionDropdown()"
+                          @scroll.window="isOpen && positionDropdown()">
                       <div class="flexihub-global-search-row flex">
                         <div class="relative grow">
                           {# Search input #}
@@ -470,28 +537,33 @@
                         <div class="flexihub-global-search-type-wrapper"
                              @click.outside="isOpen = false">
                           <button type="button"
-                                  @click="isOpen = !isOpen"
+                                  x-ref="typeButton"
+                                  @click="toggleDropdown()"
                                   class="flexihub-global-search-type-button flex items-center justify-between px-2 sm:px-4 py-2 text-sm text-gray-300 bg-[#272c31] rounded-r-md focus:outline-none focus:ring-2 focus:ring-[#4a9eff] focus:ring-inset hover:bg-[#2a2e33] transition-colors duration-200 cursor-pointer">
                             <span class="truncate" x-text="getSelectedDisplay()"></span>
                             {% include "app/icons/chevron-down.svg" with classes="w-4 h-4 ml-2 shrink-0" %}
                           </button>
 
-                          <ul x-cloak
-                              x-show="isOpen"
-                              @keydown.escape.window="isOpen = false"
-                              x-transition:enter="transition ease-out duration-100"
-                              x-transition:enter-start="transform opacity-0 scale-95"
-                              x-transition:enter-end="transform opacity-100 scale-100"
-                              x-transition:leave="transition ease-in duration-75"
-                              x-transition:leave-start="transform opacity-100 scale-100"
-                              x-transition:leave-end="transform opacity-0 scale-95"
-                              class="flexihub-global-search-dropdown text-sm text-gray-300">
-                            <template x-for="type in mediaTypes" :key="getTypeValue(type)">
-                              <li @click="selectType(type)"
-                                  class="cursor-pointer transition duration-150 ease-in-out"
-                                  x-text="getTypeDisplay(type)"></li>
-                            </template>
-                          </ul>
+                          <template x-teleport="body">
+                            <ul x-cloak
+                                x-show="isOpen"
+                                :style="dropdownStyle"
+                                @keydown.escape.window="isOpen = false"
+                                @click.outside="isOpen = false"
+                                x-transition:enter="transition ease-out duration-100"
+                                x-transition:enter-start="transform opacity-0 scale-95"
+                                x-transition:enter-end="transform opacity-100 scale-100"
+                                x-transition:leave="transition ease-in duration-75"
+                                x-transition:leave-start="transform opacity-100 scale-100"
+                                x-transition:leave-end="transform opacity-0 scale-95"
+                                class="flexihub-global-search-dropdown text-sm text-gray-300">
+                              <template x-for="type in mediaTypes" :key="getTypeValue(type)">
+                                <li @click="selectType(type)"
+                                    class="cursor-pointer transition duration-150 ease-in-out"
+                                    x-text="getTypeDisplay(type)"></li>
+                              </template>
+                            </ul>
+                          </template>
                         </div>
                       </div>
                     </form>
