@@ -315,6 +315,8 @@
                   Data atual
                 {% elif choice.1 == "Now" %}
                   Agora
+                {% elif choice.1 == "No Date" or choice.1 == "No date" %}
+                  Sem data
                 {% else %}
                   {{ choice.1 }}
                 {% endif %}
