@@ -3,7 +3,7 @@
 {% load app_tags %}
 
 {% block title %}
-  Configurações - Yamtrack
+  Configurações - FlexiHub
 {% endblock title %}
 
 {% block extra_head %}
@@ -107,6 +107,70 @@
       position: relative;
       flex: 1;
       min-width: 0;
+    }
+
+    div.sticky.top-0.z-10,
+    div.sticky.top-0.z-10 > div,
+    div.sticky.top-0.z-10 .h-16 {
+      overflow: visible !important;
+    }
+
+    div.sticky.top-0.z-10 {
+      z-index: 5000 !important;
+    }
+
+    .yamtrack-settings-top-search {
+      overflow: visible !important;
+      z-index: 7000;
+    }
+
+    .yamtrack-settings-search-type-wrap {
+      position: relative;
+      flex: 0 0 auto;
+      overflow: visible !important;
+      z-index: 9000;
+    }
+
+    .yamtrack-settings-search-type-button {
+      width: 180px;
+      min-width: 180px;
+    }
+
+    .yamtrack-settings-search-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      width: 230px;
+      max-height: min(70vh, 420px);
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      padding: 6px;
+      z-index: 99999 !important;
+    }
+
+    .yamtrack-settings-search-dropdown li {
+      border-radius: 12px;
+      padding: 9px 12px;
+      color: rgba(255,255,255,0.82);
+      transition: background 160ms ease, color 160ms ease;
+    }
+
+    .yamtrack-settings-search-dropdown li:hover {
+      background: rgba(255,255,255,0.09);
+      color: #ffffff;
+    }
+
+    .yamtrack-settings-search-dropdown::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .yamtrack-settings-search-dropdown::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .yamtrack-settings-search-dropdown::-webkit-scrollbar-thumb {
+      border-radius: 9999px;
+      background: rgba(255,255,255,0.18);
     }
 
     .yamtrack-settings-page {
@@ -403,6 +467,15 @@
       .yamtrack-settings-top-search {
         width: 100%;
       }
+
+      .yamtrack-settings-search-type-button {
+        width: 140px;
+        min-width: 140px;
+      }
+
+      .yamtrack-settings-search-dropdown {
+        width: 220px;
+      }
     }
   </style>
 {% endblock extra_head %}
@@ -412,24 +485,84 @@
     <form method="get"
           action="{% url 'search' %}"
           class="yamtrack-settings-top-search"
-          x-data="{ 
-            isOpen: false, 
-            selectedType: { display: '{{ user.last_search_type|media_type_readable_plural }}', value: '{{ user.last_search_type }}' }, 
+          x-data="{
+            isOpen: false,
+            selectedType: {
+              display: '{{ user.last_search_type|media_type_readable_plural|escapejs }}',
+              value: '{{ user.last_search_type|escapejs }}'
+            },
             mediaTypes: {% get_search_media_types user as search_types %}{{ search_types }},
-            translateMediaDisplay(display) {
-              const translations = {
-                'TV Shows': 'Séries',
-                'TV Seasons': 'Temporadas',
-                'Movies': 'Filmes',
-                'Games': 'Jogos',
-                'Books': 'Livros',
-                'Anime': 'Animes',
-                'Manga': 'Mangás'
+            getRawDisplay(type) {
+              if (!type) return '';
+              return type.display || type.display_name || type.label || type.name || type.title || '';
+            },
+            getTypeValue(type) {
+              if (!type) return '';
+              return type.value || type.media_type || type.type || type.id || '';
+            },
+            translateMediaDisplay(display, value = '') {
+              const raw = String(display || '').trim();
+              const key = raw.toLowerCase();
+              const rawValue = String(value || '').trim().toLowerCase();
+
+              const valueTranslations = {
+                'tv': 'Séries',
+                'season': 'Temporadas',
+                'episode': 'Episódios',
+                'movie': 'Filmes',
+                'anime': 'Animes',
+                'manga': 'Mangás',
+                'game': 'Jogos',
+                'book': 'Livros',
+                'comic': 'Quadrinhos',
+                'boardgame': 'Jogos de tabuleiro'
               };
-              return translations[display] || display;
+
+              const displayTranslations = {
+                'tv shows': 'Séries',
+                'tv show': 'Séries',
+                'series': 'Séries',
+                'seasons': 'Temporadas',
+                'tv seasons': 'Temporadas',
+                'tv season': 'Temporadas',
+                'episodes': 'Episódios',
+                'episode': 'Episódios',
+                'movies': 'Filmes',
+                'movie': 'Filmes',
+                'games': 'Jogos',
+                'game': 'Jogos',
+                'books': 'Livros',
+                'book': 'Livros',
+                'anime': 'Animes',
+                'animes': 'Animes',
+                'manga': 'Mangás',
+                'mangas': 'Mangás',
+                'comics': 'Quadrinhos',
+                'comic': 'Quadrinhos',
+                'boardgames': 'Jogos de tabuleiro',
+                'boardgame': 'Jogos de tabuleiro',
+                'board games': 'Jogos de tabuleiro',
+                'board game': 'Jogos de tabuleiro'
+              };
+
+              return valueTranslations[rawValue] || displayTranslations[key] || raw;
+            },
+            getTypeDisplay(type) {
+              return this.translateMediaDisplay(this.getRawDisplay(type), this.getTypeValue(type));
+            },
+            getSelectedDisplay() {
+              return this.translateMediaDisplay(this.getRawDisplay(this.selectedType), this.getTypeValue(this.selectedType));
+            },
+            selectType(type) {
+              this.selectedType = {
+                ...type,
+                display: this.getRawDisplay(type),
+                value: this.getTypeValue(type)
+              };
+              this.isOpen = false;
             },
             getPlaceholder() {
-              return `Buscar ${this.translateMediaDisplay(this.selectedType.display).toLowerCase()}...`;
+              return `Buscar ${this.getSelectedDisplay().toLowerCase()}...`;
             }
           }">
       <div class="yamtrack-settings-search-field">
@@ -446,32 +579,34 @@
         </button>
       </div>
 
-      <input type="hidden" name="media_type" :value="selectedType.value">
+      <input type="hidden" name="media_type" :value="getTypeValue(selectedType)">
 
-      <button type="button"
-              @click="isOpen = !isOpen"
-              @click.away="isOpen = false"
-              class="yamtrack-glass-button flex items-center justify-between px-4 py-2 text-sm font-semibold cursor-pointer min-w-32">
-        <span class="truncate" x-text="translateMediaDisplay(selectedType.display)"></span>
-        {% include "app/icons/chevron-down.svg" with classes="w-4 h-4 ml-2" %}
-      </button>
+      <div class="yamtrack-settings-search-type-wrap"
+           @click.outside="isOpen = false">
+        <button type="button"
+                @click="isOpen = !isOpen"
+                class="yamtrack-glass-button yamtrack-settings-search-type-button flex items-center justify-between px-4 py-2 text-sm font-semibold cursor-pointer">
+          <span class="truncate" x-text="getSelectedDisplay()"></span>
+          {% include "app/icons/chevron-down.svg" with classes="w-4 h-4 ml-2 shrink-0" %}
+        </button>
 
-      <ul x-cloak
-          x-show="isOpen"
-          @keydown.escape.window="isOpen = false"
-          x-transition:enter="transition ease-out duration-100"
-          x-transition:enter-start="transform opacity-0 scale-95"
-          x-transition:enter-end="transform opacity-100 scale-100"
-          x-transition:leave="transition ease-in duration-75"
-          x-transition:leave-start="transform opacity-100 scale-100"
-          x-transition:leave-end="transform opacity-0 scale-95"
-          class="yamtrack-glass-menu absolute z-20 py-1 mt-12 overflow-hidden text-sm text-gray-300 right-0 w-36">
-        <template x-for="type in mediaTypes" :key="type.value">
-          <li @click="selectedType = type; isOpen = false"
-              class="px-4 py-2 cursor-pointer hover:bg-white/10 hover:text-white transition duration-150 ease-in-out"
-              x-text="translateMediaDisplay(type.display)"></li>
-        </template>
-      </ul>
+        <ul x-cloak
+            x-show="isOpen"
+            @keydown.escape.window="isOpen = false"
+            x-transition:enter="transition ease-out duration-100"
+            x-transition:enter-start="transform opacity-0 scale-95"
+            x-transition:enter-end="transform opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-75"
+            x-transition:leave-start="transform opacity-100 scale-100"
+            x-transition:leave-end="transform opacity-0 scale-95"
+            class="yamtrack-glass-menu yamtrack-settings-search-dropdown text-sm text-gray-300">
+          <template x-for="type in mediaTypes" :key="getTypeValue(type)">
+            <li @click="selectType(type)"
+                class="cursor-pointer transition duration-150 ease-in-out"
+                x-text="getTypeDisplay(type)"></li>
+          </template>
+        </ul>
+      </div>
     </form>
   {% endif %}
 {% endblock search_bar %}
