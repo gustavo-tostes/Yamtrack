@@ -84,95 +84,6 @@
       -webkit-backdrop-filter: blur(28px) saturate(160%);
     }
 
-    .yamtrack-settings-top-search {
-      position: relative;
-      width: min(680px, 100%);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px;
-      border-radius: 9999px;
-      background:
-        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.16), rgba(255,255,255,0.055) 52%, rgba(255,255,255,0.025) 100%);
-      border: 1px solid rgba(255,255,255,0.14);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.12),
-        inset 0 -1px 0 rgba(255,255,255,0.03),
-        0 8px 18px rgba(0,0,0,0.14);
-      backdrop-filter: blur(18px) saturate(150%);
-      -webkit-backdrop-filter: blur(18px) saturate(150%);
-    }
-
-    .yamtrack-settings-search-field {
-      position: relative;
-      flex: 1;
-      min-width: 0;
-    }
-
-    div.sticky.top-0.z-10,
-    div.sticky.top-0.z-10 > div,
-    div.sticky.top-0.z-10 .h-16 {
-      overflow: visible !important;
-    }
-
-    div.sticky.top-0.z-10 {
-      z-index: 5000 !important;
-    }
-
-    .yamtrack-settings-top-search {
-      overflow: visible !important;
-      z-index: 7000;
-    }
-
-    .yamtrack-settings-search-type-wrap {
-      position: relative;
-      flex: 0 0 auto;
-      overflow: visible !important;
-      z-index: 9000;
-    }
-
-    .yamtrack-settings-search-type-button {
-      width: 128px;
-      min-width: 128px;
-    }
-
-    .yamtrack-settings-search-dropdown {
-      position: absolute;
-      top: calc(100% + 8px);
-      right: 0;
-      width: 230px;
-      max-height: min(70vh, 420px);
-      overflow-y: auto !important;
-      overflow-x: hidden !important;
-      padding: 6px;
-      z-index: 99999 !important;
-    }
-
-    .yamtrack-settings-search-dropdown li {
-      border-radius: 12px;
-      padding: 9px 12px;
-      color: rgba(255,255,255,0.82);
-      transition: background 160ms ease, color 160ms ease;
-    }
-
-    .yamtrack-settings-search-dropdown li:hover {
-      background: rgba(255,255,255,0.09);
-      color: #ffffff;
-    }
-
-    .yamtrack-settings-search-dropdown::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    .yamtrack-settings-search-dropdown::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    .yamtrack-settings-search-dropdown::-webkit-scrollbar-thumb {
-      border-radius: 9999px;
-      background: rgba(255,255,255,0.18);
-    }
-
     .yamtrack-settings-page {
       max-width: 1180px;
       margin: -22px auto 0;
@@ -223,15 +134,6 @@
       -webkit-backdrop-filter: blur(18px) saturate(150%);
     }
 
-    .yamtrack-settings-top-search .yamtrack-glass-input {
-      min-height: 38px;
-      border: none !important;
-      background: transparent !important;
-      box-shadow: none !important;
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
-    }
-
     .yamtrack-glass-input::placeholder {
       color: rgba(255,255,255,0.42);
     }
@@ -243,11 +145,6 @@
         inset 0 1px 0 rgba(255,255,255,0.16),
         0 0 0 2px rgba(130,140,255,0.20),
         0 12px 24px rgba(0,0,0,0.18);
-    }
-
-    .yamtrack-settings-top-search .yamtrack-glass-input:focus {
-      border: none !important;
-      box-shadow: none !important;
     }
 
     .yamtrack-glass-button {
@@ -463,152 +360,11 @@
         position: relative;
         top: 0;
       }
-
-      .yamtrack-settings-top-search {
-        width: 100%;
-      }
-
-      .yamtrack-settings-search-type-button {
-        width: 128px;
-        min-width: 128px;
-      }
-
-      .yamtrack-settings-search-dropdown {
-        width: 220px;
-      }
     }
   </style>
 {% endblock extra_head %}
 
 {% block search_bar %}
-  {% if request.user.is_authenticated %}
-    <form method="get"
-          action="{% url 'search' %}"
-          class="yamtrack-settings-top-search"
-          x-data="{
-            isOpen: false,
-            selectedType: {
-              display: '{{ user.last_search_type|media_type_readable_plural|escapejs }}',
-              value: '{{ user.last_search_type|escapejs }}'
-            },
-            mediaTypes: {% get_search_media_types user as search_types %}{{ search_types }},
-            getRawDisplay(type) {
-              if (!type) return '';
-              return type.display || type.display_name || type.label || type.name || type.title || '';
-            },
-            getTypeValue(type) {
-              if (!type) return '';
-              return type.value || type.media_type || type.type || type.id || '';
-            },
-            translateMediaDisplay(display, value = '') {
-              const raw = String(display || '').trim();
-              const key = raw.toLowerCase();
-              const rawValue = String(value || '').trim().toLowerCase();
-
-              const valueTranslations = {
-                'tv': 'Séries',
-                'season': 'Temporadas',
-                'episode': 'Episódios',
-                'movie': 'Filmes',
-                'anime': 'Animes',
-                'manga': 'Mangás',
-                'game': 'Jogos',
-                'book': 'Livros',
-                'comic': 'Quadrinhos',
-                'boardgame': 'Jogos de tabuleiro'
-              };
-
-              const displayTranslations = {
-                'tv shows': 'Séries',
-                'tv show': 'Séries',
-                'series': 'Séries',
-                'seasons': 'Temporadas',
-                'tv seasons': 'Temporadas',
-                'tv season': 'Temporadas',
-                'episodes': 'Episódios',
-                'episode': 'Episódios',
-                'movies': 'Filmes',
-                'movie': 'Filmes',
-                'games': 'Jogos',
-                'game': 'Jogos',
-                'books': 'Livros',
-                'book': 'Livros',
-                'anime': 'Animes',
-                'animes': 'Animes',
-                'manga': 'Mangás',
-                'mangas': 'Mangás',
-                'comics': 'Quadrinhos',
-                'comic': 'Quadrinhos',
-                'boardgames': 'Jogos de tabuleiro',
-                'boardgame': 'Jogos de tabuleiro',
-                'board games': 'Jogos de tabuleiro',
-                'board game': 'Jogos de tabuleiro'
-              };
-
-              return valueTranslations[rawValue] || displayTranslations[key] || raw;
-            },
-            getTypeDisplay(type) {
-              return this.translateMediaDisplay(this.getRawDisplay(type), this.getTypeValue(type));
-            },
-            getSelectedDisplay() {
-              return this.translateMediaDisplay(this.getRawDisplay(this.selectedType), this.getTypeValue(this.selectedType));
-            },
-            selectType(type) {
-              this.selectedType = {
-                ...type,
-                display: this.getRawDisplay(type),
-                value: this.getTypeValue(type)
-              };
-              this.isOpen = false;
-            },
-            getPlaceholder() {
-              return `Buscar ${this.getSelectedDisplay().toLowerCase()}...`;
-            }
-          }">
-      <div class="yamtrack-settings-search-field">
-        <input type="search"
-               id="global-search"
-               name="q"
-               value="{{ request.GET.q }}"
-               :placeholder="getPlaceholder()"
-               class="yamtrack-glass-input w-full py-2 pl-10 pr-4 text-sm appearance-none">
-
-        <button type="submit"
-                class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200 focus:outline-none cursor-pointer">
-          {% include "app/icons/magnifying-glass.svg" with classes="w-5 h-5" %}
-        </button>
-      </div>
-
-      <input type="hidden" name="media_type" :value="getTypeValue(selectedType)">
-
-      <div class="yamtrack-settings-search-type-wrap"
-           @click.outside="isOpen = false">
-        <button type="button"
-                @click="isOpen = !isOpen"
-                class="yamtrack-glass-button yamtrack-settings-search-type-button flex items-center justify-between px-4 py-2 text-sm font-semibold cursor-pointer">
-          <span class="truncate" x-text="getSelectedDisplay()"></span>
-          {% include "app/icons/chevron-down.svg" with classes="w-4 h-4 ml-2 shrink-0" %}
-        </button>
-
-        <ul x-cloak
-            x-show="isOpen"
-            @keydown.escape.window="isOpen = false"
-            x-transition:enter="transition ease-out duration-100"
-            x-transition:enter-start="transform opacity-0 scale-95"
-            x-transition:enter-end="transform opacity-100 scale-100"
-            x-transition:leave="transition ease-in duration-75"
-            x-transition:leave-start="transform opacity-100 scale-100"
-            x-transition:leave-end="transform opacity-0 scale-95"
-            class="yamtrack-glass-menu yamtrack-settings-search-dropdown text-sm text-gray-300">
-          <template x-for="type in mediaTypes" :key="getTypeValue(type)">
-            <li @click="selectType(type)"
-                class="cursor-pointer transition duration-150 ease-in-out"
-                x-text="getTypeDisplay(type)"></li>
-          </template>
-        </ul>
-      </div>
-    </form>
-  {% endif %}
 {% endblock search_bar %}
 
 {% block content %}
