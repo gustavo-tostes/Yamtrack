@@ -1,110 +1,389 @@
 {% extends "base.html" %}
-
 {% load static %}
+{% load app_tags %}
 
 {% block title %}
   Configurações - FlexiHub
 {% endblock title %}
 
-{% block search_bar %}
-{% endblock search_bar %}
-
-{% block content %}
+{% block extra_head %}
   <style>
-    .yamtrack-settings-shell {
-      width: min(1180px, 100%);
-      margin: 0 auto;
+    [x-cloak] {
+      display: none !important;
     }
 
-    .yamtrack-settings-hero {
-      position: relative;
-      overflow: hidden;
-      border-radius: 34px;
-      border: 1px solid rgba(255,255,255,0.14);
+    html,
+    body {
       background:
-        radial-gradient(circle at 18% 0%, rgba(255,255,255,0.14), transparent 34%),
-        radial-gradient(circle at 86% 18%, rgba(130,140,255,0.14), transparent 28%),
-        linear-gradient(135deg, rgba(255,255,255,0.09), rgba(255,255,255,0.035)) !important;
+        radial-gradient(circle at 50% -10%, rgba(255, 255, 255, 0.08), transparent 28%),
+        radial-gradient(circle at 72% 20%, rgba(110, 124, 255, 0.10), transparent 22%),
+        radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.04), transparent 20%),
+        linear-gradient(180deg, #17181b 0%, #111214 50%, #0d0e10 100%) !important;
+    }
+
+    body > div.flex.min-h-screen,
+    main {
+      background: transparent !important;
+    }
+
+    body > div.flex.min-h-screen > aside {
+      background:
+        linear-gradient(180deg, rgba(28, 29, 32, 0.82), rgba(16, 17, 19, 0.90)) !important;
+      border-right: 1px solid rgba(255, 255, 255, 0.10) !important;
+      box-shadow:
+        inset -1px 0 0 rgba(255, 255, 255, 0.04),
+        18px 0 40px rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(26px) saturate(150%);
+      -webkit-backdrop-filter: blur(26px) saturate(150%);
+    }
+
+    body > div.flex.min-h-screen > aside > div:first-child {
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    }
+
+    body > div.flex.min-h-screen > aside nav a,
+    body > div.flex.min-h-screen > aside form button {
+      border: 1px solid transparent;
+      transition: background 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    body > div.flex.min-h-screen > aside nav a:hover,
+    body > div.flex.min-h-screen > aside form button:hover {
+      background: rgba(255, 255, 255, 0.06) !important;
+      border-color: rgba(255, 255, 255, 0.08);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 8px 18px rgba(0, 0, 0, 0.15);
+    }
+
+    body > div.flex.min-h-screen > aside a[class*="bg-[#2c3136]"] {
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.05)) !important;
+      border-color: rgba(255, 255, 255, 0.14);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.14),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.03),
+        0 10px 24px rgba(0, 0, 0, 0.18);
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+    }
+
+    body > div.flex.min-h-screen > aside .border-t {
+      border-color: rgba(255, 255, 255, 0.08) !important;
+    }
+
+    div.sticky.top-0.z-10 {
+      background:
+        linear-gradient(180deg, rgba(26, 27, 30, 0.78), rgba(18, 19, 21, 0.64)) !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+      box-shadow:
+        inset 0 -1px 0 rgba(255, 255, 255, 0.035),
+        0 14px 32px rgba(0, 0, 0, 0.18);
+      backdrop-filter: blur(28px) saturate(160%);
+      -webkit-backdrop-filter: blur(28px) saturate(160%);
+    }
+
+    .yamtrack-settings-top-search {
+      position: relative;
+      width: min(680px, 100%);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px;
+      border-radius: 9999px;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.16), rgba(255,255,255,0.055) 52%, rgba(255,255,255,0.025) 100%);
+      border: 1px solid rgba(255,255,255,0.14);
       box-shadow:
         inset 0 1px 0 rgba(255,255,255,0.12),
         inset 0 -1px 0 rgba(255,255,255,0.03),
-        0 24px 58px rgba(0,0,0,0.24);
-      backdrop-filter: blur(26px) saturate(160%);
-      -webkit-backdrop-filter: blur(26px) saturate(160%);
-      padding: 28px;
-      margin-bottom: 24px;
-    }
-
-    .yamtrack-settings-hero::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background:
-        linear-gradient(90deg, rgba(255,255,255,0.06), transparent 34%, transparent 70%, rgba(255,255,255,0.035));
-      opacity: 0.75;
-    }
-
-    .yamtrack-settings-hero-content {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-    }
-
-    .yamtrack-settings-kicker {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      min-height: 30px;
-      padding: 0 12px;
-      border-radius: 9999px;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.055);
-      color: rgba(190,195,255,0.94);
-      font-size: 12px;
-      font-weight: 850;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.10);
+        0 8px 18px rgba(0,0,0,0.14);
       backdrop-filter: blur(18px) saturate(150%);
       -webkit-backdrop-filter: blur(18px) saturate(150%);
-      margin-bottom: 12px;
     }
 
-    .yamtrack-settings-title {
-      color: rgba(255,255,255,0.95);
-      font-size: clamp(28px, 3vw, 42px);
-      line-height: 1.05;
+    .yamtrack-settings-search-field {
+      position: relative;
+      flex: 1;
+      min-width: 0;
+    }
+
+    div.sticky.top-0.z-10,
+    div.sticky.top-0.z-10 > div,
+    div.sticky.top-0.z-10 .h-16 {
+      overflow: visible !important;
+    }
+
+    div.sticky.top-0.z-10 {
+      z-index: 5000 !important;
+    }
+
+    .yamtrack-settings-top-search {
+      overflow: visible !important;
+      z-index: 7000;
+    }
+
+    .yamtrack-settings-search-type-wrap {
+      position: relative;
+      flex: 0 0 auto;
+      overflow: visible !important;
+      z-index: 9000;
+    }
+
+    .yamtrack-settings-search-type-button {
+      width: auto;
+      min-width: 0;
+      max-width: 230px;
+    }
+
+    .yamtrack-settings-search-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      width: 230px;
+      max-height: min(70vh, 420px);
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      padding: 6px;
+      z-index: 99999 !important;
+    }
+
+    .yamtrack-settings-search-dropdown li {
+      border-radius: 12px;
+      padding: 9px 12px;
+      color: rgba(255,255,255,0.82);
+      transition: background 160ms ease, color 160ms ease;
+    }
+
+    .yamtrack-settings-search-dropdown li:hover {
+      background: rgba(255,255,255,0.09);
+      color: #ffffff;
+    }
+
+    .yamtrack-settings-search-dropdown::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .yamtrack-settings-search-dropdown::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .yamtrack-settings-search-dropdown::-webkit-scrollbar-thumb {
+      border-radius: 9999px;
+      background: rgba(255,255,255,0.18);
+    }
+
+    .yamtrack-settings-page {
+      max-width: 1180px;
+      margin: -22px auto 0;
+    }
+
+    .yamtrack-settings-title-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      padding: 9px 26px;
+      color: rgba(255,255,255,0.94);
+      font-size: 15px;
       font-weight: 900;
-      letter-spacing: -0.04em;
-      margin: 0;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.26), rgba(255,255,255,0.10) 44%, rgba(255,255,255,0.04) 100%);
+      border: 1px solid rgba(255,255,255,0.20);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.20),
+        inset 0 -1px 0 rgba(255,255,255,0.04),
+        0 10px 24px rgba(0,0,0,0.18);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.32);
+      backdrop-filter: blur(20px) saturate(165%);
+      -webkit-backdrop-filter: blur(20px) saturate(165%);
     }
 
     .yamtrack-settings-subtitle {
-      color: rgba(255,255,255,0.56);
-      font-size: 14px;
-      line-height: 1.55;
-      max-width: 680px;
-      margin-top: 10px;
+      margin-top: 14px;
+      color: rgba(255,255,255,0.58);
+      font-size: 15px;
+      text-align: center;
     }
 
-    .yamtrack-settings-grid {
-      display: grid;
-      grid-template-columns: 280px minmax(0, 1fr);
-      gap: 24px;
-      align-items: start;
-    }
-
-    .yamtrack-settings-menu-card,
-    .yamtrack-settings-content-card {
-      border-radius: 30px;
+    .yamtrack-glass-input {
+      min-height: 44px;
+      border-radius: 9999px;
       border: 1px solid rgba(255,255,255,0.14);
       background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.16), rgba(255,255,255,0.055) 52%, rgba(255,255,255,0.025) 100%) !important;
+      color: rgba(255,255,255,0.92);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 8px 18px rgba(0,0,0,0.14);
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+    }
+
+    .yamtrack-settings-top-search .yamtrack-glass-input {
+      min-height: 38px;
+      border: none !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    .yamtrack-glass-input::placeholder {
+      color: rgba(255,255,255,0.42);
+    }
+
+    .yamtrack-glass-input:focus {
+      outline: none;
+      border-color: rgba(255,255,255,0.24);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.16),
+        0 0 0 2px rgba(130,140,255,0.20),
+        0 12px 24px rgba(0,0,0,0.18);
+    }
+
+    .yamtrack-settings-top-search .yamtrack-glass-input:focus {
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    .yamtrack-glass-button {
+      min-height: 38px;
+      border-radius: 9999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.18), rgba(255,255,255,0.08) 44%, rgba(255,255,255,0.035) 100%) !important;
+      color: rgba(255,255,255,0.84);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.14),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 8px 18px rgba(0,0,0,0.14);
+      backdrop-filter: blur(18px) saturate(155%);
+      -webkit-backdrop-filter: blur(18px) saturate(155%);
+    }
+
+    .yamtrack-glass-button:hover {
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.26), rgba(255,255,255,0.10) 44%, rgba(255,255,255,0.04) 100%) !important;
+      border-color: rgba(255,255,255,0.22);
+      color: #ffffff;
+    }
+
+    .yamtrack-glass-menu {
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.13);
+      background:
+        linear-gradient(135deg, rgba(33,35,40,0.88), rgba(18,19,22,0.86)) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.10),
+        0 18px 36px rgba(0,0,0,0.30);
+      backdrop-filter: blur(24px) saturate(155%);
+      -webkit-backdrop-filter: blur(24px) saturate(155%);
+    }
+
+    .yamtrack-settings-shell {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    @media (min-width: 768px) {
+      .yamtrack-settings-shell {
+        flex-direction: row;
+        align-items: flex-start;
+      }
+    }
+
+    .yamtrack-settings-nav-wrap {
+      width: 100%;
+    }
+
+    @media (min-width: 768px) {
+      .yamtrack-settings-nav-wrap {
+        width: 260px;
+        flex: 0 0 260px;
+      }
+    }
+
+    .yamtrack-settings-nav {
+      position: sticky;
+      top: 92px;
+      overflow: hidden;
+      border-radius: 26px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.11), transparent 38%),
+        linear-gradient(135deg, rgba(255,255,255,0.075), rgba(255,255,255,0.03)) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.11),
+        inset 0 -1px 0 rgba(255,255,255,0.025),
+        0 18px 42px rgba(0,0,0,0.20);
+      backdrop-filter: blur(24px) saturate(155%);
+      -webkit-backdrop-filter: blur(24px) saturate(155%);
+    }
+
+    .yamtrack-settings-nav-link {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 42px;
+      padding: 10px 13px;
+      border-radius: 9999px;
+      color: rgba(255,255,255,0.56);
+      font-size: 14px;
+      font-weight: 700;
+      border: 1px solid transparent;
+      transition:
+        color 180ms ease,
+        background 180ms ease,
+        border-color 180ms ease,
+        box-shadow 180ms ease;
+    }
+
+    .yamtrack-settings-nav-link:hover {
+      color: rgba(255,255,255,0.92);
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.09);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.08),
+        0 8px 18px rgba(0,0,0,0.14);
+    }
+
+    .yamtrack-settings-nav-link.is-active {
+      color: #ffffff;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.20), rgba(255,255,255,0.08) 44%, rgba(255,255,255,0.035) 100%) !important;
+      border-color: rgba(255,255,255,0.16);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.14),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 10px 24px rgba(0,0,0,0.18);
+    }
+
+    .yamtrack-settings-nav-link.is-active::before {
+      content: "";
+      width: 3px;
+      height: 20px;
+      border-radius: 9999px;
+      background: rgba(130,140,255,0.95);
+      box-shadow: 0 0 14px rgba(130,140,255,0.45);
+    }
+
+    .yamtrack-settings-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .yamtrack-settings-content :is(.bg-[#2a2f35], .bg-[#39404b], .bg-[#262a2f]) {
+      background:
         radial-gradient(circle at top left, rgba(255,255,255,0.12), transparent 38%),
-        linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.032)) !important;
+        linear-gradient(135deg, rgba(255,255,255,0.09), rgba(255,255,255,0.035)) !important;
+      border-color: rgba(255,255,255,0.14) !important;
       box-shadow:
         inset 0 1px 0 rgba(255,255,255,0.12),
         inset 0 -1px 0 rgba(255,255,255,0.03),
@@ -113,247 +392,403 @@
       -webkit-backdrop-filter: blur(24px) saturate(155%);
     }
 
-    .yamtrack-settings-menu-card {
-      position: sticky;
-      top: 92px;
-      padding: 12px;
+    .yamtrack-settings-content :is(.rounded-lg, .rounded-md) {
+      border-radius: 26px;
     }
 
-    .yamtrack-settings-menu-title {
-      color: rgba(255,255,255,0.48);
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing: 0.11em;
-      text-transform: uppercase;
-      padding: 10px 12px 8px;
-    }
-
-    .yamtrack-settings-menu-list {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .yamtrack-settings-menu-item {
-      position: relative;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-height: 42px;
-      padding: 0 13px;
-      border-radius: 18px;
-      border: 1px solid transparent;
-      color: rgba(255,255,255,0.62);
-      font-size: 14px;
-      font-weight: 750;
-      text-decoration: none;
-      overflow: hidden;
-      transition:
-        color 180ms ease,
-        background 180ms ease,
-        border-color 180ms ease,
-        box-shadow 180ms ease,
-        transform 180ms ease;
-    }
-
-    .yamtrack-settings-menu-item::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      border-radius: inherit;
+    .yamtrack-settings-content :is(input, select, textarea) {
+      border-radius: 18px !important;
+      border: 1px solid rgba(255,255,255,0.14) !important;
       background:
-        radial-gradient(circle at 28% 18%, rgba(255,255,255,0.14), rgba(255,255,255,0.055) 48%, transparent 100%);
-      opacity: 0;
-      transition: opacity 180ms ease;
-    }
-
-    .yamtrack-settings-menu-item:hover {
-      transform: translateY(-1px);
-      color: rgba(255,255,255,0.94);
-      background: rgba(255,255,255,0.055);
-      border-color: rgba(255,255,255,0.10);
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.16), rgba(255,255,255,0.055) 52%, rgba(255,255,255,0.025) 100%) !important;
+      color: rgba(255,255,255,0.92) !important;
       box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.095),
-        0 10px 22px rgba(0,0,0,0.16);
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 8px 18px rgba(0,0,0,0.14) !important;
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
     }
 
-    .yamtrack-settings-menu-item:hover::before {
-      opacity: 1;
+    .yamtrack-settings-content :is(input, select) {
+      min-height: 44px;
     }
 
-    .yamtrack-settings-menu-item.is-active {
-      color: #ffffff;
-      background:
-        radial-gradient(circle at 30% 20%, rgba(255,255,255,0.22), rgba(255,255,255,0.085) 46%, rgba(255,255,255,0.035) 100%);
-      border-color: rgba(255,255,255,0.17);
+    .yamtrack-settings-content textarea {
+      min-height: 120px;
+    }
+
+    .yamtrack-settings-content :is(input, textarea)::placeholder {
+      color: rgba(255,255,255,0.42) !important;
+    }
+
+    .yamtrack-settings-content :is(input, select, textarea):focus {
+      outline: none !important;
+      border-color: rgba(255,255,255,0.24) !important;
       box-shadow:
         inset 0 1px 0 rgba(255,255,255,0.16),
-        inset 0 -1px 0 rgba(255,255,255,0.035),
-        0 12px 26px rgba(0,0,0,0.20),
-        0 0 0 1px rgba(128,140,255,0.08);
+        0 0 0 2px rgba(130,140,255,0.20),
+        0 12px 24px rgba(0,0,0,0.18) !important;
+    }
+
+    .yamtrack-settings-content :is(button, a[class*="bg-indigo"], button[class*="bg-indigo"]) {
+      border-radius: 9999px !important;
+      border: 1px solid rgba(255,255,255,0.14) !important;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.20), rgba(255,255,255,0.08) 44%, rgba(255,255,255,0.035) 100%) !important;
+      color: rgba(255,255,255,0.92) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.14),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 8px 18px rgba(0,0,0,0.14);
       backdrop-filter: blur(18px) saturate(155%);
       -webkit-backdrop-filter: blur(18px) saturate(155%);
     }
 
-    .yamtrack-settings-menu-item.is-active::after {
-      content: "";
-      position: absolute;
-      left: 7px;
-      top: 50%;
-      width: 3px;
-      height: 18px;
+    .yamtrack-settings-content :is(button, a[class*="bg-indigo"], button[class*="bg-indigo"]):hover {
+      border-color: rgba(255,255,255,0.22) !important;
+      color: #ffffff !important;
+    }
+
+
+    .yamtrack-settings-account-logout-card {
+      margin-top: 24px;
+      border-radius: 30px;
+      border: 1px solid rgba(248,113,113,0.24);
+      background:
+        radial-gradient(circle at top left, rgba(248,113,113,0.10), transparent 36%),
+        linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 18px 42px rgba(0,0,0,0.22);
+      backdrop-filter: blur(24px) saturate(155%);
+      -webkit-backdrop-filter: blur(24px) saturate(155%);
+    }
+
+    .yamtrack-settings-account-logout-heading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .yamtrack-settings-account-logout-icon {
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       border-radius: 9999px;
-      transform: translateY(-50%);
-      background: rgba(150,160,255,0.96);
-      box-shadow: 0 0 16px rgba(130,140,255,0.58);
+      border: 1px solid rgba(248,113,113,0.24);
+      background:
+        radial-gradient(circle at 34% 24%, rgba(248,113,113,0.18), rgba(255,255,255,0.08) 44%, rgba(255,255,255,0.035) 100%);
+      color: rgba(254,202,202,0.96);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.14),
+        0 8px 18px rgba(0,0,0,0.14);
+      backdrop-filter: blur(18px) saturate(155%);
+      -webkit-backdrop-filter: blur(18px) saturate(155%);
     }
 
-    .yamtrack-settings-menu-dot {
-      position: relative;
-      z-index: 1;
-      width: 8px;
-      height: 8px;
-      border-radius: 9999px;
-      border: 1px solid rgba(255,255,255,0.28);
-      background: rgba(255,255,255,0.10);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
-      flex: 0 0 auto;
+    .yamtrack-settings-account-logout-title {
+      color: rgba(255,255,255,0.94);
+      font-size: 21px;
+      font-weight: 850;
+      line-height: 1.2;
     }
 
-    .yamtrack-settings-menu-item.is-active .yamtrack-settings-menu-dot {
-      border-color: rgba(170,178,255,0.82);
-      background: rgba(150,160,255,0.92);
-      box-shadow: 0 0 14px rgba(130,140,255,0.46);
+    .yamtrack-settings-account-logout-text {
+      color: rgba(255,255,255,0.58);
+      font-size: 14px;
+      line-height: 1.55;
+      margin-bottom: 18px;
     }
 
-    .yamtrack-settings-menu-label {
-      position: relative;
-      z-index: 1;
+    .yamtrack-settings-content .yamtrack-settings-account-logout-button {
+      min-height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 9999px !important;
+      border: 1px solid rgba(248,113,113,0.30) !important;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(248,113,113,0.20), rgba(255,255,255,0.07) 44%, rgba(255,255,255,0.03) 100%) !important;
+      color: rgba(254,226,226,0.94) !important;
+      padding: 0 18px;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.14),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 8px 18px rgba(0,0,0,0.14) !important;
+      backdrop-filter: blur(18px) saturate(155%) !important;
+      -webkit-backdrop-filter: blur(18px) saturate(155%) !important;
+      cursor: pointer;
     }
 
-    .yamtrack-settings-content-card {
-      min-width: 0;
-      padding: 0;
-      background: transparent !important;
-      border: 0;
-      box-shadow: none;
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
+    .yamtrack-settings-content .yamtrack-settings-account-logout-button:hover {
+      border-color: rgba(248,113,113,0.48) !important;
+      color: #ffffff !important;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(248,113,113,0.28), rgba(255,255,255,0.09) 44%, rgba(255,255,255,0.04) 100%) !important;
     }
 
-    @media (max-width: 1024px) {
-      .yamtrack-settings-grid {
-        grid-template-columns: 1fr;
+    @media (max-width: 768px) {
+      .yamtrack-settings-page {
+        margin-top: -12px;
       }
 
-      .yamtrack-settings-menu-card {
+      .yamtrack-settings-title-pill {
+        font-size: 13px;
+        padding: 8px 20px;
+      }
+
+      .yamtrack-settings-nav {
         position: relative;
-        top: auto;
+        top: 0;
       }
 
-      .yamtrack-settings-menu-list {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width: 640px) {
-      .yamtrack-settings-hero {
-        padding: 22px;
-        border-radius: 28px;
+      .yamtrack-settings-top-search {
+        width: 100%;
       }
 
-      .yamtrack-settings-hero-content {
-        align-items: flex-start;
+      .yamtrack-settings-search-type-button {
+        width: auto;
+        min-width: 0;
+        max-width: 190px;
       }
 
-      .yamtrack-settings-menu-list {
-        grid-template-columns: 1fr;
+      .yamtrack-settings-search-dropdown {
+        width: 220px;
       }
     }
   </style>
+{% endblock extra_head %}
 
-  {% url 'account' as account_url %}
-  {% url 'preferences' as preferences_url %}
-  {% url 'notifications' as notifications_url %}
-  {% url 'sidebar' as sidebar_url %}
-  {% url 'integrations' as integrations_url %}
-  {% url 'import_data' as import_url %}
-  {% url 'export_data' as export_url %}
-  {% url 'advanced' as advanced_url %}
+{% block search_bar %}
+  {% if request.user.is_authenticated %}
+    <form method="get"
+          action="{% url 'search' %}"
+          class="yamtrack-settings-top-search"
+          x-data="{
+            isOpen: false,
+            selectedType: {
+              display: '{{ user.last_search_type|media_type_readable_plural|escapejs }}',
+              value: '{{ user.last_search_type|escapejs }}'
+            },
+            mediaTypes: {% get_search_media_types user as search_types %}{{ search_types }},
+            getRawDisplay(type) {
+              if (!type) return '';
+              return type.display || type.display_name || type.label || type.name || type.title || '';
+            },
+            getTypeValue(type) {
+              if (!type) return '';
+              return type.value || type.media_type || type.type || type.id || '';
+            },
+            translateMediaDisplay(display, value = '') {
+              const raw = String(display || '').trim();
+              const key = raw.toLowerCase();
+              const rawValue = String(value || '').trim().toLowerCase();
 
-  <div class="yamtrack-settings-shell">
-    <section class="yamtrack-settings-hero">
-      <div class="yamtrack-settings-hero-content">
-        <div>
-          <div class="yamtrack-settings-kicker">FlexiHub</div>
-          <h1 class="yamtrack-settings-title">Configurações</h1>
-          <p class="yamtrack-settings-subtitle">
-            Ajuste sua conta, preferências, notificações, integrações e opções avançadas do seu painel.
-          </p>
+              const valueTranslations = {
+                'tv': 'Séries',
+                'season': 'Temporadas',
+                'episode': 'Episódios',
+                'movie': 'Filmes',
+                'anime': 'Animes',
+                'manga': 'Mangás',
+                'game': 'Jogos',
+                'book': 'Livros',
+                'comic': 'Quadrinhos',
+                'boardgame': 'Jogos de tabuleiro'
+              };
+
+              const displayTranslations = {
+                'tv shows': 'Séries',
+                'tv show': 'Séries',
+                'series': 'Séries',
+                'seasons': 'Temporadas',
+                'tv seasons': 'Temporadas',
+                'tv season': 'Temporadas',
+                'episodes': 'Episódios',
+                'episode': 'Episódios',
+                'movies': 'Filmes',
+                'movie': 'Filmes',
+                'games': 'Jogos',
+                'game': 'Jogos',
+                'books': 'Livros',
+                'book': 'Livros',
+                'anime': 'Animes',
+                'animes': 'Animes',
+                'manga': 'Mangás',
+                'mangas': 'Mangás',
+                'comics': 'Quadrinhos',
+                'comic': 'Quadrinhos',
+                'boardgames': 'Jogos de tabuleiro',
+                'boardgame': 'Jogos de tabuleiro',
+                'board games': 'Jogos de tabuleiro',
+                'board game': 'Jogos de tabuleiro'
+              };
+
+              return valueTranslations[rawValue] || displayTranslations[key] || raw;
+            },
+            getTypeDisplay(type) {
+              return this.translateMediaDisplay(this.getRawDisplay(type), this.getTypeValue(type));
+            },
+            getSelectedDisplay() {
+              return this.translateMediaDisplay(this.getRawDisplay(this.selectedType), this.getTypeValue(this.selectedType));
+            },
+            selectType(type) {
+              this.selectedType = {
+                ...type,
+                display: this.getRawDisplay(type),
+                value: this.getTypeValue(type)
+              };
+              this.isOpen = false;
+            },
+            getPlaceholder() {
+              return `Buscar ${this.getSelectedDisplay().toLowerCase()}...`;
+            }
+          }">
+      <div class="yamtrack-settings-search-field">
+        <input type="search"
+               id="global-search"
+               name="q"
+               value="{{ request.GET.q }}"
+               :placeholder="getPlaceholder()"
+               class="yamtrack-glass-input w-full py-2 pl-10 pr-4 text-sm appearance-none">
+
+        <button type="submit"
+                class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200 focus:outline-none cursor-pointer">
+          {% include "app/icons/magnifying-glass.svg" with classes="w-5 h-5" %}
+        </button>
+      </div>
+
+      <input type="hidden" name="media_type" :value="getTypeValue(selectedType)">
+
+      <div class="yamtrack-settings-search-type-wrap"
+           @click.outside="isOpen = false">
+        <button type="button"
+                @click="isOpen = !isOpen"
+                class="yamtrack-glass-button yamtrack-settings-search-type-button flex items-center justify-between px-4 py-2 text-sm font-semibold cursor-pointer">
+          <span class="whitespace-nowrap" x-text="getSelectedDisplay()"></span>
+          {% include "app/icons/chevron-down.svg" with classes="w-4 h-4 ml-2 shrink-0" %}
+        </button>
+
+        <ul x-cloak
+            x-show="isOpen"
+            @keydown.escape.window="isOpen = false"
+            x-transition:enter="transition ease-out duration-100"
+            x-transition:enter-start="transform opacity-0 scale-95"
+            x-transition:enter-end="transform opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-75"
+            x-transition:leave-start="transform opacity-100 scale-100"
+            x-transition:leave-end="transform opacity-0 scale-95"
+            class="yamtrack-glass-menu yamtrack-settings-search-dropdown text-sm text-gray-300">
+          <template x-for="type in mediaTypes" :key="getTypeValue(type)">
+            <li @click="selectType(type)"
+                class="cursor-pointer transition duration-150 ease-in-out"
+                x-text="getTypeDisplay(type)"></li>
+          </template>
+        </ul>
+      </div>
+    </form>
+  {% endif %}
+{% endblock search_bar %}
+
+{% block content %}
+  <div class="yamtrack-settings-page">
+    <div class="flex flex-col items-center justify-center mb-8">
+      <h1 class="yamtrack-settings-title-pill">Configurações</h1>
+      <p class="yamtrack-settings-subtitle">Configure sua conta e preferências.</p>
+    </div>
+
+    <div class="yamtrack-settings-shell">
+      <div class="yamtrack-settings-nav-wrap">
+        <div class="yamtrack-settings-nav">
+          <nav class="p-2 space-y-1">
+            {% url 'account' as account_url %}
+            <a href="{{ account_url }}"
+               class="yamtrack-settings-nav-link {% if request.path == account_url %}is-active{% endif %}">
+              {% include "app/icons/person.svg" with classes="w-5 h-5" %}
+              <span>Conta</span>
+            </a>
+
+            {% url 'preferences' as preferences_url %}
+            <a href="{{ preferences_url }}"
+               class="yamtrack-settings-nav-link {% if request.path == preferences_url %}is-active{% endif %}">
+              {% include "app/icons/vertical-sliders.svg" with classes="w-5 h-5" %}
+              <span>Preferências</span>
+            </a>
+
+            {% url 'notifications' as notifications_url %}
+            <a href="{{ notifications_url }}"
+               class="yamtrack-settings-nav-link {% if request.path == notifications_url %}is-active{% endif %}">
+              {% include "app/icons/bell.svg" with classes="w-5 h-5" %}
+              <span>Notificações</span>
+            </a>
+
+            {% url 'integrations' as integrations_url %}
+            <a href="{{ integrations_url }}"
+               class="yamtrack-settings-nav-link {% if request.path == integrations_url %}is-active{% endif %}">
+              {% include "app/icons/database.svg" with classes="w-5 h-5" %}
+              <span>Integrações</span>
+            </a>
+
+            {% url 'import_data' as import_url %}
+            <a href="{{ import_url }}"
+               class="yamtrack-settings-nav-link {% if request.path == import_url %}is-active{% endif %}">
+              {% include "app/icons/import.svg" with classes="w-5 h-5" %}
+              <span>Importar dados</span>
+            </a>
+
+            {% url 'export_data' as export_url %}
+            <a href="{{ export_url }}"
+               class="yamtrack-settings-nav-link {% if request.path == export_url %}is-active{% endif %}">
+              {% include "app/icons/export.svg" with classes="w-5 h-5" %}
+              <span>Exportar dados</span>
+            </a>
+
+            {% url 'advanced' as advanced_url %}
+            <a href="{{ advanced_url }}"
+               class="yamtrack-settings-nav-link {% if request.path == advanced_url %}is-active{% endif %}">
+              {% include "app/icons/shield-alert.svg" with classes="w-5 h-5" %}
+              <span>Avançado</span>
+            </a>
+          </nav>
         </div>
       </div>
-    </section>
 
-    <div class="yamtrack-settings-grid">
-      <aside class="yamtrack-settings-menu-card" aria-label="Menu de configurações">
-        <div class="yamtrack-settings-menu-title">Ajustes</div>
-        <nav class="yamtrack-settings-menu-list">
-          <a href="{{ account_url }}"
-             class="yamtrack-settings-menu-item {% if request.path == account_url %}is-active{% endif %}">
-            <span class="yamtrack-settings-menu-dot"></span>
-            <span class="yamtrack-settings-menu-label">Conta</span>
-          </a>
-
-          <a href="{{ preferences_url }}"
-             class="yamtrack-settings-menu-item {% if request.path == preferences_url %}is-active{% endif %}">
-            <span class="yamtrack-settings-menu-dot"></span>
-            <span class="yamtrack-settings-menu-label">Preferências</span>
-          </a>
-
-          <a href="{{ notifications_url }}"
-             class="yamtrack-settings-menu-item {% if request.path == notifications_url %}is-active{% endif %}">
-            <span class="yamtrack-settings-menu-dot"></span>
-            <span class="yamtrack-settings-menu-label">Notificações</span>
-          </a>
-
-          <a href="{{ sidebar_url }}"
-             class="yamtrack-settings-menu-item {% if request.path == sidebar_url %}is-active{% endif %}">
-            <span class="yamtrack-settings-menu-dot"></span>
-            <span class="yamtrack-settings-menu-label">Barra lateral</span>
-          </a>
-
-          <a href="{{ integrations_url }}"
-             class="yamtrack-settings-menu-item {% if request.path == integrations_url %}is-active{% endif %}">
-            <span class="yamtrack-settings-menu-dot"></span>
-            <span class="yamtrack-settings-menu-label">Integrações</span>
-          </a>
-
-          <a href="{{ import_url }}"
-             class="yamtrack-settings-menu-item {% if request.path == import_url %}is-active{% endif %}">
-            <span class="yamtrack-settings-menu-dot"></span>
-            <span class="yamtrack-settings-menu-label">Importar dados</span>
-          </a>
-
-          <a href="{{ export_url }}"
-             class="yamtrack-settings-menu-item {% if request.path == export_url %}is-active{% endif %}">
-            <span class="yamtrack-settings-menu-dot"></span>
-            <span class="yamtrack-settings-menu-label">Exportar dados</span>
-          </a>
-
-          <a href="{{ advanced_url }}"
-             class="yamtrack-settings-menu-item {% if request.path == advanced_url %}is-active{% endif %}">
-            <span class="yamtrack-settings-menu-dot"></span>
-            <span class="yamtrack-settings-menu-label">Avançado</span>
-          </a>
-        </nav>
-      </aside>
-
-      <section class="yamtrack-settings-content-card yamtrack-settings-content">
+      <div class="yamtrack-settings-content">
         {% block settings_content %}
         {% endblock settings_content %}
-      </section>
+
+        {% url 'account' as account_url %}
+        {% if request.path == account_url %}
+          <div class="yamtrack-settings-account-logout-card p-6">
+            <div class="yamtrack-settings-account-logout-heading">
+              <div class="yamtrack-settings-account-logout-icon">
+                {% include "app/icons/logout.svg" with classes="w-6 h-6" %}
+              </div>
+              <h2 class="yamtrack-settings-account-logout-title">Sair da conta</h2>
+            </div>
+
+            <p class="yamtrack-settings-account-logout-text">
+              Encerre sua sessão atual no FlexiHub. Você poderá acessar novamente usando seu usuário e senha.
+            </p>
+
+            <form method="post" action="{% url 'account_logout' %}">
+              {% csrf_token %}
+              <button type="submit" class="yamtrack-settings-account-logout-button">
+                {% include "app/icons/logout.svg" with classes="w-4 h-4" %}
+                Sair
+              </button>
+            </form>
+          </div>
+        {% endif %}
+      </div>
     </div>
   </div>
 {% endblock content %}
