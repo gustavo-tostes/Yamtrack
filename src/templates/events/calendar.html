@@ -3,7 +3,7 @@
 {% load app_tags %}
 
 {% block title %}
-  Calendário - Yamtrack
+  Calendário - FlexiHub
 {% endblock title %}
 
 {% block extra_head %}
@@ -84,30 +84,6 @@
       -webkit-backdrop-filter: blur(28px) saturate(160%);
     }
 
-    .yamtrack-calendar-top-search {
-      position: relative;
-      width: min(680px, 100%);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px;
-      border-radius: 9999px;
-      background:
-        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.16), rgba(255,255,255,0.055) 52%, rgba(255,255,255,0.025) 100%);
-      border: 1px solid rgba(255,255,255,0.14);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.12),
-        inset 0 -1px 0 rgba(255,255,255,0.03),
-        0 8px 18px rgba(0,0,0,0.14);
-      backdrop-filter: blur(18px) saturate(150%);
-      -webkit-backdrop-filter: blur(18px) saturate(150%);
-    }
-
-    .yamtrack-calendar-search-field {
-      position: relative;
-      flex: 1;
-      min-width: 0;
-    }
 
     .yamtrack-calendar-page {
       max-width: 1320px;
@@ -159,14 +135,6 @@
       -webkit-backdrop-filter: blur(18px) saturate(150%);
     }
 
-    .yamtrack-calendar-top-search .yamtrack-glass-input {
-      min-height: 38px;
-      border: none !important;
-      background: transparent !important;
-      box-shadow: none !important;
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
-    }
 
     .yamtrack-glass-input::placeholder {
       color: rgba(255,255,255,0.42);
@@ -181,10 +149,6 @@
         0 12px 24px rgba(0,0,0,0.18);
     }
 
-    .yamtrack-calendar-top-search .yamtrack-glass-input:focus {
-      border: none !important;
-      box-shadow: none !important;
-    }
 
     .yamtrack-glass-button {
       min-height: 38px;
@@ -356,80 +320,11 @@
         flex: 1 1 auto;
       }
 
-      .yamtrack-calendar-top-search {
-        width: 100%;
-      }
     }
   </style>
 {% endblock extra_head %}
 
 {% block search_bar %}
-  {% if request.user.is_authenticated %}
-    <form method="get"
-          action="{% url 'search' %}"
-          class="yamtrack-calendar-top-search"
-          x-data="{ 
-            isOpen: false, 
-            selectedType: { display: '{{ user.last_search_type|media_type_readable_plural }}', value: '{{ user.last_search_type }}' }, 
-            mediaTypes: {% get_search_media_types user as search_types %}{{ search_types }},
-            translateMediaDisplay(display) {
-              const translations = {
-                'TV Shows': 'Séries',
-                'TV Seasons': 'Temporadas',
-                'Movies': 'Filmes',
-                'Games': 'Jogos',
-                'Books': 'Livros',
-                'Anime': 'Animes',
-                'Manga': 'Mangás'
-              };
-              return translations[display] || display;
-            },
-            getPlaceholder() {
-              return `Buscar ${this.translateMediaDisplay(this.selectedType.display).toLowerCase()}...`;
-            }
-          }">
-      <div class="yamtrack-calendar-search-field">
-        <input type="search"
-               id="global-search"
-               name="q"
-               value="{{ request.GET.q }}"
-               :placeholder="getPlaceholder()"
-               class="yamtrack-glass-input w-full py-2 pl-10 pr-4 text-sm appearance-none">
-
-        <button type="submit"
-                class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200 focus:outline-none cursor-pointer">
-          {% include "app/icons/magnifying-glass.svg" with classes="w-5 h-5" %}
-        </button>
-      </div>
-
-      <input type="hidden" name="media_type" :value="selectedType.value">
-
-      <button type="button"
-              @click="isOpen = !isOpen"
-              @click.away="isOpen = false"
-              class="yamtrack-glass-button flex items-center justify-between px-4 py-2 text-sm font-semibold cursor-pointer min-w-32">
-        <span class="truncate" x-text="translateMediaDisplay(selectedType.display)"></span>
-        {% include "app/icons/chevron-down.svg" with classes="w-4 h-4 ml-2" %}
-      </button>
-
-      <ul x-cloak
-          x-show="isOpen"
-          @keydown.escape.window="isOpen = false"
-          x-transition:enter="transition ease-out duration-100"
-          x-transition:enter-start="transform opacity-0 scale-95"
-          x-transition:enter-end="transform opacity-100 scale-100"
-          x-transition:leave="transition ease-in duration-75"
-          x-transition:leave-start="transform opacity-100 scale-100"
-          x-transition:leave-end="transform opacity-0 scale-95"
-          class="yamtrack-glass-menu absolute z-20 py-1 mt-12 overflow-hidden text-sm text-gray-300 right-0 w-36">
-        <template x-for="type in mediaTypes" :key="type.value">
-          <li @click="selectedType = type; isOpen = false"
-              class="px-4 py-2 cursor-pointer hover:bg-white/10 hover:text-white transition duration-150 ease-in-out"
-              x-text="translateMediaDisplay(type.display)"></li>
-        </template>
-      </ul>
-    </form>
-  {% endif %}
 {% endblock search_bar %}
 
 {% block content %}
