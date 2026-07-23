@@ -4,7 +4,7 @@
 {% load static %}
 
 {% block title %}
-  Conta - Yamtrack
+  Conta - FlexiHub
 {% endblock title %}
 
 {% block settings_content %}
@@ -248,6 +248,35 @@
       font-size: 13px;
       line-height: 1.45;
     }
+
+    .yamtrack-account-logout-card {
+      border-color: rgba(248,113,113,0.24);
+      background:
+        radial-gradient(circle at top left, rgba(248,113,113,0.10), transparent 36%),
+        linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)) !important;
+    }
+
+    .yamtrack-account-logout-text {
+      color: rgba(255,255,255,0.58);
+      font-size: 14px;
+      line-height: 1.55;
+      margin-bottom: 18px;
+    }
+
+    .yamtrack-account-button-danger {
+      border-color: rgba(248,113,113,0.30) !important;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(248,113,113,0.20), rgba(255,255,255,0.07) 44%, rgba(255,255,255,0.03) 100%) !important;
+      color: rgba(254,226,226,0.94) !important;
+    }
+
+    .yamtrack-account-button-danger:hover {
+      border-color: rgba(248,113,113,0.48) !important;
+      color: #ffffff !important;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(248,113,113,0.28), rgba(255,255,255,0.09) 44%, rgba(255,255,255,0.04) 100%) !important;
+    }
+
   </style>
 
   <div class="yamtrack-account-stack">
@@ -437,5 +466,27 @@
         </a>
       </div>
     {% endif %}
+
+    <div class="yamtrack-account-card yamtrack-account-logout-card p-6">
+      <div class="yamtrack-account-heading">
+        <div class="yamtrack-account-heading-icon">
+          {% include "app/icons/logout.svg" with classes="w-6 h-6" %}
+        </div>
+        <h2 class="yamtrack-account-heading-title">Sair da conta</h2>
+      </div>
+
+      <p class="yamtrack-account-logout-text">
+        Encerre sua sessão atual no FlexiHub. Você poderá acessar novamente usando seu usuário e senha.
+      </p>
+
+      <form method="post" action="{% url 'account_logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="yamtrack-account-button yamtrack-account-button-danger">
+          {% include "app/icons/logout.svg" with classes="w-4 h-4" %}
+          Sair
+        </button>
+      </form>
+    </div>
+
   </div>
 {% endblock settings_content %}
