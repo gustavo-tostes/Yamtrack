@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="keywords" content="FlexiHub, Media Tracker, Yamtrack">
     <meta name="description" content="Pesquise e acompanhe séries, temporadas e filmes no FlexiHub.">
-    <meta name="flexihub-base-version" content="dropdown-v4-fixed-teleport-2026-07-10">
+    <meta name="flexihub-base-version" content="sidebar-liquid-glass-v1-2026-07-23">
 
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-status-bar-style" content="black-translucent">
@@ -139,6 +139,240 @@
     {% block extra_head %}
     {% endblock extra_head %}
 
+    <style id="flexihub-sidebar-liquid-glass-final">
+      body > div.flexihub-app-shell {
+        background:
+          radial-gradient(circle at 48% -10%, rgba(255, 255, 255, 0.08), transparent 28%),
+          radial-gradient(circle at 78% 18%, rgba(110, 124, 255, 0.09), transparent 24%),
+          radial-gradient(circle at 16% 34%, rgba(255, 255, 255, 0.035), transparent 22%),
+          linear-gradient(180deg, #17181b 0%, #111214 52%, #0d0e10 100%) !important;
+      }
+
+      body > div.flexihub-app-shell > aside.flexihub-sidebar {
+        isolation: isolate;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at 34% 0%, rgba(255, 255, 255, 0.14), transparent 34%),
+          radial-gradient(circle at 100% 22%, rgba(126, 136, 255, 0.12), transparent 28%),
+          linear-gradient(180deg, rgba(31, 33, 38, 0.78), rgba(16, 17, 20, 0.88)) !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.12) !important;
+        box-shadow:
+          inset -1px 0 0 rgba(255, 255, 255, 0.045),
+          inset 1px 0 0 rgba(255, 255, 255, 0.045),
+          18px 0 44px rgba(0, 0, 0, 0.28) !important;
+        backdrop-filter: blur(30px) saturate(165%) !important;
+        -webkit-backdrop-filter: blur(30px) saturate(165%) !important;
+      }
+
+      body > div.flexihub-app-shell > aside.flexihub-sidebar::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background:
+          linear-gradient(90deg, rgba(255, 255, 255, 0.06), transparent 28%, transparent 72%, rgba(255, 255, 255, 0.035)),
+          radial-gradient(circle at 50% 100%, rgba(255, 255, 255, 0.08), transparent 34%);
+        opacity: 0.9;
+      }
+
+      body > div.flexihub-app-shell > aside.flexihub-sidebar::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 1px;
+        height: 100%;
+        pointer-events: none;
+        background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+        opacity: 0.65;
+      }
+
+      body > div.flexihub-app-shell > aside.flexihub-sidebar > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-brand {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.09) !important;
+        background:
+          radial-gradient(circle at 28% 18%, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.035) 48%, transparent 100%) !important;
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.08),
+          inset 0 -1px 0 rgba(255, 255, 255, 0.03);
+      }
+
+      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-logo-link {
+        border-radius: 18px;
+        padding: 4px 0;
+        filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.28));
+      }
+
+      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-nav {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+      }
+
+      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-nav::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-nav::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-nav::-webkit-scrollbar-thumb {
+        border-radius: 9999px;
+        background: rgba(255, 255, 255, 0.16);
+      }
+
+      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-section,
+      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer {
+        border-color: rgba(255, 255, 255, 0.09) !important;
+      }
+
+      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer {
+        background:
+          radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.08), transparent 56%),
+          linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015));
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.055);
+      }
+
+      body > div.flexihub-app-shell > aside.flexihub-sidebar nav a,
+      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer a,
+      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer button {
+        position: relative;
+        min-height: 40px;
+        border-radius: 18px !important;
+        border: 1px solid transparent !important;
+        background: transparent !important;
+        color: rgba(255, 255, 255, 0.60) !important;
+        overflow: hidden;
+        transition:
+          color 180ms ease,
+          background 180ms ease,
+          border-color 180ms ease,
+          box-shadow 180ms ease,
+          transform 180ms ease !important;
+      }
+
+      body > div.flexihub-app-shell > aside.flexihub-sidebar nav a::before,
+      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer a::before,
+      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer button::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        border-radius: inherit;
+        background:
+          radial-gradient(circle at 28% 18%, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.055) 46%, transparent 100%);
+        opacity: 0;
+        transition: opacity 180ms ease;
+      }
+
+      body > div.flexihub-app-shell > aside.flexihub-sidebar nav a:hover,
+      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer a:hover,
+      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer button:hover {
+        transform: translateY(-1px);
+        color: rgba(255, 255, 255, 0.94) !important;
+        background: rgba(255, 255, 255, 0.055) !important;
+        border-color: rgba(255, 255, 255, 0.10) !important;
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.095),
+          inset 0 -1px 0 rgba(255, 255, 255, 0.025),
+          0 10px 22px rgba(0, 0, 0, 0.16) !important;
+      }
+
+      body > div.flexihub-app-shell > aside.flexihub-sidebar nav a:hover::before,
+      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer a:hover::before,
+      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer button:hover::before {
+        opacity: 1;
+      }
+
+      body > div.flexihub-app-shell > aside.flexihub-sidebar nav a[class*="bg-[#2c3136]"],
+      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer a[class*="bg-[#2c3136]"] {
+        color: #ffffff !important;
+        background:
+          radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.23), rgba(255, 255, 255, 0.085) 46%, rgba(255, 255, 255, 0.035) 100%) !important;
+        border-color: rgba(255, 255, 255, 0.17) !important;
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.16),
+          inset 0 -1px 0 rgba(255, 255, 255, 0.035),
+          0 12px 26px rgba(0, 0, 0, 0.20),
+          0 0 0 1px rgba(128, 140, 255, 0.08) !important;
+        backdrop-filter: blur(18px) saturate(155%) !important;
+        -webkit-backdrop-filter: blur(18px) saturate(155%) !important;
+      }
+
+      body > div.flexihub-app-shell > aside.flexihub-sidebar nav a[class*="bg-[#2c3136]"]::after,
+      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer a[class*="bg-[#2c3136]"]::after {
+        content: "";
+        position: absolute;
+        left: 7px;
+        top: 50%;
+        width: 3px;
+        height: 18px;
+        border-radius: 9999px;
+        transform: translateY(-50%);
+        background: rgba(150, 160, 255, 0.96);
+        box-shadow: 0 0 16px rgba(130, 140, 255, 0.58);
+      }
+
+      body > div.flexihub-app-shell > aside.flexihub-sidebar nav a svg,
+      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer a svg,
+      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer button svg {
+        color: rgba(255, 255, 255, 0.58) !important;
+        transition: color 180ms ease, filter 180ms ease;
+      }
+
+      body > div.flexihub-app-shell > aside.flexihub-sidebar nav a:hover svg,
+      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer a:hover svg,
+      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer button:hover svg,
+      body > div.flexihub-app-shell > aside.flexihub-sidebar nav a[class*="bg-[#2c3136]"] svg,
+      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer a[class*="bg-[#2c3136]"] svg {
+        color: rgba(170, 178, 255, 0.98) !important;
+        filter: drop-shadow(0 0 10px rgba(130, 140, 255, 0.28));
+      }
+
+      body > div.flexihub-app-shell > aside.flexihub-sidebar nav a span,
+      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer a span,
+      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer button span {
+        position: relative;
+        z-index: 1;
+      }
+
+      div.sticky.top-0.z-10.flexihub-topbar {
+        background:
+          linear-gradient(180deg, rgba(26, 27, 30, 0.74), rgba(18, 19, 21, 0.58)) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        box-shadow:
+          inset 0 -1px 0 rgba(255, 255, 255, 0.035),
+          0 14px 32px rgba(0, 0, 0, 0.18) !important;
+        backdrop-filter: blur(28px) saturate(160%) !important;
+        -webkit-backdrop-filter: blur(28px) saturate(160%) !important;
+      }
+
+      .flexihub-mobile-overlay {
+        background: rgba(0, 0, 0, 0.54) !important;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+      }
+
+      .flexihub-mobile-menu-button {
+        border-radius: 14px;
+        padding: 8px;
+        margin-left: -8px;
+      }
+
+      .flexihub-mobile-menu-button:hover {
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .flexihub-main-surface {
+        background: transparent !important;
+      }
+    </style>
+
     <link rel="stylesheet"
           type="text/css"
           href="{% static 'css/main.css' %}{% get_static_file_mtime 'css/main.css' %}">
@@ -170,21 +404,21 @@
     <!-- FLEXIHUB_BASE_DROPDOWN_V4_ACTIVE -->
     {% block body %}
       {# Main container for the layout #}
-      <div class="flex min-h-screen bg-[#212529] text-gray-100"
+      <div class="flexihub-app-shell flex min-h-screen bg-[#212529] text-gray-100"
            x-data="{ isMobileMenuOpen: false }">
 
         {# Mobile menu overlay #}
         <div x-show="isMobileMenuOpen"
-             class="fixed inset-0 bg-black/50 z-30 lg:hidden"
+             class="flexihub-mobile-overlay fixed inset-0 bg-black/50 z-30 lg:hidden"
              @click="isMobileMenuOpen = false"></div>
 
         {# Sidebar #}
-        <aside class="fixed top-0 left-0 z-40 h-screen w-64 bg-[#1a1d20] transform transition-transform duration-300 ease-in-out border-r border-[#2c3136] -translate-x-full lg:translate-x-0 lg:sticky flex flex-col"
+        <aside class="flexihub-sidebar fixed top-0 left-0 z-40 h-screen w-64 bg-[#1a1d20] transform transition-transform duration-300 ease-in-out border-r border-[#2c3136] -translate-x-full lg:translate-x-0 lg:sticky flex flex-col"
                :class="isMobileMenuOpen ? 'translate-x-0' : ''">
 
-          <div class="h-20 border-b border-[#2c3136] flex items-center px-7">
+          <div class="flexihub-sidebar-brand h-20 border-b border-[#2c3136] flex items-center px-7">
             <a href="{% url 'home' %}"
-               class="inline-flex items-center"
+               class="flexihub-sidebar-logo-link inline-flex items-center"
                aria-label="FlexiHub">
               <img src="{% static 'img/flexihub/Logo.png' %}"
                    alt="FlexiHub"
@@ -192,7 +426,7 @@
             </a>
           </div>
 
-          <nav class="p-4 flex-1 overflow-y-auto">
+          <nav class="flexihub-sidebar-nav p-4 flex-1 overflow-y-auto">
             {% block sidebar_own_media %}
               <ul class="space-y-1 mb-6">
                 <li>
@@ -276,7 +510,7 @@
             {% endblock sidebar_external_media_view %}
 
             {% block sidebar_utilities %}
-              <div class="border-t border-[#2c3136] pt-4">
+              <div class="flexihub-sidebar-section border-t border-[#2c3136] pt-4">
                 <ul class="space-y-1">
                   {% url 'create_entry' as create_entry_url %}
                   <li>
@@ -335,7 +569,7 @@
           </nav>
 
           {% block sidebar_logout %}
-            <div class="p-4 border-t border-[#2c3136] mt-auto">
+            <div class="flexihub-sidebar-footer p-4 border-t border-[#2c3136] mt-auto">
               <div class="space-y-2">
                 {% url 'account' as account_url %}
                 {% url 'preferences' as preferences_url %}
@@ -376,12 +610,12 @@
         {# Main content #}
         <div class="flex-1 min-w-0 flex flex-col min-h-screen">
           {# Top bar #}
-          <div class="sticky top-0 z-10 bg-[#1a1d20] border-b border-[#2c3136] shadow-md">
+          <div class="flexihub-topbar sticky top-0 z-10 bg-[#1a1d20] border-b border-[#2c3136] shadow-md">
             <div class="container mx-auto px-4">
               <div class="flex items-center justify-between lg:justify-center h-16">
                 {# Mobile: sidebar toggle button #}
                 <button @click="isMobileMenuOpen = !isMobileMenuOpen"
-                        class="lg:hidden pe-3 text-gray-400 hover:text-white transition-colors duration-200">
+                        class="flexihub-mobile-menu-button lg:hidden pe-3 text-gray-400 hover:text-white transition-colors duration-200">
                   {% include "app/icons/hamburger.svg" with classes="w-6 h-6" %}
                 </button>
 
@@ -584,7 +818,7 @@
             </div>
           </div>
 
-          <main class="flex-1 relative bg-[#212529]">
+          <main class="flexihub-main-surface flex-1 relative bg-[#212529]">
             <div class="container mx-auto px-8 py-12">
               {% block content %}
               {% endblock content %}
