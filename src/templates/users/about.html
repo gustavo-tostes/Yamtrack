@@ -1,17 +1,15 @@
 {% extends "users/base.html" %}
 
-{% load socialaccount %}
 {% load static %}
 
 {% block title %}
-  Sobre - Yamtrack
+  Sobre - FlexiHub
 {% endblock title %}
 
 {% block settings_content %}
   <style>
-    .yamtrack-about-card,
-    .yamtrack-about-section,
-    .yamtrack-about-version {
+    .flexihub-about-card,
+    .flexihub-about-section {
       border-radius: 30px;
       border: 1px solid rgba(255,255,255,0.14);
       background:
@@ -25,8 +23,7 @@
       -webkit-backdrop-filter: blur(24px) saturate(155%);
     }
 
-    .yamtrack-about-section,
-    .yamtrack-about-version {
+    .flexihub-about-section {
       border-radius: 24px;
       background:
         radial-gradient(circle at 34% 24%, rgba(255,255,255,0.14), rgba(255,255,255,0.055) 52%, rgba(255,255,255,0.025) 100%) !important;
@@ -37,15 +34,15 @@
       -webkit-backdrop-filter: blur(18px) saturate(150%);
     }
 
-    .yamtrack-about-heading {
+    .flexihub-about-heading {
       display: flex;
       align-items: center;
       gap: 12px;
       margin-bottom: 22px;
     }
 
-    .yamtrack-about-heading-icon,
-    .yamtrack-about-section-icon {
+    .flexihub-about-heading-icon,
+    .flexihub-about-section-icon {
       width: 42px;
       height: 42px;
       display: flex;
@@ -63,31 +60,31 @@
       -webkit-backdrop-filter: blur(18px) saturate(155%);
     }
 
-    .yamtrack-about-section-icon {
+    .flexihub-about-section-icon {
       width: 36px;
       height: 36px;
     }
 
-    .yamtrack-about-title {
+    .flexihub-about-title {
       color: rgba(255,255,255,0.94);
       font-size: 24px;
       font-weight: 900;
       line-height: 1.2;
     }
 
-    .yamtrack-about-section-title {
+    .flexihub-about-section-title {
       color: rgba(255,255,255,0.92);
       font-size: 17px;
       font-weight: 850;
     }
 
-    .yamtrack-about-text {
+    .flexihub-about-text {
       color: rgba(255,255,255,0.66);
       font-size: 14px;
       line-height: 1.6;
     }
 
-    .yamtrack-about-link {
+    .flexihub-about-link {
       display: inline-flex;
       align-items: center;
       gap: 8px;
@@ -97,142 +94,63 @@
       transition: color 180ms ease;
     }
 
-    .yamtrack-about-link:hover {
+    .flexihub-about-link:hover {
       color: #ffffff;
-    }
-
-    .yamtrack-about-link-card {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-height: 44px;
-      padding: 0 14px;
-      border-radius: 9999px;
-      border: 1px solid rgba(255,255,255,0.12);
-      background:
-        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.14), rgba(255,255,255,0.055) 52%, rgba(255,255,255,0.025) 100%);
-      color: rgba(255,255,255,0.78);
-      font-size: 14px;
-      font-weight: 800;
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.10),
-        0 8px 18px rgba(0,0,0,0.12);
-      transition: color 180ms ease, border-color 180ms ease, background 180ms ease;
-    }
-
-    .yamtrack-about-link-card:hover {
-      color: #ffffff;
-      border-color: rgba(255,255,255,0.22);
-      background:
-        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.20), rgba(255,255,255,0.08) 44%, rgba(255,255,255,0.035) 100%);
-    }
-
-    .yamtrack-about-version-code {
-      color: rgba(255,255,255,0.78);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
   </style>
 
-  <div class="yamtrack-about-card p-6">
-    <div class="yamtrack-about-heading">
-      <div class="yamtrack-about-heading-icon">
+  <div class="flexihub-about-card p-6">
+    <div class="flexihub-about-heading">
+      <div class="flexihub-about-heading-icon">
         {% include "app/icons/info.svg" with classes="w-6 h-6" %}
       </div>
-      <h2 class="yamtrack-about-title">Sobre o Yamtrack</h2>
+      <h2 class="flexihub-about-title">Sobre o FlexiHub</h2>
     </div>
 
     <div class="space-y-5">
-      <div class="yamtrack-about-section p-5">
+      <div class="flexihub-about-section p-5">
         <div class="flex items-center gap-3 mb-3">
-          <div class="yamtrack-about-section-icon">
+          <div class="flexihub-about-section-icon">
             {% include "app/icons/info.svg" with classes="w-5 h-5" %}
           </div>
-          <h3 class="yamtrack-about-section-title">Descrição</h3>
+          <h3 class="flexihub-about-section-title">Descrição</h3>
         </div>
 
-        <p class="yamtrack-about-text">
-          Yamtrack é um rastreador de mídia de código aberto que ajuda você a organizar e acompanhar suas mídias.
+        <p class="flexihub-about-text">
+          O FlexiHub nasceu para reunir tudo o que você acompanha em um só lugar, tornando mais simples organizar, descobrir e acompanhar séries, filmes, livros e muito mais.
         </p>
       </div>
 
-      <div class="yamtrack-about-section p-5">
-        <div class="flex items-center gap-3 mb-4">
-          <div class="yamtrack-about-section-icon">
-            {% include "app/icons/external-link.svg" with classes="w-5 h-5" %}
-          </div>
-          <h3 class="yamtrack-about-section-title">Links</h3>
-        </div>
-
-        <div class="grid gap-3">
-          <a href="https://github.com/FuzzyGrim/Yamtrack"
-             target="_blank"
-             rel="noopener noreferrer"
-             class="yamtrack-about-link-card">
-            {% include "app/icons/github.svg" with classes="w-4 h-4" %}
-            <span>Código-fonte</span>
-            {% include "app/icons/external-link.svg" with classes="w-3 h-3 ml-auto" %}
-          </a>
-
-          <a href="https://github.com/FuzzyGrim/Yamtrack/wiki"
-             target="_blank"
-             rel="noopener noreferrer"
-             class="yamtrack-about-link-card">
-            {% include "app/icons/book-open.svg" with classes="w-4 h-4" %}
-            <span>Documentação</span>
-            {% include "app/icons/external-link.svg" with classes="w-3 h-3 ml-auto" %}
-          </a>
-
-          <a href="https://github.com/FuzzyGrim/Yamtrack/issues"
-             target="_blank"
-             rel="noopener noreferrer"
-             class="yamtrack-about-link-card">
-            {% include "app/icons/bug.svg" with classes="w-4 h-4" %}
-            <span>Relatar problemas</span>
-            {% include "app/icons/external-link.svg" with classes="w-3 h-3 ml-auto" %}
-          </a>
-        </div>
-      </div>
-
-      <div class="yamtrack-about-section p-5">
+      <div class="flexihub-about-section p-5">
         <div class="flex items-center gap-3 mb-3">
-          <div class="yamtrack-about-section-icon">
+          <div class="flexihub-about-section-icon">
             {% include "app/icons/page.svg" with classes="w-5 h-5" %}
           </div>
-          <h3 class="yamtrack-about-section-title">Licença</h3>
+          <h3 class="flexihub-about-section-title">Licença</h3>
         </div>
 
-        <p class="yamtrack-about-text">
-          Yamtrack é licenciado sob a
-          <a href="https://github.com/FuzzyGrim/Yamtrack/blob/dev/LICENSE"
-             target="_blank"
-             rel="noopener noreferrer"
-             class="yamtrack-about-link">GNU Affero General Public License v3.0 (AGPL-3.0)</a>.
+        <p class="flexihub-about-text">
+          O FlexiHub é disponibilizado sob os termos da GNU Affero General Public License v3.0 (AGPL-3.0).
         </p>
       </div>
 
-      <div class="yamtrack-about-section p-5">
+      <div class="flexihub-about-section p-5">
         <div class="flex items-center gap-3 mb-3">
-          <div class="yamtrack-about-section-icon">
+          <div class="flexihub-about-section-icon">
             {% include "app/icons/page.svg" with classes="w-5 h-5" %}
           </div>
-          <h3 class="yamtrack-about-section-title">Atribuição</h3>
+          <h3 class="flexihub-about-section-title">Atribuição</h3>
         </div>
 
-        <p class="yamtrack-about-text">
+        <p class="flexihub-about-text">
           Provedores de streaming de filmes e séries fornecidos por
           <a href="https://www.justwatch.com/"
              target="_blank"
              rel="noopener noreferrer"
-             class="yamtrack-about-link">
+             class="flexihub-about-link">
             JustWatch
             {% include "app/icons/external-link.svg" with classes="w-3 h-3" %}
           </a>.
-        </p>
-      </div>
-
-      <div class="yamtrack-about-version p-4">
-        <p class="yamtrack-about-text">
-          Versão: <span class="yamtrack-about-version-code">{{ version }}</span>
         </p>
       </div>
     </div>
