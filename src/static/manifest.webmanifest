@@ -1,0 +1,35 @@
+{
+    "name": "FlexiHub",
+    "short_name": "FlexiHub",
+    "description": "Acompanhe séries, filmes, animes, mangás, jogos, livros, quadrinhos e jogos de tabuleiro.",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "portrait",
+    "background_color": "#111214",
+    "theme_color": "#181a1b",
+    "categories": [
+        "entertainment",
+        "productivity"
+    ],
+    "icons": [
+        {
+            "src": "/static/img/flexihub/android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/static/img/flexihub/android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/static/img/flexihub/android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}
