@@ -670,13 +670,6 @@
               {% include "app/icons/shield-alert.svg" with classes="w-5 h-5" %}
               <span>Avançado</span>
             </a>
-
-            {% url 'about' as about_url %}
-            <a href="{{ about_url }}"
-               class="yamtrack-settings-nav-link {% if request.path == about_url %}is-active{% endif %}">
-              {% include "app/icons/info.svg" with classes="w-5 h-5" %}
-              <span>Sobre</span>
-            </a>
           </nav>
         </div>
       </div>
