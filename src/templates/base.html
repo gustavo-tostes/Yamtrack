@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="keywords" content="FlexiHub, Media Tracker, Yamtrack">
     <meta name="description" content="Pesquise e acompanhe séries, temporadas e filmes no FlexiHub.">
-    <meta name="flexihub-base-version" content="sidebar-liquid-glass-v1-2026-07-23">
+    <meta name="flexihub-base-version" content="sidebar-liquid-glass-v2-footer-transparent-2026-07-23">
 
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-status-bar-style" content="black-translucent">
@@ -232,10 +232,21 @@
       }
 
       body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer {
-        background:
-          radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.08), transparent 56%),
-          linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015));
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.055);
+        background: transparent !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+        box-shadow: none !important;
+      }
+
+      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer::before {
+        content: "";
+        position: absolute;
+        top: -1px;
+        left: 16px;
+        right: 16px;
+        height: 1px;
+        pointer-events: none;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.16), transparent);
+        opacity: 0.8;
       }
 
       body > div.flexihub-app-shell > aside.flexihub-sidebar nav a,
