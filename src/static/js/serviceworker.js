@@ -1,4 +1,4 @@
-const CACHE_NAME = 'flexihub-v1';
+const CACHE_NAME = 'flexihub-v2';
 
 const STATIC_CACHE_URLS = [
   '/static/css/main.css',
