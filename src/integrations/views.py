@@ -351,11 +351,11 @@ def import_kitsu(request):
 
 @require_POST
 def import_yamtrack(request):
-    """View for importing anime and manga data from Yamtrack CSV."""
+    """View for importing media data from FlexiHub CSV."""
     file = request.FILES.get("yamtrack_csv")
 
     if not file:
-        messages.error(request, "Yamtrack CSV file is required.")
+        messages.error(request, "FlexiHub CSV file is required.")
         return redirect("import_data")
 
     mode = request.POST["mode"]
@@ -366,7 +366,7 @@ def import_yamtrack(request):
     )
     messages.info(
         request,
-        "The task to import media from Yamtrack CSV file has been queued.",
+        "The task to import media from FlexiHub CSV file has been queued.",
     )
     return redirect("import_data")
 
@@ -466,11 +466,13 @@ def import_goodreads(request):
 @require_GET
 def export_csv(request):
     """View for exporting all media data to a CSV file."""
-    now = timezone.localtime()
+    now = timezone.localtime().strftime("%Y-%m-%d_%H-%M-%S")
+    filename = f"flexihub_{now}.csv"
+
     response = StreamingHttpResponse(
         streaming_content=exports.generate_rows(request.user),
         content_type="text/csv",
-        headers={"Content-Disposition": f'attachment; filename="yamtrack_{now}.csv"'},
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )
     logger.info("User %s started CSV export", request.user.username)
     return response
