@@ -22,15 +22,81 @@
           {% if field.name != 'notes' and field.name != 'instance_id' and field.name != 'media_type' and field.name != 'source' and field.name != 'media_id' and field.name != 'season_number' %}
             <div class="mb-5 {% if field.name == 'status' and total_fields|divisibleby:2 %}sm:col-span-2{% endif %}">
               <label class="block text-sm font-medium mb-1 text-gray-300"
-                     for="{{ field.id_for_label }}">{{ field.label }}</label>
+                     for="{{ field.id_for_label }}">
+                {% if field.name == "score" or field.label == "Score" %}
+                  Nota
+                {% elif field.name == "status" or field.label == "Status" %}
+                  Status
+                {% elif field.name == "progress" or field.label == "Progress" %}
+                  Progresso
+                {% elif field.name == "max_progress" or field.label == "Max progress" or field.label == "Max Progress" %}
+                  Progresso máximo
+                {% elif field.name == "start_date" or field.label == "Start date" or field.label == "Start Date" %}
+                  Data de início
+                {% elif field.name == "end_date" or field.label == "End date" or field.label == "End Date" %}
+                  Data de conclusão
+                {% elif field.name == "repeat" or field.label == "Repeat" %}
+                  Repetição
+                {% elif field.name == "rewatch" or field.label == "Rewatch" %}
+                  Reassistir
+                {% else %}
+                  {{ field.label }}
+                {% endif %}
+              </label>
+
               <div class="relative">
                 {% if field.name == "status" %}
-                  {{ field|add_class:"w-full p-2 bg-[#39404b] rounded-md text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#4a9eff] appearance-none" }}
+                  <select name="{{ field.name }}"
+                          id="{{ field.id_for_label }}"
+                          class="w-full p-2 bg-[#39404b] rounded-md text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#4a9eff] appearance-none">
+                    {% with current_value=field.value|stringformat:"s" %}
+                      {% for value, label in field.field.choices %}
+                        {% with option_value=value|stringformat:"s" %}
+                          <option value="{{ value }}"
+                                  {% if current_value == option_value %}selected{% endif %}>
+                            {% if label == "Completed" %}
+                              Concluído
+                            {% elif label == "In Progress" %}
+                              Em andamento
+                            {% elif label == "Planning" %}
+                              Planejado
+                            {% elif label == "Paused" %}
+                              Pausado
+                            {% elif label == "Dropped" %}
+                              Abandonado
+                            {% elif label == "Rewatching" %}
+                              Reassistindo
+                            {% elif label == "Rereading" %}
+                              Relendo
+                            {% elif label == "Playing" %}
+                              Jogando
+                            {% elif label == "Reading" %}
+                              Lendo
+                            {% elif label == "Watching" %}
+                              Assistindo
+                            {% elif label == "On Hold" %}
+                              Pausado
+                            {% elif label == "Plan to Watch" %}
+                              Planejado
+                            {% elif label == "Plan to Read" %}
+                              Planejado
+                            {% elif label == "Plan to Play" %}
+                              Planejado
+                            {% else %}
+                              {{ label }}
+                            {% endif %}
+                          </option>
+                        {% endwith %}
+                      {% endfor %}
+                    {% endwith %}
+                  </select>
+
                   <div class="absolute inset-y-0 right-2 flex items-center pointer-events-none">
                     {% include "app/icons/chevron-down.svg" with classes="w-4 h-4" %}
                   </div>
                 {% elif field.field.widget.input_type == 'number' %}
                   {{ field|add_class:"w-full p-2 pr-12 bg-[#39404b] rounded-md text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#4a9eff] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" }}
+
                   <div class="absolute inset-y-0 right-0 flex flex-col border-l border-gray-600">
                     <button type="button"
                             class="flex-1 px-2 hover:bg-gray-700 transition-colors rounded-tr-md border-t border-r border-gray-600"
@@ -57,8 +123,15 @@
     {% if form.notes %}
       <div class="mb-5">
         <label class="block text-sm font-medium mb-1 text-gray-300"
-               for="{{ form.notes.id_for_label }}">{{ form.notes.label }}</label>
-        {{ form.notes|add_class:"w-full p-2 bg-[#39404b] rounded-md text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#4a9eff]" }}
+               for="{{ form.notes.id_for_label }}">
+          {% if form.notes.label == "Notes" %}
+            Notas
+          {% else %}
+            {{ form.notes.label }}
+          {% endif %}
+        </label>
+
+        {{ form.notes|add_class:"w-full p-2 bg-[#39404b] rounded-md text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#4a9eff]"|attr:"placeholder:Adicione notas ou comentários..." }}
       </div>
     {% endif %}
 
@@ -67,15 +140,18 @@
               formaction="{% url 'media_save' %}?next={{ return_url }}"
               class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 cursor-pointer">
         {% if media %}
-          Update
+          Atualizar
         {% else %}
-          Add
+          Adicionar
         {% endif %}
       </button>
+
       <button type="submit"
               formaction="{% url 'media_delete' %}?next={{ return_url }}"
               class="px-4 py-2 rounded-md transition duration-300 {% if media %}bg-red-700 text-white hover:bg-red-800 cursor-pointer{% else %}bg-gray-600 text-gray-300 cursor-not-allowed{% endif %}"
-              {% if not media %}disabled{% endif %}>Delete</button>
+              {% if not media %}disabled{% endif %}>
+        Excluir
+      </button>
     </div>
   </form>
 </div>
