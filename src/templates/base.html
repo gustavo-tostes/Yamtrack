@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="keywords" content="FlexiHub, Media Tracker, Yamtrack">
     <meta name="description" content="Pesquise e acompanhe séries, temporadas e filmes no FlexiHub.">
-    <meta name="flexihub-base-version" content="sidebar-liquid-glass-v2-footer-transparent-2026-07-23">
+    <meta name="flexihub-base-version" content="sidebar-liquid-glass-v3-no-logout-2026-07-23">
 
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-status-bar-style" content="black-translucent">
@@ -602,14 +602,7 @@
                   <span>Configurações</span>
                 </a>
 
-                <form method="post" action="{% url 'account_logout' %}" class="w-full">
-                  {% csrf_token %}
-                  <button type="submit"
-                          class="w-full flex items-center space-x-3 px-4 py-2 rounded-md text-gray-400 hover:bg-[#23272b] hover:text-white transition-colors duration-200 text-sm cursor-pointer">
-                    {% include "app/icons/logout.svg" with classes="w-5 h-5" %}
-                    <span>Sair</span>
-                  </button>
-                </form>
+
               </div>
             </div>
           {% endblock sidebar_logout %}

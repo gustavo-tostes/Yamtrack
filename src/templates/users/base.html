@@ -1,865 +1,492 @@
+{% extends "users/base.html" %}
+
+{% load socialaccount %}
 {% load static %}
-{% load app_tags %}
 
-<!DOCTYPE html>
-<html lang="pt-BR" class="scheme-dark bg-[#212529]">
-  <head>
-    {# Required meta tags #}
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="keywords" content="FlexiHub, Media Tracker, Yamtrack">
-    <meta name="description" content="Pesquise e acompanhe séries, temporadas e filmes no FlexiHub.">
-    <meta name="flexihub-base-version" content="sidebar-liquid-glass-v3-logout-inside-account-2026-07-23">
-
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="mobile-web-app-title" content="FlexiHub">
-
-    <title>
-      {% block title %}
-        FlexiHub
-      {% endblock title %}
-    </title>
-
-    <style>
-      [x-cloak] {
-        display: none !important;
-      }
-
-      div.sticky.top-0.z-10 {
-        z-index: 5000 !important;
-        overflow: visible !important;
-      }
-
-      div.sticky.top-0.z-10 > div,
-      div.sticky.top-0.z-10 .h-16 {
-        overflow: visible !important;
-      }
-
-      main {
-        position: relative;
-        z-index: 0;
-      }
-
-      .flexihub-global-search-wrapper,
-      .flexihub-global-search-form,
-      .flexihub-global-search-row,
-      .flexihub-global-search-type-wrapper {
-        position: relative;
-        overflow: visible !important;
-      }
-
-      .flexihub-global-search-wrapper {
-        z-index: 6000;
-      }
-
-      .flexihub-global-search-form {
-        z-index: 7000;
-      }
-
-      .flexihub-global-search-row {
-        z-index: 8000;
-      }
-
-      .flexihub-global-search-type-wrapper {
-        flex: 0 0 auto;
-        z-index: 9000;
-      }
-
-      .flexihub-global-search-type-button {
-        width: 176px;
-        min-width: 176px;
-      }
-
-      .flexihub-global-search-dropdown {
-        position: fixed;
-        top: auto;
-        left: auto;
-        right: auto;
-        width: 240px;
-        max-height: min(70vh, 420px);
-        overflow-y: auto;
-        overflow-x: hidden;
-        padding: 6px;
-        margin: 0;
-        list-style: none;
-        border-radius: 18px;
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        background:
-          linear-gradient(135deg, rgba(36, 38, 43, 0.96), rgba(18, 19, 22, 0.96)) !important;
-        color: rgba(255, 255, 255, 0.84);
-        box-shadow:
-          inset 0 1px 0 rgba(255, 255, 255, 0.10),
-          0 18px 36px rgba(0, 0, 0, 0.34);
-        backdrop-filter: blur(24px) saturate(155%);
-        -webkit-backdrop-filter: blur(24px) saturate(155%);
-        transform-origin: top right;
-        z-index: 2147483647 !important;
-      }
-
-      .flexihub-global-search-dropdown li {
-        border-radius: 12px;
-        padding: 9px 12px;
-        color: rgba(255, 255, 255, 0.82);
-        transition:
-          background 160ms ease,
-          color 160ms ease;
-      }
-
-      .flexihub-global-search-dropdown li:hover {
-        background: rgba(255, 255, 255, 0.09);
-        color: #ffffff;
-      }
-
-      .flexihub-global-search-dropdown::-webkit-scrollbar {
-        width: 8px;
-      }
-
-      .flexihub-global-search-dropdown::-webkit-scrollbar-track {
-        background: transparent;
-      }
-
-      .flexihub-global-search-dropdown::-webkit-scrollbar-thumb {
-        border-radius: 9999px;
-        background: rgba(255, 255, 255, 0.18);
-      }
-
-      @media (max-width: 640px) {
-        .flexihub-global-search-type-button {
-          width: 132px;
-          min-width: 132px;
-        }
-
-        .flexihub-global-search-dropdown {
-          width: 210px;
-        }
-      }
-    </style>
-
-    {% block extra_head %}
-    {% endblock extra_head %}
-
-    <style id="flexihub-sidebar-liquid-glass-final">
-      body > div.flexihub-app-shell {
-        background:
-          radial-gradient(circle at 48% -10%, rgba(255, 255, 255, 0.08), transparent 28%),
-          radial-gradient(circle at 78% 18%, rgba(110, 124, 255, 0.09), transparent 24%),
-          radial-gradient(circle at 16% 34%, rgba(255, 255, 255, 0.035), transparent 22%),
-          linear-gradient(180deg, #17181b 0%, #111214 52%, #0d0e10 100%) !important;
-      }
-
-      body > div.flexihub-app-shell > aside.flexihub-sidebar {
-        isolation: isolate;
-        overflow: hidden;
-        background:
-          radial-gradient(circle at 34% 0%, rgba(255, 255, 255, 0.14), transparent 34%),
-          radial-gradient(circle at 100% 22%, rgba(126, 136, 255, 0.12), transparent 28%),
-          linear-gradient(180deg, rgba(31, 33, 38, 0.78), rgba(16, 17, 20, 0.88)) !important;
-        border-right: 1px solid rgba(255, 255, 255, 0.12) !important;
-        box-shadow:
-          inset -1px 0 0 rgba(255, 255, 255, 0.045),
-          inset 1px 0 0 rgba(255, 255, 255, 0.045),
-          18px 0 44px rgba(0, 0, 0, 0.28) !important;
-        backdrop-filter: blur(30px) saturate(165%) !important;
-        -webkit-backdrop-filter: blur(30px) saturate(165%) !important;
-      }
-
-      body > div.flexihub-app-shell > aside.flexihub-sidebar::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        z-index: -1;
-        pointer-events: none;
-        background:
-          linear-gradient(90deg, rgba(255, 255, 255, 0.06), transparent 28%, transparent 72%, rgba(255, 255, 255, 0.035)),
-          radial-gradient(circle at 50% 100%, rgba(255, 255, 255, 0.08), transparent 34%);
-        opacity: 0.9;
-      }
-
-      body > div.flexihub-app-shell > aside.flexihub-sidebar::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 1px;
-        height: 100%;
-        pointer-events: none;
-        background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.18), transparent);
-        opacity: 0.65;
-      }
-
-      body > div.flexihub-app-shell > aside.flexihub-sidebar > * {
-        position: relative;
-        z-index: 1;
-      }
-
-      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-brand {
-        border-bottom: 1px solid rgba(255, 255, 255, 0.09) !important;
-        background:
-          radial-gradient(circle at 28% 18%, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.035) 48%, transparent 100%) !important;
-        box-shadow:
-          inset 0 1px 0 rgba(255, 255, 255, 0.08),
-          inset 0 -1px 0 rgba(255, 255, 255, 0.03);
-      }
-
-      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-logo-link {
-        border-radius: 18px;
-        padding: 4px 0;
-        filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.28));
-      }
-
-      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-nav {
-        scrollbar-width: thin;
-        scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
-      }
-
-      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-nav::-webkit-scrollbar {
-        width: 8px;
-      }
-
-      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-nav::-webkit-scrollbar-track {
-        background: transparent;
-      }
-
-      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-nav::-webkit-scrollbar-thumb {
-        border-radius: 9999px;
-        background: rgba(255, 255, 255, 0.16);
-      }
-
-      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-section,
-      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer {
-        border-color: rgba(255, 255, 255, 0.09) !important;
-      }
-
-      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer {
-        background: transparent !important;
-        border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
-        box-shadow: none !important;
-      }
-
-      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer::before {
-        content: "";
-        position: absolute;
-        top: -1px;
-        left: 16px;
-        right: 16px;
-        height: 1px;
-        pointer-events: none;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.16), transparent);
-        opacity: 0.8;
-      }
-
-      body > div.flexihub-app-shell > aside.flexihub-sidebar nav a,
-      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer a,
-      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer button {
-        position: relative;
-        min-height: 40px;
-        border-radius: 18px !important;
-        border: 1px solid transparent !important;
-        background: transparent !important;
-        color: rgba(255, 255, 255, 0.60) !important;
-        overflow: hidden;
-        transition:
-          color 180ms ease,
-          background 180ms ease,
-          border-color 180ms ease,
-          box-shadow 180ms ease,
-          transform 180ms ease !important;
-      }
-
-      body > div.flexihub-app-shell > aside.flexihub-sidebar nav a::before,
-      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer a::before,
-      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer button::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        border-radius: inherit;
-        background:
-          radial-gradient(circle at 28% 18%, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.055) 46%, transparent 100%);
-        opacity: 0;
-        transition: opacity 180ms ease;
-      }
-
-      body > div.flexihub-app-shell > aside.flexihub-sidebar nav a:hover,
-      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer a:hover,
-      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer button:hover {
-        transform: translateY(-1px);
-        color: rgba(255, 255, 255, 0.94) !important;
-        background: rgba(255, 255, 255, 0.055) !important;
-        border-color: rgba(255, 255, 255, 0.10) !important;
-        box-shadow:
-          inset 0 1px 0 rgba(255, 255, 255, 0.095),
-          inset 0 -1px 0 rgba(255, 255, 255, 0.025),
-          0 10px 22px rgba(0, 0, 0, 0.16) !important;
-      }
-
-      body > div.flexihub-app-shell > aside.flexihub-sidebar nav a:hover::before,
-      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer a:hover::before,
-      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer button:hover::before {
-        opacity: 1;
-      }
-
-      body > div.flexihub-app-shell > aside.flexihub-sidebar nav a[class*="bg-[#2c3136]"],
-      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer a[class*="bg-[#2c3136]"] {
-        color: #ffffff !important;
-        background:
-          radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.23), rgba(255, 255, 255, 0.085) 46%, rgba(255, 255, 255, 0.035) 100%) !important;
-        border-color: rgba(255, 255, 255, 0.17) !important;
-        box-shadow:
-          inset 0 1px 0 rgba(255, 255, 255, 0.16),
-          inset 0 -1px 0 rgba(255, 255, 255, 0.035),
-          0 12px 26px rgba(0, 0, 0, 0.20),
-          0 0 0 1px rgba(128, 140, 255, 0.08) !important;
-        backdrop-filter: blur(18px) saturate(155%) !important;
-        -webkit-backdrop-filter: blur(18px) saturate(155%) !important;
-      }
-
-      body > div.flexihub-app-shell > aside.flexihub-sidebar nav a[class*="bg-[#2c3136]"]::after,
-      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer a[class*="bg-[#2c3136]"]::after {
-        content: "";
-        position: absolute;
-        left: 7px;
-        top: 50%;
-        width: 3px;
-        height: 18px;
-        border-radius: 9999px;
-        transform: translateY(-50%);
-        background: rgba(150, 160, 255, 0.96);
-        box-shadow: 0 0 16px rgba(130, 140, 255, 0.58);
-      }
-
-      body > div.flexihub-app-shell > aside.flexihub-sidebar nav a svg,
-      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer a svg,
-      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer button svg {
-        color: rgba(255, 255, 255, 0.58) !important;
-        transition: color 180ms ease, filter 180ms ease;
-      }
-
-      body > div.flexihub-app-shell > aside.flexihub-sidebar nav a:hover svg,
-      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer a:hover svg,
-      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer button:hover svg,
-      body > div.flexihub-app-shell > aside.flexihub-sidebar nav a[class*="bg-[#2c3136]"] svg,
-      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer a[class*="bg-[#2c3136]"] svg {
-        color: rgba(170, 178, 255, 0.98) !important;
-        filter: drop-shadow(0 0 10px rgba(130, 140, 255, 0.28));
-      }
-
-      body > div.flexihub-app-shell > aside.flexihub-sidebar nav a span,
-      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer a span,
-      body > div.flexihub-app-shell > aside.flexihub-sidebar .flexihub-sidebar-footer button span {
-        position: relative;
-        z-index: 1;
-      }
-
-      div.sticky.top-0.z-10.flexihub-topbar {
-        background:
-          linear-gradient(180deg, rgba(26, 27, 30, 0.74), rgba(18, 19, 21, 0.58)) !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-        box-shadow:
-          inset 0 -1px 0 rgba(255, 255, 255, 0.035),
-          0 14px 32px rgba(0, 0, 0, 0.18) !important;
-        backdrop-filter: blur(28px) saturate(160%) !important;
-        -webkit-backdrop-filter: blur(28px) saturate(160%) !important;
-      }
-
-      .flexihub-mobile-overlay {
-        background: rgba(0, 0, 0, 0.54) !important;
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-      }
-
-      .flexihub-mobile-menu-button {
-        border-radius: 14px;
-        padding: 8px;
-        margin-left: -8px;
-      }
-
-      .flexihub-mobile-menu-button:hover {
-        background: rgba(255, 255, 255, 0.06);
-      }
-
-      .flexihub-main-surface {
-        background: transparent !important;
-      }
-    </style>
-
-    <link rel="stylesheet"
-          type="text/css"
-          href="{% static 'css/main.css' %}{% get_static_file_mtime 'css/main.css' %}">
-
-    <script src="{% static 'js/libraries/htmx-2.0.4.min.js' %}"></script>
-    <script defer src="{% static 'js/libraries/alpinejs-3.14.9.min.js' %}"></script>
-    <script src="{% static 'js/libraries/lazysizes-5.3.2.min.js' %}" async></script>
-
-    <link rel="manifest" href="{% static 'manifest.webmanifest' %}?v=2">
-
-    <link rel="apple-touch-icon"
-          sizes="180x180"
-          href="{% static 'img/flexihub/apple-touch-icon.png' %}">
-    <link rel="icon"
-          type="image/png"
-          sizes="32x32"
-          href="{% static 'img/flexihub/favicon-32x32.png' %}">
-    <link rel="icon"
-          type="image/png"
-          sizes="16x16"
-          href="{% static 'img/flexihub/favicon-16x16.png' %}">
-    <link rel="shortcut icon" href="{% static 'img/flexihub/favicon.ico' %}">
-    <meta name="msapplication-TileColor" content="#181a1b">
-    <meta name="theme-color" content="#181a1b">
-
-  </head>
-
-  <body>
-    <!-- FLEXIHUB_BASE_DROPDOWN_V4_ACTIVE -->
-    {% block body %}
-      {# Main container for the layout #}
-      <div class="flexihub-app-shell flex min-h-screen bg-[#212529] text-gray-100"
-           x-data="{ isMobileMenuOpen: false }">
-
-        {# Mobile menu overlay #}
-        <div x-show="isMobileMenuOpen"
-             class="flexihub-mobile-overlay fixed inset-0 bg-black/50 z-30 lg:hidden"
-             @click="isMobileMenuOpen = false"></div>
-
-        {# Sidebar #}
-        <aside class="flexihub-sidebar fixed top-0 left-0 z-40 h-screen w-64 bg-[#1a1d20] transform transition-transform duration-300 ease-in-out border-r border-[#2c3136] -translate-x-full lg:translate-x-0 lg:sticky flex flex-col"
-               :class="isMobileMenuOpen ? 'translate-x-0' : ''">
-
-          <div class="flexihub-sidebar-brand h-20 border-b border-[#2c3136] flex items-center px-7">
-            <a href="{% url 'home' %}"
-               class="flexihub-sidebar-logo-link inline-flex items-center"
-               aria-label="FlexiHub">
-              <img src="{% static 'img/flexihub/Logo.png' %}"
-                   alt="FlexiHub"
-                   class="h-12 w-auto max-w-[210px] object-contain scale-[1.35] origin-left">
-            </a>
-          </div>
-
-          <nav class="flexihub-sidebar-nav p-4 flex-1 overflow-y-auto">
-            {% block sidebar_own_media %}
-              <ul class="space-y-1 mb-6">
-                <li>
-                  <a href="{% url 'home' %}"
-                     class="flex items-center space-x-3 px-4 py-2 rounded-md transition-colors duration-200 text-sm {% if request.path == "/" %}text-white bg-[#2c3136]{% else %}text-gray-400 hover:text-white hover:bg-[#23272b]{% endif %}">
-                    {% if request.path|str_equals:"/" %}
-                      {% include "app/icons/house.svg" with classes="w-5 h-5 text-indigo-400 " %}
-                    {% else %}
-                      {% include "app/icons/house.svg" with classes="w-5 h-5" %}
-                    {% endif %}
-                    <span>Início</span>
-                  </a>
-                </li>
-
-                {% get_sidebar_media_types user as sidebar_media_types %}
-                {% for item in sidebar_media_types %}
-                  <li>
-                    {% if target_user is None or target_user == request.user %}
-                      <a href="{% url 'medialist' username=user.username media_type=item.media_type %}"
-                         class="flex items-center space-x-3 px-4 py-2 rounded-md transition-colors duration-200 text-sm {% if media_type == item.media_type %}text-white bg-[#2c3136]{% else %}text-gray-400 hover:text-white hover:bg-[#23272b]{% endif %}">
-                        {% icon item.media_type is_active=media_type|str_equals:item.media_type %}
-                        <span>
-                          {% if item.display_name == "TV Shows" %}
-                            Séries
-                          {% elif item.display_name == "TV Seasons" %}
-                            Temporadas
-                          {% elif item.display_name == "Movies" %}
-                            Filmes
-                          {% elif item.display_name == "Anime" or item.display_name == "Animes" %}
-                            Animes
-                          {% elif item.display_name == "Manga" or item.display_name == "Mangas" %}
-                            Mangás
-                          {% elif item.display_name == "Games" or item.display_name == "Game" %}
-                            Jogos
-                          {% elif item.display_name == "Books" or item.display_name == "Book" %}
-                            Livros
-                          {% elif item.display_name == "Comics" or item.display_name == "Comic" %}
-                            Quadrinhos
-                          {% elif item.display_name == "Boardgames" or item.display_name == "Board Games" or item.display_name == "Boardgame" or item.display_name == "Board Game" %}
-                            Jogos de tabuleiro
-                          {% else %}
-                            {{ item.display_name }}
-                          {% endif %}
-                        </span>
-                      </a>
-                    {% else %}
-                      <a href="{% url 'medialist' username=user.username media_type=item.media_type %}"
-                         class="flex items-center space-x-3 px-4 py-2 rounded-md transition-colors duration-200 text-sm text-gray-400 hover:text-white hover:bg-[#23272b]">
-                        {% icon item.media_type is_active=False %}
-                        <span>
-                          {% if item.display_name == "TV Shows" %}
-                            Séries
-                          {% elif item.display_name == "TV Seasons" %}
-                            Temporadas
-                          {% elif item.display_name == "Movies" %}
-                            Filmes
-                          {% elif item.display_name == "Anime" or item.display_name == "Animes" %}
-                            Animes
-                          {% elif item.display_name == "Manga" or item.display_name == "Mangas" %}
-                            Mangás
-                          {% elif item.display_name == "Games" or item.display_name == "Game" %}
-                            Jogos
-                          {% elif item.display_name == "Books" or item.display_name == "Book" %}
-                            Livros
-                          {% elif item.display_name == "Comics" or item.display_name == "Comic" %}
-                            Quadrinhos
-                          {% elif item.display_name == "Boardgames" or item.display_name == "Board Games" or item.display_name == "Boardgame" or item.display_name == "Board Game" %}
-                            Jogos de tabuleiro
-                          {% else %}
-                            {{ item.display_name }}
-                          {% endif %}
-                        </span>
-                      </a>
-                    {% endif %}
-                  </li>
-                {% endfor %}
-              </ul>
-            {% endblock sidebar_own_media %}
-
-            {% block sidebar_external_media_view %}
-            {% endblock sidebar_external_media_view %}
-
-            {% block sidebar_utilities %}
-              <div class="flexihub-sidebar-section border-t border-[#2c3136] pt-4">
-                <ul class="space-y-1">
-                  {% url 'create_entry' as create_entry_url %}
-                  <li>
-                    <a href="{{ create_entry_url }}"
-                       class="flex items-center space-x-3 px-4 py-2 rounded-md transition-colors duration-200 text-sm {% if request.path == create_entry_url %}text-white bg-[#2c3136]{% else %}text-gray-400 hover:text-white hover:bg-[#23272b]{% endif %}">
-                      {% if request.path|str_equals:create_entry_url %}
-                        {% include "app/icons/circle-plus.svg" with classes="w-5 h-5 text-indigo-400 " %}
-                      {% else %}
-                        {% include "app/icons/circle-plus.svg" with classes="w-5 h-5" %}
-                      {% endif %}
-                      <span>Criar personalizado</span>
-                    </a>
-                  </li>
-
-                  {% url 'statistics' as statistics_url %}
-                  <li>
-                    <a href="{{ statistics_url }}"
-                       class="flex items-center space-x-3 px-4 py-2 rounded-md transition-colors duration-200 text-sm {% if request.path == statistics_url %}text-white bg-[#2c3136]{% else %}text-gray-400 hover:text-white hover:bg-[#23272b]{% endif %}">
-                      {% if request.path|str_equals:statistics_url %}
-                        {% include "app/icons/bars-pyramid.svg" with classes="w-5 h-5 text-indigo-400 " %}
-                      {% else %}
-                        {% include "app/icons/bars-pyramid.svg" with classes="w-5 h-5" %}
-                      {% endif %}
-                      <span>Estatísticas</span>
-                    </a>
-                  </li>
-
-                  {% url 'lists' as lists_url %}
-                  <li>
-                    <a href="{{ lists_url }}"
-                       class="flex items-center space-x-3 px-4 py-2 rounded-md transition-colors duration-200 text-sm {% if request.path == lists_url %}text-white bg-[#2c3136]{% else %}text-gray-400 hover:text-white hover:bg-[#23272b]{% endif %}">
-                      {% if request.path|str_equals:lists_url %}
-                        {% include "app/icons/folder-plus.svg" with classes="w-5 h-5 text-indigo-400 " %}
-                      {% else %}
-                        {% include "app/icons/folder-plus.svg" with classes="w-5 h-5" %}
-                      {% endif %}
-                      <span>Listas</span>
-                    </a>
-                  </li>
-
-                  {% url 'calendar' as calendar_url %}
-                  <li>
-                    <a href="{{ calendar_url }}"
-                       class="flex items-center space-x-3 px-4 py-2 rounded-md transition-colors duration-200 text-sm {% if request.path == calendar_url %}text-white bg-[#2c3136]{% else %}text-gray-400 hover:text-white hover:bg-[#23272b]{% endif %}">
-                      {% if request.path|str_equals:calendar_url %}
-                        {% include "app/icons/calendar.svg" with classes="w-5 h-5 text-indigo-400 " %}
-                      {% else %}
-                        {% include "app/icons/calendar.svg" with classes="w-5 h-5" %}
-                      {% endif %}
-                      <span>Calendário</span>
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            {% endblock sidebar_utilities %}
-          </nav>
-
-          {% block sidebar_logout %}
-            <div class="flexihub-sidebar-footer p-4 border-t border-[#2c3136] mt-auto">
-              <div class="space-y-2">
-                {% url 'account' as account_url %}
-                {% url 'preferences' as preferences_url %}
-                {% url 'notifications' as notifications_url %}
-                {% url 'sidebar' as sidebar_url %}
-                {% url 'integrations' as integrations_url %}
-                {% url 'import_data' as import_url %}
-                {% url 'export_data' as export_url %}
-                {% url 'advanced' as advanced_url %}
-                {% url 'about' as about_url %}
-
-                <a href="{{ account_url }}"
-                   class="flex items-center space-x-3 px-4 py-2 rounded-md transition-colors duration-200 text-sm {% if request.path == account_url or request.path == preferences_url or request.path == notifications_url or request.path == sidebar_url or request.path == integrations_url or request.path == import_url or request.path == export_url or request.path == advanced_url or request.path == about_url %}text-white bg-[#2c3136]{% else %}text-gray-400 hover:text-white hover:bg-[#23272b]{% endif %}">
-                  {% if request.path == account_url or request.path == preferences_url or request.path == notifications_url or request.path == sidebar_url or request.path == integrations_url or request.path == import_url or request.path == export_url or request.path == advanced_url or request.path == about_url %}
-                    {% include "app/icons/settings.svg" with classes="w-5 h-5 text-indigo-400 " %}
-                  {% else %}
-                    {% include "app/icons/settings.svg" with classes="w-5 h-5" %}
-                  {% endif %}
-                  <span>Configurações</span>
-                </a>
-
-              </div>
-            </div>
-          {% endblock sidebar_logout %}
-
-          {% block anonymous_login %}
-          {% endblock anonymous_login %}
-        </aside>
-
-        {# Main content #}
-        <div class="flex-1 min-w-0 flex flex-col min-h-screen">
-          {# Top bar #}
-          <div class="flexihub-topbar sticky top-0 z-10 bg-[#1a1d20] border-b border-[#2c3136] shadow-md">
-            <div class="container mx-auto px-4">
-              <div class="flex items-center justify-between lg:justify-center h-16">
-                {# Mobile: sidebar toggle button #}
-                <button @click="isMobileMenuOpen = !isMobileMenuOpen"
-                        class="flexihub-mobile-menu-button lg:hidden pe-3 text-gray-400 hover:text-white transition-colors duration-200">
-                  {% include "app/icons/hamburger.svg" with classes="w-6 h-6" %}
-                </button>
-
-                {# Define search type from current media type (if it exists) or last search type #}
-                {% if media_type == MediaTypes.SEASON.value %}
-                  {% firstof MediaTypes.TV.value as search_type %}
-                {% else %}
-                  {% firstof media_type user.last_search_type as search_type %}
-                {% endif %}
-
-                {# Search bar #}
-                {% block search_bar %}
-                  <div class="flexihub-global-search-wrapper relative w-full max-w-2xl">
-                    <form method="get"
-                          action="{% url 'search' %}"
-                          class="flexihub-global-search-form"
-                          x-data="{
-                            isOpen: false,
-                            dropdownStyle: '',
-                            selectedType: { display: '{{ search_type|media_type_readable_plural|escapejs }}', value: '{{ search_type }}' },
-                            mediaTypes: {% get_search_media_types user as search_types %}{{ search_types }},
-                            init() {
-                              this.selectedType = {
-                                ...this.selectedType,
-                                display: this.getSelectedDisplay(),
-                                value: this.getTypeValue(this.selectedType)
-                              };
-                            },
-                            normalizeKey(value) {
-                              return String(value || '')
-                                .trim()
-                                .toLowerCase()
-                                .replace(/_/g, ' ')
-                                .replace(/-/g, ' ')
-                                .replace(/\s+/g, ' ');
-                            },
-                            getRawDisplay(type) {
-                              if (!type) return '';
-                              if (typeof type === 'string') return type;
-                              return type.display || type.display_name || type.label || type.name || type.title || type.value || type.media_type || type.type || type.id || '';
-                            },
-                            getTypeValue(type) {
-                              if (!type) return '';
-                              if (typeof type === 'string') return type;
-                              return type.value || type.media_type || type.type || type.id || '';
-                            },
-                            translateMediaValue(value) {
-                              const translations = {
-                                'tv': 'Séries',
-                                'show': 'Séries',
-                                'shows': 'Séries',
-                                'season': 'Temporadas',
-                                'seasons': 'Temporadas',
-                                'movie': 'Filmes',
-                                'movies': 'Filmes',
-                                'anime': 'Animes',
-                                'animes': 'Animes',
-                                'manga': 'Mangás',
-                                'mangas': 'Mangás',
-                                'game': 'Jogos',
-                                'games': 'Jogos',
-                                'book': 'Livros',
-                                'books': 'Livros',
-                                'comic': 'Quadrinhos',
-                                'comics': 'Quadrinhos',
-                                'boardgame': 'Jogos de tabuleiro',
-                                'boardgames': 'Jogos de tabuleiro',
-                                'board game': 'Jogos de tabuleiro',
-                                'board games': 'Jogos de tabuleiro'
-                              };
-                              return translations[this.normalizeKey(value)] || '';
-                            },
-                            translateMediaDisplay(display, type = null) {
-                              const byValue = this.translateMediaValue(this.getTypeValue(type));
-                              if (byValue) return byValue;
-
-                              const raw = String(display || '').trim();
-                              const translations = {
-                                'tv shows': 'Séries',
-                                'tv show': 'Séries',
-                                'series': 'Séries',
-                                'séries': 'Séries',
-                                'seasons': 'Temporadas',
-                                'tv seasons': 'Temporadas',
-                                'tv season': 'Temporadas',
-                                'movies': 'Filmes',
-                                'movie': 'Filmes',
-                                'games': 'Jogos',
-                                'game': 'Jogos',
-                                'books': 'Livros',
-                                'book': 'Livros',
-                                'anime': 'Animes',
-                                'animes': 'Animes',
-                                'manga': 'Mangás',
-                                'mangas': 'Mangás',
-                                'mangás': 'Mangás',
-                                'comics': 'Quadrinhos',
-                                'comic': 'Quadrinhos',
-                                'quadrinhos': 'Quadrinhos',
-                                'boardgames': 'Jogos de tabuleiro',
-                                'boardgame': 'Jogos de tabuleiro',
-                                'board games': 'Jogos de tabuleiro',
-                                'board game': 'Jogos de tabuleiro',
-                                'jogos de tabuleiro': 'Jogos de tabuleiro'
-                              };
-                              return translations[this.normalizeKey(raw)] || raw;
-                            },
-                            getTypeDisplay(type) {
-                              return this.translateMediaDisplay(this.getRawDisplay(type), type);
-                            },
-                            getSelectedDisplay() {
-                              return this.translateMediaDisplay(this.getRawDisplay(this.selectedType), this.selectedType);
-                            },
-                            selectType(type) {
-                              this.selectedType = {
-                                ...type,
-                                display: this.getTypeDisplay(type),
-                                value: this.getTypeValue(type)
-                              };
-                              this.isOpen = false;
-                            },
-                            positionDropdown() {
-                              const button = this.$refs.typeButton;
-                              if (!button) return;
-
-                              const rect = button.getBoundingClientRect();
-                              const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
-                              const width = viewportWidth < 640 ? 210 : 240;
-                              const left = Math.max(12, Math.min(rect.right - width, viewportWidth - width - 12));
-                              const top = Math.round(rect.bottom + 10);
-
-                              this.dropdownStyle = 'position: fixed !important; top: ' + top + 'px !important; left: ' + Math.round(left) + 'px !important; width: ' + width + 'px !important; z-index: 2147483647 !important;';
-                            },
-                            toggleDropdown() {
-                              this.isOpen = !this.isOpen;
-                              if (this.isOpen) {
-                                this.$nextTick(() => this.positionDropdown());
-                              }
-                            },
-                            getPlaceholder() {
-                              return 'Buscar ' + this.getSelectedDisplay().toLowerCase() + '...';
-                            }
-                          }"
-                          @resize.window="isOpen && positionDropdown()"
-                          @scroll.window="isOpen && positionDropdown()">
-                      <div class="flexihub-global-search-row flex">
-                        <div class="relative grow">
-                          {# Search input #}
-                          <input type="search"
-                                 id="global-search"
-                                 name="q"
-                                 value="{{ request.GET.q }}"
-                                 :placeholder="getPlaceholder()"
-                                 class="w-full py-2 pl-10 pr-4 text-sm text-gray-300 bg-[#272c31] rounded-l-md focus:outline-none focus:ring-2 focus:ring-[#4a9eff] focus:ring-inset placeholder-gray-500">
-                          <button type="submit"
-                                  class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200 focus:outline-none cursor-pointer">
-                            {% include "app/icons/magnifying-glass.svg" with classes="w-5 h-5" %}
-                          </button>
-                        </div>
-
-                        <input type="hidden" name="media_type" :value="getTypeValue(selectedType)">
-
-                        {# Media type dropdown #}
-                        <div class="flexihub-global-search-type-wrapper"
-                             @click.outside="isOpen = false">
-                          <button type="button"
-                                  x-ref="typeButton"
-                                  @click="toggleDropdown()"
-                                  class="flexihub-global-search-type-button flex items-center justify-between px-2 sm:px-4 py-2 text-sm text-gray-300 bg-[#272c31] rounded-r-md focus:outline-none focus:ring-2 focus:ring-[#4a9eff] focus:ring-inset hover:bg-[#2a2e33] transition-colors duration-200 cursor-pointer">
-                            <span class="truncate" x-text="getSelectedDisplay()"></span>
-                            {% include "app/icons/chevron-down.svg" with classes="w-4 h-4 ml-2 shrink-0" %}
-                          </button>
-
-                          <template x-teleport="body">
-                            <ul x-cloak
-                                x-show="isOpen"
-                                :style="dropdownStyle"
-                                @keydown.escape.window="isOpen = false"
-                                @click.outside="isOpen = false"
-                                x-transition:enter="transition ease-out duration-100"
-                                x-transition:enter-start="transform opacity-0 scale-95"
-                                x-transition:enter-end="transform opacity-100 scale-100"
-                                x-transition:leave="transition ease-in duration-75"
-                                x-transition:leave-start="transform opacity-100 scale-100"
-                                x-transition:leave-end="transform opacity-0 scale-95"
-                                class="flexihub-global-search-dropdown text-sm text-gray-300">
-                              <template x-for="type in mediaTypes" :key="getTypeValue(type)">
-                                <li @click="selectType(type)"
-                                    class="cursor-pointer transition duration-150 ease-in-out"
-                                    x-text="getTypeDisplay(type)"></li>
-                              </template>
-                            </ul>
-                          </template>
-                        </div>
-                      </div>
-                    </form>
-                  </div>
-                {% endblock search_bar %}
-              </div>
-            </div>
-          </div>
-
-          <main class="flexihub-main-surface flex-1 relative bg-[#212529]">
-            <div class="container mx-auto px-8 py-12">
-              {% block content %}
-              {% endblock content %}
-            </div>
-          </main>
+{% block title %}
+  Conta - FlexiHub
+{% endblock title %}
+
+{% block settings_content %}
+  <style>
+    .yamtrack-account-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .yamtrack-account-card {
+      border-radius: 30px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.12), transparent 38%),
+        linear-gradient(135deg, rgba(255,255,255,0.09), rgba(255,255,255,0.035)) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 18px 42px rgba(0,0,0,0.22);
+      backdrop-filter: blur(24px) saturate(155%);
+      -webkit-backdrop-filter: blur(24px) saturate(155%);
+    }
+
+    .yamtrack-account-heading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .yamtrack-account-heading-icon {
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.18), rgba(255,255,255,0.08) 44%, rgba(255,255,255,0.035) 100%);
+      color: rgba(160,168,255,0.98);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.14),
+        0 8px 18px rgba(0,0,0,0.14);
+      backdrop-filter: blur(18px) saturate(155%);
+      -webkit-backdrop-filter: blur(18px) saturate(155%);
+    }
+
+    .yamtrack-account-heading-title {
+      color: rgba(255,255,255,0.94);
+      font-size: 21px;
+      font-weight: 850;
+      line-height: 1.2;
+    }
+
+    .yamtrack-account-label {
+      display: block;
+      margin-bottom: 8px;
+      color: rgba(255,255,255,0.78);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .yamtrack-account-input {
+      width: 100%;
+      min-height: 48px;
+      border-radius: 18px !important;
+      border: 1px solid rgba(255,255,255,0.14) !important;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.16), rgba(255,255,255,0.055) 52%, rgba(255,255,255,0.025) 100%) !important;
+      color: rgba(255,255,255,0.92) !important;
+      padding: 0 15px;
+      font-size: 14px;
+      outline: none;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 8px 18px rgba(0,0,0,0.14) !important;
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+    }
+
+    .yamtrack-account-input:focus {
+      border-color: rgba(255,255,255,0.24) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.16),
+        0 0 0 2px rgba(130,140,255,0.20),
+        0 12px 24px rgba(0,0,0,0.18) !important;
+    }
+
+    .yamtrack-account-input.has-error {
+      border-color: rgba(248,113,113,0.55) !important;
+    }
+
+    .yamtrack-account-visibility {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      min-height: 76px;
+      padding: 14px 16px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.14), rgba(255,255,255,0.055) 52%, rgba(255,255,255,0.025) 100%) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.10),
+        0 10px 24px rgba(0,0,0,0.14);
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+    }
+
+    .yamtrack-account-button {
+      min-height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 9999px !important;
+      border: 1px solid rgba(255,255,255,0.14) !important;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,0.20), rgba(255,255,255,0.08) 44%, rgba(255,255,255,0.035) 100%) !important;
+      color: rgba(255,255,255,0.92) !important;
+      padding: 0 18px;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.14),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 8px 18px rgba(0,0,0,0.14);
+      backdrop-filter: blur(18px) saturate(155%);
+      -webkit-backdrop-filter: blur(18px) saturate(155%);
+      cursor: pointer;
+    }
+
+    .yamtrack-account-button:hover {
+      border-color: rgba(255,255,255,0.22) !important;
+      color: #ffffff !important;
+    }
+
+    .yamtrack-account-password-wrap {
+      position: relative;
+    }
+
+    .yamtrack-account-password-wrap .yamtrack-account-input {
+      padding-right: 48px;
+    }
+
+    .yamtrack-password-toggle,
+    .yamtrack-settings-content .yamtrack-password-toggle {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      width: 34px;
+      height: 34px;
+      min-height: 34px;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px !important;
+      border: 1px solid transparent !important;
+      background: transparent !important;
+      color: rgba(255,255,255,0.48) !important;
+      box-shadow: none !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      cursor: pointer;
+      transition: color 180ms ease, background 180ms ease, border-color 180ms ease;
+    }
+
+    .yamtrack-password-toggle:hover,
+    .yamtrack-settings-content .yamtrack-password-toggle:hover {
+      color: rgba(255,255,255,0.92) !important;
+      background: rgba(255,255,255,0.07) !important;
+      border-color: rgba(255,255,255,0.10) !important;
+    }
+
+    .yamtrack-account-switch {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      width: 44px;
+      height: 26px;
+      flex: 0 0 auto;
+      cursor: pointer;
+    }
+
+    .yamtrack-account-switch input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .yamtrack-account-switch-track {
+      position: absolute;
+      inset: 0;
+      border-radius: 9999px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.14);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        0 8px 18px rgba(0,0,0,0.14);
+      transition: background 180ms ease, border-color 180ms ease;
+    }
+
+    .yamtrack-account-switch-track::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 18px;
+      height: 18px;
+      border-radius: 9999px;
+      background: rgba(255,255,255,0.92);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+      transition: transform 180ms ease;
+    }
+
+    .yamtrack-account-switch input:checked + .yamtrack-account-switch-track {
+      background: rgba(130,140,255,0.58);
+      border-color: rgba(160,168,255,0.48);
+    }
+
+    .yamtrack-account-switch input:checked + .yamtrack-account-switch-track::after {
+      transform: translateX(18px);
+    }
+
+    .yamtrack-account-error {
+      border-radius: 18px;
+      border: 1px solid rgba(248,113,113,0.34);
+      background: rgba(127,29,29,0.24);
+      color: rgba(254,202,202,0.96);
+      padding: 12px 14px;
+      font-size: 14px;
+    }
+
+    .yamtrack-account-help-text {
+      color: rgba(255,255,255,0.52);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .yamtrack-account-logout-card {
+      border-color: rgba(248,113,113,0.24);
+      background:
+        radial-gradient(circle at top left, rgba(248,113,113,0.10), transparent 36%),
+        linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)) !important;
+    }
+
+    .yamtrack-account-logout-text {
+      color: rgba(255,255,255,0.58);
+      font-size: 14px;
+      line-height: 1.55;
+      margin-bottom: 18px;
+    }
+
+    .yamtrack-account-button-danger {
+      border-color: rgba(248,113,113,0.30) !important;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(248,113,113,0.20), rgba(255,255,255,0.07) 44%, rgba(255,255,255,0.03) 100%) !important;
+      color: rgba(254,226,226,0.94) !important;
+    }
+
+    .yamtrack-account-button-danger:hover {
+      border-color: rgba(248,113,113,0.48) !important;
+      color: #ffffff !important;
+      background:
+        radial-gradient(circle at 34% 24%, rgba(248,113,113,0.28), rgba(255,255,255,0.09) 44%, rgba(255,255,255,0.04) 100%) !important;
+    }
+
+  </style>
+
+  <div class="yamtrack-account-stack">
+    <div class="yamtrack-account-card p-6">
+      <div class="yamtrack-account-heading">
+        <div class="yamtrack-account-heading-icon">
+          {% include "app/icons/person.svg" with classes="w-6 h-6" %}
         </div>
+        <h2 class="yamtrack-account-heading-title">Informações do perfil</h2>
       </div>
-    {% endblock body %}
 
-    <div class="fixed top-24 right-0 left-0 {% block messages_sidebar_offset %}lg:left-64{% endblock messages_sidebar_offset %} z-50 flex justify-center pointer-events-none">
-      <div id="messages-list"
-           class="w-full max-w-xl px-4 space-y-2 pointer-events-auto">
-        {% include "app/components/messages/messages_stack.html" %}
-      </div>
+      {% if user_form.non_field_errors %}
+        <div class="yamtrack-account-error mb-4">
+          {% for error in user_form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+        </div>
+      {% endif %}
+
+      <form method="post" class="space-y-5">
+        {% csrf_token %}
+
+        <div>
+          <label for="{{ user_form.username.id_for_label }}"
+                 class="yamtrack-account-label">Nome de usuário</label>
+          <input id="{{ user_form.username.id_for_label }}"
+                 name="{{ user_form.username.html_name }}"
+                 class="yamtrack-account-input {% if user_form.username.errors %}has-error{% endif %}"
+                 type="text"
+                 value="{{ user_form.username.value|default:user.username }}">
+          {% if user_form.username.errors %}
+            <p class="mt-2 text-sm text-red-400">{{ user_form.username.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <div>
+          <label for="{{ user_form.profile_private.id_for_label }}"
+                 class="yamtrack-account-label">Visibilidade do perfil</label>
+
+          <div class="yamtrack-account-visibility">
+            <div class="flex-1">
+              <div class="flex items-center text-gray-100 mb-1">
+                {% include "app/icons/hat-glasses.svg" with classes="w-5 h-5 mr-2 text-gray-200" %}
+                <span class="text-sm font-bold">Perfil privado</span>
+              </div>
+              <p class="yamtrack-account-help-text ml-7">
+                Oculte seu perfil e suas listas de mídia de visitantes anônimos.
+              </p>
+            </div>
+
+            <label for="{{ user_form.profile_private.id_for_label }}"
+                   class="yamtrack-account-switch"
+                   title="Alternar perfil privado">
+              <input type="checkbox"
+                     id="{{ user_form.profile_private.id_for_label }}"
+                     name="{{ user_form.profile_private.html_name }}"
+                     {% if user_form.profile_private.value %}checked{% endif %}>
+              <span class="yamtrack-account-switch-track"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="pt-1">
+          <button type="submit"
+                  class="yamtrack-account-button">
+            {% include "app/icons/save.svg" with classes="w-4 h-4" %}
+            Salvar alterações
+          </button>
+        </div>
+      </form>
     </div>
 
-    <div id="persistent-messages-actions">
-      {% include "app/components/messages/persistent_messages_actions.html" %}
+    <div class="yamtrack-account-card p-6">
+      <div class="yamtrack-account-heading">
+        <div class="yamtrack-account-heading-icon">
+          {% include "app/icons/padlock.svg" with classes="w-6 h-6" %}
+        </div>
+        <h2 class="yamtrack-account-heading-title">Alterar senha</h2>
+      </div>
+
+      {% if password_form.non_field_errors %}
+        <div class="yamtrack-account-error mb-4">
+          {% for error in password_form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+        </div>
+      {% endif %}
+
+      <form method="post"
+            class="space-y-5"
+            x-data="{ showCurrentPassword: false, showNewPassword: false, showConfirmPassword: false }">
+        {% csrf_token %}
+
+        <div>
+          <label for="{{ password_form.old_password.id_for_label }}"
+                 class="yamtrack-account-label">Senha atual</label>
+          <div class="yamtrack-account-password-wrap">
+            <input id="{{ password_form.old_password.id_for_label }}"
+                   name="{{ password_form.old_password.html_name }}"
+                   class="yamtrack-account-input {% if password_form.old_password.errors %}has-error{% endif %}"
+                   :type="showCurrentPassword ? 'text' : 'password'"
+                   value="">
+            <button type="button"
+                    tabindex="-1"
+                    @click="showCurrentPassword = !showCurrentPassword"
+                    class="yamtrack-password-toggle"
+                    title="Mostrar ou ocultar senha atual">
+              <div x-show="!showCurrentPassword">{% include "app/icons/eye.svg" with classes="w-4 h-4" %}</div>
+              <div x-show="showCurrentPassword">{% include "app/icons/eye-closed.svg" with classes="w-4 h-4" %}</div>
+            </button>
+          </div>
+          {% if password_form.old_password.errors %}
+            <p class="mt-2 text-sm text-red-400">{{ password_form.old_password.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <div>
+          <label for="{{ password_form.new_password1.id_for_label }}"
+                 class="yamtrack-account-label">Nova senha</label>
+          <div class="yamtrack-account-password-wrap">
+            <input id="{{ password_form.new_password1.id_for_label }}"
+                   name="{{ password_form.new_password1.html_name }}"
+                   class="yamtrack-account-input {% if password_form.new_password1.errors %}has-error{% endif %}"
+                   :type="showNewPassword ? 'text' : 'password'"
+                   value="">
+            <button type="button"
+                    tabindex="-1"
+                    @click="showNewPassword = !showNewPassword"
+                    class="yamtrack-password-toggle"
+                    title="Mostrar ou ocultar nova senha">
+              <div x-show="!showNewPassword">{% include "app/icons/eye.svg" with classes="w-4 h-4" %}</div>
+              <div x-show="showNewPassword">{% include "app/icons/eye-closed.svg" with classes="w-4 h-4" %}</div>
+            </button>
+          </div>
+          {% if password_form.new_password1.errors %}
+            <p class="mt-2 text-sm text-red-400">{{ password_form.new_password1.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <div>
+          <label for="{{ password_form.new_password2.id_for_label }}"
+                 class="yamtrack-account-label">Confirmar nova senha</label>
+          <div class="yamtrack-account-password-wrap">
+            <input id="{{ password_form.new_password2.id_for_label }}"
+                   name="{{ password_form.new_password2.html_name }}"
+                   class="yamtrack-account-input {% if password_form.new_password2.errors %}has-error{% endif %}"
+                   :type="showConfirmPassword ? 'text' : 'password'"
+                   value="">
+            <button type="button"
+                    tabindex="-1"
+                    @click="showConfirmPassword = !showConfirmPassword"
+                    class="yamtrack-password-toggle"
+                    title="Mostrar ou ocultar confirmação de senha">
+              <div x-show="!showConfirmPassword">{% include "app/icons/eye.svg" with classes="w-4 h-4" %}</div>
+              <div x-show="showConfirmPassword">{% include "app/icons/eye-closed.svg" with classes="w-4 h-4" %}</div>
+            </button>
+          </div>
+          {% if password_form.new_password2.errors %}
+            <p class="mt-2 text-sm text-red-400">{{ password_form.new_password2.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <div class="pt-1">
+          <button type="submit"
+                  class="yamtrack-account-button">
+            {% include "app/icons/save.svg" with classes="w-4 h-4" %}
+            Atualizar senha
+          </button>
+        </div>
+      </form>
     </div>
 
-    {% block js %}
-    {% endblock js %}
+    {% get_providers as socialaccount_providers %}
+    {% if socialaccount_providers %}
+      <div class="yamtrack-account-card p-6">
+        <div class="yamtrack-account-heading">
+          <div class="yamtrack-account-heading-icon">
+            {% include "app/icons/shield.svg" with classes="w-6 h-6" %}
+          </div>
+          <h2 class="yamtrack-account-heading-title">Conexões de terceiros</h2>
+        </div>
 
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/static/js/serviceworker.js')
-            .then((registration) => {
-              console.log('SW registered: ', registration);
-            })
-            .catch((registrationError) => {
-              console.log('SW registration failed: ', registrationError);
-            });
-        });
-      }
-    </script>
+        <p class="text-gray-400 mb-5 text-sm">
+          Gerencie suas contas conectadas para facilitar o acesso.
+        </p>
 
-    <script src="{% static 'js/mediaStatusDateHandler.js' %}{% get_static_file_mtime 'js/mediaStatusDateHandler.js' %}"></script>
-    <script src="{% static 'js/searchShortcut.js' %}{% get_static_file_mtime 'js/searchShortcut.js' %}"></script>
-  </body>
-</html>
+        <a href="{% url 'socialaccount_connections' %}"
+           class="yamtrack-account-button">
+          {% include "app/icons/link.svg" with classes="w-4 h-4" %}
+          Gerenciar conexões da conta
+        </a>
+      </div>
+    {% endif %}
+
+    <div class="yamtrack-account-card yamtrack-account-logout-card p-6">
+      <div class="yamtrack-account-heading">
+        <div class="yamtrack-account-heading-icon">
+          {% include "app/icons/logout.svg" with classes="w-6 h-6" %}
+        </div>
+        <h2 class="yamtrack-account-heading-title">Sair da conta</h2>
+      </div>
+
+      <p class="yamtrack-account-logout-text">
+        Encerre sua sessão atual no FlexiHub. Você poderá acessar novamente usando seu usuário e senha.
+      </p>
+
+      <form method="post" action="{% url 'account_logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="yamtrack-account-button yamtrack-account-button-danger">
+          {% include "app/icons/logout.svg" with classes="w-4 h-4" %}
+          Sair
+        </button>
+      </form>
+    </div>
+
+  </div>
+{% endblock settings_content %}
