@@ -602,13 +602,6 @@
               <span>Notificações</span>
             </a>
 
-            {% url 'integrations' as integrations_url %}
-            <a href="{{ integrations_url }}"
-               class="yamtrack-settings-nav-link {% if request.path == integrations_url %}is-active{% endif %}">
-              {% include "app/icons/database.svg" with classes="w-5 h-5" %}
-              <span>Integrações</span>
-            </a>
-
             {% url 'import_data' as import_url %}
             <a href="{{ import_url }}"
                class="yamtrack-settings-nav-link {% if request.path == import_url %}is-active{% endif %}">
