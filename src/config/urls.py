@@ -14,6 +14,7 @@ from django.contrib.auth.decorators import login_not_required
 from django.urls import include, path
 from health_check.views import HealthCheckView
 from redis.asyncio import Redis as RedisClient
+from app.views_assetlinks import assetlinks
 
 urlpatterns = [
     path("", include("app.urls")),
@@ -22,6 +23,7 @@ urlpatterns = [
     path("", include("lists.urls")),
     path("", include("events.urls")),
     path("select2/", include("django_select2.urls")),
+    path(".well-known/assetlinks.json", assetlinks, name="assetlinks"),
     path(
         "health/",
         login_not_required(
