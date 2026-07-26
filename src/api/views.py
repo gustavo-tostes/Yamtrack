@@ -11,6 +11,8 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 
+from app.models import BasicMedia, MediaTypes, Status
+
 
 MOBILE_TOKEN_SALT = "flexihub.mobile.auth"
 MOBILE_TOKEN_MAX_AGE = getattr(
@@ -18,6 +20,29 @@ MOBILE_TOKEN_MAX_AGE = getattr(
     "MOBILE_API_TOKEN_MAX_AGE",
     60 * 60 * 24 * 60,
 )
+
+
+MEDIA_TYPE_LABELS = {
+    MediaTypes.TV.value: "Série",
+    MediaTypes.SEASON.value: "Temporada",
+    MediaTypes.EPISODE.value: "Episódio",
+    MediaTypes.MOVIE.value: "Filme",
+    MediaTypes.ANIME.value: "Anime",
+    MediaTypes.MANGA.value: "Mangá",
+    MediaTypes.GAME.value: "Jogo",
+    MediaTypes.BOOK.value: "Livro",
+    MediaTypes.COMIC.value: "Quadrinho",
+    MediaTypes.BOARDGAME.value: "Jogo de tabuleiro",
+}
+
+
+STATUS_LABELS = {
+    Status.COMPLETED.value: "Concluído",
+    Status.IN_PROGRESS.value: "Em andamento",
+    Status.PLANNING.value: "Planejado",
+    Status.PAUSED.value: "Pausado",
+    Status.DROPPED.value: "Abandonado",
+}
 
 
 def _json_response(data, status=200):
@@ -34,6 +59,43 @@ def _read_json_body(request):
         return json.loads(raw_body)
     except json.JSONDecodeError:
         return None
+
+
+def _iso_datetime(value):
+    if value is None:
+        return None
+
+    return value.isoformat()
+
+
+def _safe_int(value):
+    if value is None:
+        return None
+
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _safe_decimal(value):
+    if value is None:
+        return None
+
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _progress_percent(progress, max_progress):
+    progress_value = _safe_decimal(progress)
+    max_progress_value = _safe_decimal(max_progress)
+
+    if progress_value is None or not max_progress_value or max_progress_value <= 0:
+        return None
+
+    return round(min((progress_value / max_progress_value) * 100, 100), 1)
 
 
 def _user_payload(user):
@@ -106,6 +168,15 @@ def _get_user_from_token(request):
     return user
 
 
+def _get_authenticated_api_user(request):
+    user = _get_user_from_token(request)
+
+    if user is None and request.user.is_authenticated:
+        user = request.user
+
+    return user
+
+
 def _authenticate_with_username_or_email(identifier, password):
     user = authenticate(username=identifier, password=password)
 
@@ -122,6 +193,51 @@ def _authenticate_with_username_or_email(identifier, password):
         return None
 
     return authenticate(username=matched_user.get_username(), password=password)
+
+
+def _serialize_event(event):
+    if event is None:
+        return None
+
+    return {
+        "id": event.pk,
+        "title": str(event),
+        "content_number": event.content_number,
+        "readable_content_number": event.readable_content_number,
+        "datetime": _iso_datetime(event.datetime),
+    }
+
+
+def _serialize_media(media):
+    item = media.item
+    max_progress = getattr(media, "max_progress", None)
+    progress = getattr(media, "progress", None)
+
+    return {
+        "id": media.pk,
+        "media_id": item.media_id,
+        "source": item.source,
+        "media_type": item.media_type,
+        "media_type_label": MEDIA_TYPE_LABELS.get(item.media_type, item.media_type),
+        "title": item.title,
+        "image": item.image,
+        "season_number": item.season_number,
+        "episode_number": item.episode_number,
+        "status": media.status,
+        "status_label": STATUS_LABELS.get(media.status, media.status),
+        "score": _safe_decimal(getattr(media, "score", None)),
+        "progress": _safe_int(progress),
+        "formatted_progress": getattr(media, "formatted_progress", str(progress or 0)),
+        "max_progress": _safe_int(max_progress),
+        "progress_percent": _progress_percent(progress, max_progress),
+        "start_date": _iso_datetime(getattr(media, "start_date", None)),
+        "end_date": _iso_datetime(getattr(media, "end_date", None)),
+        "progressed_at": _iso_datetime(getattr(media, "progressed_at", None)),
+        "last_watched": getattr(media, "last_watched", ""),
+        "next_episode_number": getattr(media, "next_episode_number", None),
+        "next_episode_title": getattr(media, "next_episode_title", ""),
+        "next_event": _serialize_event(getattr(media, "next_event", None)),
+    }
 
 
 @login_not_required
@@ -168,10 +284,7 @@ def login(request):
 @login_not_required
 @require_GET
 def me(request):
-    user = _get_user_from_token(request)
-
-    if user is None and request.user.is_authenticated:
-        user = request.user
+    user = _get_authenticated_api_user(request)
 
     if user is None:
         return _error("Autenticação necessária.", status=401)
@@ -186,3 +299,64 @@ def logout(request):
     django_logout(request)
 
     return _json_response({"ok": True})
+
+
+@login_not_required
+@require_GET
+def home_next_up(request):
+    user = _get_authenticated_api_user(request)
+
+    if user is None:
+        return _error("Autenticação necessária.", status=401)
+
+    try:
+        items_limit = int(request.GET.get("limit", 8))
+    except ValueError:
+        items_limit = 8
+
+    items_limit = max(1, min(items_limit, 20))
+
+    sort_by = getattr(user, "home_sort", "upcoming") or "upcoming"
+
+    sections = []
+
+    for status in (Status.IN_PROGRESS.value, Status.PLANNING.value):
+        media_types = BasicMedia.objects.get_home_status(
+            user=user,
+            status=status,
+            sort_by=sort_by,
+            items_limit=items_limit,
+        )
+
+        serialized_media_types = []
+
+        for media_type, media_payload in media_types.items():
+            items = media_payload.get("items", [])
+            total = media_payload.get("total", 0)
+
+            serialized_media_types.append(
+                {
+                    "media_type": media_type,
+                    "media_type_label": MEDIA_TYPE_LABELS.get(media_type, media_type),
+                    "total": total,
+                    "items": [_serialize_media(media) for media in items],
+                }
+            )
+
+        sections.append(
+            {
+                "status": status,
+                "status_label": STATUS_LABELS.get(status, status),
+                "count": sum(media_type["total"] for media_type in serialized_media_types),
+                "media_types": serialized_media_types,
+            }
+        )
+
+    return _json_response(
+        {
+            "user": _user_payload(user),
+            "sort": sort_by,
+            "limit": items_limit,
+            "sections": sections,
+        }
+    )
