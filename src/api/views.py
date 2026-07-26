@@ -1,0 +1,188 @@
+import json
+
+from django.conf import settings
+from django.contrib.auth import authenticate, get_user_model, login as django_login
+from django.contrib.auth import logout as django_logout
+from django.contrib.auth.decorators import login_not_required
+from django.core import signing
+from django.core.signing import BadSignature, SignatureExpired
+from django.http import JsonResponse
+from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_GET, require_POST
+
+
+MOBILE_TOKEN_SALT = "flexihub.mobile.auth"
+MOBILE_TOKEN_MAX_AGE = getattr(
+    settings,
+    "MOBILE_API_TOKEN_MAX_AGE",
+    60 * 60 * 24 * 60,
+)
+
+
+def _json_response(data, status=200):
+    return JsonResponse(data, status=status, json_dumps_params={"ensure_ascii": False})
+
+
+def _error(message, status=400):
+    return _json_response({"detail": message}, status=status)
+
+
+def _read_json_body(request):
+    try:
+        raw_body = request.body.decode("utf-8") if request.body else "{}"
+        return json.loads(raw_body)
+    except json.JSONDecodeError:
+        return None
+
+
+def _user_payload(user):
+    full_name = user.get_full_name()
+
+    return {
+        "id": user.pk,
+        "username": user.get_username(),
+        "email": user.email,
+        "name": full_name or user.get_username(),
+        "is_staff": user.is_staff,
+        "is_superuser": user.is_superuser,
+        "date_joined": user.date_joined.isoformat() if user.date_joined else None,
+        "last_login": user.last_login.isoformat() if user.last_login else None,
+    }
+
+
+def _create_mobile_token(user):
+    payload = {
+        "user_id": user.pk,
+        "auth_hash": user.get_session_auth_hash(),
+        "issued_at": int(timezone.now().timestamp()),
+    }
+
+    return signing.dumps(payload, salt=MOBILE_TOKEN_SALT)
+
+
+def _get_bearer_token(request):
+    authorization = request.headers.get("Authorization", "")
+
+    if not authorization.startswith("Bearer "):
+        return ""
+
+    return authorization.removeprefix("Bearer ").strip()
+
+
+def _get_user_from_token(request):
+    token = _get_bearer_token(request)
+
+    if not token:
+        return None
+
+    try:
+        payload = signing.loads(
+            token,
+            salt=MOBILE_TOKEN_SALT,
+            max_age=MOBILE_TOKEN_MAX_AGE,
+        )
+    except SignatureExpired:
+        return None
+    except BadSignature:
+        return None
+
+    user_id = payload.get("user_id")
+    auth_hash = payload.get("auth_hash")
+
+    if not user_id or not auth_hash:
+        return None
+
+    User = get_user_model()
+
+    try:
+        user = User.objects.get(pk=user_id, is_active=True)
+    except User.DoesNotExist:
+        return None
+
+    if user.get_session_auth_hash() != auth_hash:
+        return None
+
+    return user
+
+
+def _authenticate_with_username_or_email(identifier, password):
+    user = authenticate(username=identifier, password=password)
+
+    if user is not None:
+        return user
+
+    User = get_user_model()
+
+    try:
+        matched_user = User.objects.get(email__iexact=identifier)
+    except User.DoesNotExist:
+        return None
+    except User.MultipleObjectsReturned:
+        return None
+
+    return authenticate(username=matched_user.get_username(), password=password)
+
+
+@login_not_required
+@csrf_exempt
+@require_POST
+def login(request):
+    data = _read_json_body(request)
+
+    if data is None:
+        return _error("Envie um JSON válido.", status=400)
+
+    identifier = str(
+        data.get("username")
+        or data.get("email")
+        or data.get("login")
+        or ""
+    ).strip()
+    password = str(data.get("password") or "")
+
+    if not identifier or not password:
+        return _error("Informe usuário/e-mail e senha.", status=400)
+
+    user = _authenticate_with_username_or_email(identifier, password)
+
+    if user is None:
+        return _error("Usuário/e-mail ou senha inválidos.", status=401)
+
+    if not user.is_active:
+        return _error("Esta conta está inativa.", status=403)
+
+    django_login(request, user)
+
+    token = _create_mobile_token(user)
+
+    return _json_response(
+        {
+            "token": token,
+            "access": token,
+            "user": _user_payload(user),
+        }
+    )
+
+
+@login_not_required
+@require_GET
+def me(request):
+    user = _get_user_from_token(request)
+
+    if user is None and request.user.is_authenticated:
+        user = request.user
+
+    if user is None:
+        return _error("Autenticação necessária.", status=401)
+
+    return _json_response({"user": _user_payload(user)})
+
+
+@login_not_required
+@csrf_exempt
+@require_POST
+def logout(request):
+    django_logout(request)
+
+    return _json_response({"ok": True})

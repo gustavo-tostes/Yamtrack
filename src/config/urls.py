@@ -22,6 +22,7 @@ urlpatterns = [
     path("", include("users.urls")),
     path("", include("lists.urls")),
     path("", include("events.urls")),
+    path("api/", include("api.urls")),
     path("select2/", include("django_select2.urls")),
     path(".well-known/assetlinks.json", assetlinks, name="assetlinks"),
     path(
