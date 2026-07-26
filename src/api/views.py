@@ -1,6 +1,7 @@
 import json
 
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate, get_user_model, login as django_login
 from django.contrib.auth import logout as django_logout
 from django.contrib.auth.decorators import login_not_required
@@ -358,5 +359,60 @@ def home_next_up(request):
             "sort": sort_by,
             "limit": items_limit,
             "sections": sections,
+        }
+    )
+
+
+@login_not_required
+@csrf_exempt
+@require_POST
+def media_progress(request, media_type, instance_id):
+    user = _get_authenticated_api_user(request)
+
+    if user is None:
+        return _error("Autenticação necessária.", status=401)
+
+    if media_type not in MediaTypes.values:
+        return _error("Tipo de mídia inválido.", status=400)
+
+    data = _read_json_body(request)
+
+    if data is None:
+        return _error("Envie um JSON válido.", status=400)
+
+    operation = str(data.get("operation") or "increase").strip()
+
+    if operation not in {"increase", "decrease"}:
+        return _error("Operação inválida.", status=400)
+
+    try:
+        media = BasicMedia.objects.get_media_prefetch(
+            user=user,
+            media_type=media_type,
+            instance_id=instance_id,
+        )
+    except ObjectDoesNotExist:
+        return _error("Mídia não encontrada.", status=404)
+
+    try:
+        if operation == "increase":
+            media.increase_progress()
+        else:
+            media.decrease_progress()
+    except Exception:
+        return _error("Não foi possível atualizar o progresso desta mídia.", status=400)
+
+    try:
+        updated_media = BasicMedia.objects.get_media_prefetch(
+            user=user,
+            media_type=media_type,
+            instance_id=instance_id,
+        )
+    except ObjectDoesNotExist:
+        updated_media = media
+
+    return _json_response(
+        {
+            "media": _serialize_media(updated_media),
         }
     )
