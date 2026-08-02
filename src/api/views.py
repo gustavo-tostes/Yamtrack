@@ -11,7 +11,7 @@ from django.core.signing import BadSignature, SignatureExpired
 from django.http import JsonResponse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_GET, require_POST
+from django.views.decorators.http import require_GET, require_POST, require_http_methods
 
 from app.models import BasicMedia, MediaTypes, Status, Item
 from app.providers import services as provider_services
