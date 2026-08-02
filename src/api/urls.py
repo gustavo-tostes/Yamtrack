@@ -9,5 +9,6 @@ urlpatterns = [
     path("auth/logout/", views.logout, name="logout"),
     path("me/", views.me, name="me"),
     path("home/next-up/", views.home_next_up, name="home_next_up"),
+    path("media/<str:media_type>/<int:instance_id>/", views.media_detail, name="media_detail"),
     path("media/<str:media_type>/<int:instance_id>/progress/", views.media_progress, name="media_progress"),
 ]

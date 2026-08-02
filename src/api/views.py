@@ -363,6 +363,42 @@ def home_next_up(request):
     )
 
 
+
+@login_not_required
+@require_GET
+def media_detail(request, media_type, instance_id):
+    """Return details for a single media item."""
+    user, error_response = _get_authenticated_api_user(request)
+
+    if error_response:
+        return error_response
+
+    if media_type not in MediaTypes.values:
+        return JsonResponse(
+            {"detail": "Tipo de mídia inválido."},
+            status=400,
+        )
+
+    try:
+        media = BasicMedia.objects.get_media_prefetch(
+            user=user,
+            media_type=media_type,
+            instance_id=instance_id,
+        )
+    except BasicMedia.DoesNotExist:
+        return JsonResponse(
+            {"detail": "Mídia não encontrada."},
+            status=404,
+        )
+
+    return JsonResponse(
+        {
+            "media": _serialize_media(media),
+        },
+        status=200,
+    )
+
+
 @login_not_required
 @csrf_exempt
 @require_POST
