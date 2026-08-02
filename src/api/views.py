@@ -364,6 +364,71 @@ def home_next_up(request):
 
 
 
+
+
+def _api_safe_get(obj, attr, default=None):
+    try:
+        return getattr(obj, attr)
+    except Exception:
+        return default
+
+
+def _api_iso(value):
+    if value is None:
+        return None
+
+    if hasattr(value, "isoformat"):
+        return value.isoformat()
+
+    return value
+
+
+def _serialize_media_detail(media):
+    """Serialize a single media item safely for the mobile detail screen."""
+    media_type = _api_safe_get(media, "media_type", "")
+    status = _api_safe_get(media, "status", "")
+
+    next_event = _api_safe_get(media, "next_event", None)
+
+    try:
+        serialized_next_event = _serialize_event(next_event) if next_event else None
+    except Exception:
+        serialized_next_event = None
+
+    return {
+        "id": _api_safe_get(media, "id"),
+        "media_id": _api_safe_get(media, "media_id", ""),
+        "source": _api_safe_get(media, "source", ""),
+        "media_type": media_type,
+        "media_type_label": MEDIA_TYPE_LABELS.get(media_type, media_type),
+        "title": _api_safe_get(media, "title", ""),
+        "image": _api_safe_get(media, "image", ""),
+        "season_number": _api_safe_get(media, "season_number", None),
+        "episode_number": _api_safe_get(media, "episode_number", None),
+        "status": status,
+        "status_label": STATUS_LABELS.get(status, status),
+        "score": _api_safe_get(media, "score", None),
+        "progress": _api_safe_get(media, "progress", None),
+        "formatted_progress": str(_api_safe_get(media, "formatted_progress", "")),
+        "max_progress": _api_safe_get(media, "max_progress", None),
+        "progress_percent": _api_safe_get(media, "progress_percent", None),
+        "start_date": _api_iso(_api_safe_get(media, "start_date", None)),
+        "end_date": _api_iso(_api_safe_get(media, "end_date", None)),
+        "progressed_at": _api_iso(_api_safe_get(media, "progressed_at", None)),
+        "last_watched": str(_api_safe_get(media, "last_watched", "")),
+        "next_episode_number": _api_safe_get(media, "next_episode_number", None),
+        "next_episode_title": _api_safe_get(media, "next_episode_title", ""),
+        "next_event": serialized_next_event,
+        "notes": _api_safe_get(media, "notes", ""),
+        "description": (
+            _api_safe_get(media, "description", "")
+            or _api_safe_get(media, "synopsis", "")
+            or _api_safe_get(media, "overview", "")
+        ),
+        "genres": _api_safe_get(media, "genres", []) or [],
+    }
+
+
 @login_not_required
 @require_GET
 def media_detail(request, media_type, instance_id):
@@ -385,15 +450,40 @@ def media_detail(request, media_type, instance_id):
             media_type=media_type,
             instance_id=instance_id,
         )
-    except BasicMedia.DoesNotExist:
+    except ObjectDoesNotExist:
         return JsonResponse(
             {"detail": "Mídia não encontrada."},
             status=404,
         )
+    except Exception as exc:
+        logger.exception(
+            "Erro ao buscar detalhe da mídia mobile: media_type=%s instance_id=%s user=%s",
+            media_type,
+            instance_id,
+            user.id,
+        )
+        return JsonResponse(
+            {
+                "detail": "Erro ao buscar mídia.",
+                "error": str(exc),
+            },
+            status=500,
+        )
+
+    try:
+        media_payload = _serialize_media(media)
+    except Exception:
+        logger.exception(
+            "Erro ao serializar mídia com _serialize_media. Usando serialização segura: media_type=%s instance_id=%s user=%s",
+            media_type,
+            instance_id,
+            user.id,
+        )
+        media_payload = _serialize_media_detail(media)
 
     return JsonResponse(
         {
-            "media": _serialize_media(media),
+            "media": media_payload,
         },
         status=200,
     )
