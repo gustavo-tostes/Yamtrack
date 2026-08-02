@@ -13,7 +13,7 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 
-from app.models import BasicMedia, MediaTypes, Status
+from app.models import BasicMedia, MediaTypes, Status, Item
 from app.providers import services as provider_services
 from django.apps import apps
 from django.db import IntegrityError
