@@ -656,9 +656,20 @@ def media_detail(request, media_type, instance_id):
                 status=500,
             )
 
+        try:
+            media_payload = _serialize_media(media)
+        except Exception:
+            logger.exception(
+                "Erro ao serializar mídia com _serialize_media. Usando serialização segura: media_type=%s instance_id=%s user=%s",
+                media_type,
+                instance_id,
+                user.id,
+            )
+            media_payload = _serialize_media_detail(media)
+
         return JsonResponse(
             {
-                "media": _serialize_media_detail(media),
+                "media": media_payload,
             },
             status=200,
         )
