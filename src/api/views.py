@@ -612,10 +612,12 @@ def mobile_health(request):
 def media_detail(request, media_type, instance_id):
     """Return details for a single media item."""
     try:
-        user, error_response = _get_authenticated_api_user(request)
+        auth_result = _get_authenticated_api_user(request)
 
-        if error_response:
-            return error_response
+        if isinstance(auth_result, JsonResponse):
+            return auth_result
+
+        user = auth_result
 
         if media_type not in MediaTypes.values:
             return JsonResponse(
