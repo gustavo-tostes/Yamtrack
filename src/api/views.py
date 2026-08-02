@@ -14,6 +14,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 
 from app.models import BasicMedia, MediaTypes, Status
+from app.providers import services as provider_services
 
 
 
@@ -286,6 +287,107 @@ def login(request):
 
 
 
+
+def _api_jsonify(value):
+    """Convert provider search responses to JSON-safe values."""
+    if value is None:
+        return None
+
+    if isinstance(value, (str, int, float, bool)):
+        return value
+
+    if isinstance(value, dict):
+        return {
+            str(key): _api_jsonify(item)
+            for key, item in value.items()
+        }
+
+    if isinstance(value, (list, tuple, set)):
+        return [_api_jsonify(item) for item in value]
+
+    if hasattr(value, "isoformat"):
+        return value.isoformat()
+
+    try:
+        return float(value)
+    except Exception:
+        return str(value)
+
+
+
+@login_not_required
+@require_GET
+def mobile_search(request):
+    """Search media providers for the mobile app."""
+    try:
+        auth_result = _get_authenticated_api_user(request)
+
+        if isinstance(auth_result, JsonResponse):
+            return auth_result
+
+        query = request.GET.get("q", "").strip()
+        media_type = request.GET.get("type", request.GET.get("media_type", "tv")).strip()
+        source = request.GET.get("source") or None
+
+        try:
+            page = max(1, int(request.GET.get("page", "1")))
+        except ValueError:
+            page = 1
+
+        if not query:
+            return JsonResponse(
+                {
+                    "detail": "Informe um termo de busca.",
+                    "results": [],
+                },
+                status=400,
+            )
+
+        if media_type not in MediaTypes.values:
+            return JsonResponse(
+                {
+                    "detail": "Tipo de mídia inválido.",
+                    "results": [],
+                },
+                status=400,
+            )
+
+        results = provider_services.search(
+            media_type=media_type,
+            query=query,
+            page=page,
+            source=source,
+        )
+
+        return JsonResponse(
+            {
+                "query": query,
+                "media_type": media_type,
+                "source": source,
+                "page": page,
+                "results": _api_jsonify(results),
+            },
+            status=200,
+        )
+
+    except Exception as exc:
+        logger.exception(
+            "Erro inesperado na busca mobile: media_type=%s query=%s",
+            request.GET.get("type", request.GET.get("media_type", "tv")),
+            request.GET.get("q", ""),
+        )
+
+        return JsonResponse(
+            {
+                "detail": "Erro ao realizar busca.",
+                "error_type": exc.__class__.__name__,
+                "error": str(exc),
+                "results": [],
+            },
+            status=500,
+        )
+
+
 @login_not_required
 @require_GET
 def mobile_health(request):
@@ -446,6 +548,107 @@ def _serialize_media_detail(media):
 
 
 
+
+def _api_jsonify(value):
+    """Convert provider search responses to JSON-safe values."""
+    if value is None:
+        return None
+
+    if isinstance(value, (str, int, float, bool)):
+        return value
+
+    if isinstance(value, dict):
+        return {
+            str(key): _api_jsonify(item)
+            for key, item in value.items()
+        }
+
+    if isinstance(value, (list, tuple, set)):
+        return [_api_jsonify(item) for item in value]
+
+    if hasattr(value, "isoformat"):
+        return value.isoformat()
+
+    try:
+        return float(value)
+    except Exception:
+        return str(value)
+
+
+
+@login_not_required
+@require_GET
+def mobile_search(request):
+    """Search media providers for the mobile app."""
+    try:
+        auth_result = _get_authenticated_api_user(request)
+
+        if isinstance(auth_result, JsonResponse):
+            return auth_result
+
+        query = request.GET.get("q", "").strip()
+        media_type = request.GET.get("type", request.GET.get("media_type", "tv")).strip()
+        source = request.GET.get("source") or None
+
+        try:
+            page = max(1, int(request.GET.get("page", "1")))
+        except ValueError:
+            page = 1
+
+        if not query:
+            return JsonResponse(
+                {
+                    "detail": "Informe um termo de busca.",
+                    "results": [],
+                },
+                status=400,
+            )
+
+        if media_type not in MediaTypes.values:
+            return JsonResponse(
+                {
+                    "detail": "Tipo de mídia inválido.",
+                    "results": [],
+                },
+                status=400,
+            )
+
+        results = provider_services.search(
+            media_type=media_type,
+            query=query,
+            page=page,
+            source=source,
+        )
+
+        return JsonResponse(
+            {
+                "query": query,
+                "media_type": media_type,
+                "source": source,
+                "page": page,
+                "results": _api_jsonify(results),
+            },
+            status=200,
+        )
+
+    except Exception as exc:
+        logger.exception(
+            "Erro inesperado na busca mobile: media_type=%s query=%s",
+            request.GET.get("type", request.GET.get("media_type", "tv")),
+            request.GET.get("q", ""),
+        )
+
+        return JsonResponse(
+            {
+                "detail": "Erro ao realizar busca.",
+                "error_type": exc.__class__.__name__,
+                "error": str(exc),
+                "results": [],
+            },
+            status=500,
+        )
+
+
 @login_not_required
 @require_GET
 def mobile_health(request):
@@ -593,6 +796,107 @@ def _serialize_media_detail(media):
         "next_event": serialized_next_event,
     }
 
+
+
+
+def _api_jsonify(value):
+    """Convert provider search responses to JSON-safe values."""
+    if value is None:
+        return None
+
+    if isinstance(value, (str, int, float, bool)):
+        return value
+
+    if isinstance(value, dict):
+        return {
+            str(key): _api_jsonify(item)
+            for key, item in value.items()
+        }
+
+    if isinstance(value, (list, tuple, set)):
+        return [_api_jsonify(item) for item in value]
+
+    if hasattr(value, "isoformat"):
+        return value.isoformat()
+
+    try:
+        return float(value)
+    except Exception:
+        return str(value)
+
+
+
+@login_not_required
+@require_GET
+def mobile_search(request):
+    """Search media providers for the mobile app."""
+    try:
+        auth_result = _get_authenticated_api_user(request)
+
+        if isinstance(auth_result, JsonResponse):
+            return auth_result
+
+        query = request.GET.get("q", "").strip()
+        media_type = request.GET.get("type", request.GET.get("media_type", "tv")).strip()
+        source = request.GET.get("source") or None
+
+        try:
+            page = max(1, int(request.GET.get("page", "1")))
+        except ValueError:
+            page = 1
+
+        if not query:
+            return JsonResponse(
+                {
+                    "detail": "Informe um termo de busca.",
+                    "results": [],
+                },
+                status=400,
+            )
+
+        if media_type not in MediaTypes.values:
+            return JsonResponse(
+                {
+                    "detail": "Tipo de mídia inválido.",
+                    "results": [],
+                },
+                status=400,
+            )
+
+        results = provider_services.search(
+            media_type=media_type,
+            query=query,
+            page=page,
+            source=source,
+        )
+
+        return JsonResponse(
+            {
+                "query": query,
+                "media_type": media_type,
+                "source": source,
+                "page": page,
+                "results": _api_jsonify(results),
+            },
+            status=200,
+        )
+
+    except Exception as exc:
+        logger.exception(
+            "Erro inesperado na busca mobile: media_type=%s query=%s",
+            request.GET.get("type", request.GET.get("media_type", "tv")),
+            request.GET.get("q", ""),
+        )
+
+        return JsonResponse(
+            {
+                "detail": "Erro ao realizar busca.",
+                "error_type": exc.__class__.__name__,
+                "error": str(exc),
+                "results": [],
+            },
+            status=500,
+        )
 
 
 @login_not_required
