@@ -1,3 +1,4 @@
+import logging
 import json
 
 from django.conf import settings
@@ -15,6 +16,8 @@ from django.views.decorators.http import require_GET, require_POST
 from app.models import BasicMedia, MediaTypes, Status
 
 
+
+logger = logging.getLogger(__name__)
 MOBILE_TOKEN_SALT = "flexihub.mobile.auth"
 MOBILE_TOKEN_MAX_AGE = getattr(
     settings,
