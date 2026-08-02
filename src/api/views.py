@@ -15,6 +15,8 @@ from django.views.decorators.http import require_GET, require_POST
 
 from app.models import BasicMedia, MediaTypes, Status
 from app.providers import services as provider_services
+from django.apps import apps
+from django.db import IntegrityError
 
 
 
@@ -288,6 +290,25 @@ def login(request):
 
 
 
+
+def _api_request_payload(request):
+    """Read JSON or form payload for mobile API requests."""
+    content_type = request.headers.get("content-type", "")
+
+    if "application/json" in content_type:
+        try:
+            return json.loads(request.body.decode("utf-8") or "{}"), None
+        except json.JSONDecodeError:
+            return None, JsonResponse(
+                {
+                    "detail": "JSON inválido.",
+                },
+                status=400,
+            )
+
+    return request.POST.dict(), None
+
+
 def _api_jsonify(value):
     """Convert provider search responses to JSON-safe values."""
     if value is None:
@@ -313,6 +334,175 @@ def _api_jsonify(value):
     except Exception:
         return str(value)
 
+
+
+
+@login_not_required
+@csrf_exempt
+@require_POST
+def mobile_media_add(request):
+    """Add a provider media item to the authenticated user's library."""
+    try:
+        auth_result = _get_authenticated_api_user(request)
+
+        if isinstance(auth_result, JsonResponse):
+            return auth_result
+
+        user = auth_result
+
+        payload, payload_error = _api_request_payload(request)
+
+        if payload_error:
+            return payload_error
+
+        media_id = str(payload.get("media_id", "")).strip()
+        source = str(payload.get("source", "")).strip()
+        media_type = str(payload.get("media_type", payload.get("type", ""))).strip()
+        season_number = payload.get("season_number") or None
+        status = payload.get("status") or Status.PLANNING.value
+
+        if not media_id:
+            return JsonResponse(
+                {"detail": "Informe o media_id."},
+                status=400,
+            )
+
+        if not source:
+            return JsonResponse(
+                {"detail": "Informe o source."},
+                status=400,
+            )
+
+        if media_type not in MediaTypes.values:
+            return JsonResponse(
+                {"detail": "Tipo de mídia inválido."},
+                status=400,
+            )
+
+        if media_type in [MediaTypes.SEASON.value, MediaTypes.EPISODE.value]:
+            return JsonResponse(
+                {
+                    "detail": "Adicionar temporadas e episódios pelo app ainda não está disponível.",
+                },
+                status=400,
+            )
+
+        if status not in Status.values:
+            status = Status.PLANNING.value
+
+        try:
+            metadata = provider_services.get_media_metadata(
+                media_type,
+                media_id,
+                source,
+                [season_number],
+            )
+        except Exception:
+            logger.exception(
+                "Erro ao buscar metadata para adicionar mídia mobile: media_type=%s media_id=%s source=%s",
+                media_type,
+                media_id,
+                source,
+            )
+            metadata = {
+                "title": payload.get("title", ""),
+                "image": payload.get("image", ""),
+            }
+
+        title = metadata.get("title") or payload.get("title") or ""
+        image = metadata.get("image") or payload.get("image") or ""
+
+        item, _ = Item.objects.get_or_create(
+            media_id=media_id,
+            source=source,
+            media_type=media_type,
+            season_number=season_number,
+            defaults={
+                "title": title,
+                "image": image,
+            },
+        )
+
+        model = apps.get_model(app_label="app", model_name=media_type)
+
+        existing_media = model.objects.filter(
+            item=item,
+            user=user,
+        ).first()
+
+        if existing_media:
+            return JsonResponse(
+                {
+                    "created": False,
+                    "already_exists": True,
+                    "media": _serialize_media(existing_media),
+                },
+                status=200,
+            )
+
+        instance = model(
+            item=item,
+            user=user,
+        )
+
+        if hasattr(instance, "status"):
+            instance.status = status
+
+        if hasattr(instance, "score"):
+            instance.score = None
+
+        if hasattr(instance, "notes"):
+            instance.notes = ""
+
+        if hasattr(instance, "progress"):
+            instance.progress = 0
+
+        try:
+            instance.save()
+        except IntegrityError:
+            existing_media = model.objects.filter(
+                item=item,
+                user=user,
+            ).first()
+
+            if existing_media:
+                return JsonResponse(
+                    {
+                        "created": False,
+                        "already_exists": True,
+                        "media": _serialize_media(existing_media),
+                    },
+                    status=200,
+                )
+
+            raise
+
+        logger.info(
+            "%s added from mobile API by user %s.",
+            instance,
+            user.username,
+        )
+
+        return JsonResponse(
+            {
+                "created": True,
+                "already_exists": False,
+                "media": _serialize_media(instance),
+            },
+            status=201,
+        )
+
+    except Exception as exc:
+        logger.exception("Erro inesperado ao adicionar mídia mobile.")
+
+        return JsonResponse(
+            {
+                "detail": "Erro ao adicionar mídia.",
+                "error_type": exc.__class__.__name__,
+                "error": str(exc),
+            },
+            status=500,
+        )
 
 
 @login_not_required
@@ -549,6 +739,25 @@ def _serialize_media_detail(media):
 
 
 
+
+def _api_request_payload(request):
+    """Read JSON or form payload for mobile API requests."""
+    content_type = request.headers.get("content-type", "")
+
+    if "application/json" in content_type:
+        try:
+            return json.loads(request.body.decode("utf-8") or "{}"), None
+        except json.JSONDecodeError:
+            return None, JsonResponse(
+                {
+                    "detail": "JSON inválido.",
+                },
+                status=400,
+            )
+
+    return request.POST.dict(), None
+
+
 def _api_jsonify(value):
     """Convert provider search responses to JSON-safe values."""
     if value is None:
@@ -574,6 +783,175 @@ def _api_jsonify(value):
     except Exception:
         return str(value)
 
+
+
+
+@login_not_required
+@csrf_exempt
+@require_POST
+def mobile_media_add(request):
+    """Add a provider media item to the authenticated user's library."""
+    try:
+        auth_result = _get_authenticated_api_user(request)
+
+        if isinstance(auth_result, JsonResponse):
+            return auth_result
+
+        user = auth_result
+
+        payload, payload_error = _api_request_payload(request)
+
+        if payload_error:
+            return payload_error
+
+        media_id = str(payload.get("media_id", "")).strip()
+        source = str(payload.get("source", "")).strip()
+        media_type = str(payload.get("media_type", payload.get("type", ""))).strip()
+        season_number = payload.get("season_number") or None
+        status = payload.get("status") or Status.PLANNING.value
+
+        if not media_id:
+            return JsonResponse(
+                {"detail": "Informe o media_id."},
+                status=400,
+            )
+
+        if not source:
+            return JsonResponse(
+                {"detail": "Informe o source."},
+                status=400,
+            )
+
+        if media_type not in MediaTypes.values:
+            return JsonResponse(
+                {"detail": "Tipo de mídia inválido."},
+                status=400,
+            )
+
+        if media_type in [MediaTypes.SEASON.value, MediaTypes.EPISODE.value]:
+            return JsonResponse(
+                {
+                    "detail": "Adicionar temporadas e episódios pelo app ainda não está disponível.",
+                },
+                status=400,
+            )
+
+        if status not in Status.values:
+            status = Status.PLANNING.value
+
+        try:
+            metadata = provider_services.get_media_metadata(
+                media_type,
+                media_id,
+                source,
+                [season_number],
+            )
+        except Exception:
+            logger.exception(
+                "Erro ao buscar metadata para adicionar mídia mobile: media_type=%s media_id=%s source=%s",
+                media_type,
+                media_id,
+                source,
+            )
+            metadata = {
+                "title": payload.get("title", ""),
+                "image": payload.get("image", ""),
+            }
+
+        title = metadata.get("title") or payload.get("title") or ""
+        image = metadata.get("image") or payload.get("image") or ""
+
+        item, _ = Item.objects.get_or_create(
+            media_id=media_id,
+            source=source,
+            media_type=media_type,
+            season_number=season_number,
+            defaults={
+                "title": title,
+                "image": image,
+            },
+        )
+
+        model = apps.get_model(app_label="app", model_name=media_type)
+
+        existing_media = model.objects.filter(
+            item=item,
+            user=user,
+        ).first()
+
+        if existing_media:
+            return JsonResponse(
+                {
+                    "created": False,
+                    "already_exists": True,
+                    "media": _serialize_media(existing_media),
+                },
+                status=200,
+            )
+
+        instance = model(
+            item=item,
+            user=user,
+        )
+
+        if hasattr(instance, "status"):
+            instance.status = status
+
+        if hasattr(instance, "score"):
+            instance.score = None
+
+        if hasattr(instance, "notes"):
+            instance.notes = ""
+
+        if hasattr(instance, "progress"):
+            instance.progress = 0
+
+        try:
+            instance.save()
+        except IntegrityError:
+            existing_media = model.objects.filter(
+                item=item,
+                user=user,
+            ).first()
+
+            if existing_media:
+                return JsonResponse(
+                    {
+                        "created": False,
+                        "already_exists": True,
+                        "media": _serialize_media(existing_media),
+                    },
+                    status=200,
+                )
+
+            raise
+
+        logger.info(
+            "%s added from mobile API by user %s.",
+            instance,
+            user.username,
+        )
+
+        return JsonResponse(
+            {
+                "created": True,
+                "already_exists": False,
+                "media": _serialize_media(instance),
+            },
+            status=201,
+        )
+
+    except Exception as exc:
+        logger.exception("Erro inesperado ao adicionar mídia mobile.")
+
+        return JsonResponse(
+            {
+                "detail": "Erro ao adicionar mídia.",
+                "error_type": exc.__class__.__name__,
+                "error": str(exc),
+            },
+            status=500,
+        )
 
 
 @login_not_required
@@ -799,6 +1177,25 @@ def _serialize_media_detail(media):
 
 
 
+
+def _api_request_payload(request):
+    """Read JSON or form payload for mobile API requests."""
+    content_type = request.headers.get("content-type", "")
+
+    if "application/json" in content_type:
+        try:
+            return json.loads(request.body.decode("utf-8") or "{}"), None
+        except json.JSONDecodeError:
+            return None, JsonResponse(
+                {
+                    "detail": "JSON inválido.",
+                },
+                status=400,
+            )
+
+    return request.POST.dict(), None
+
+
 def _api_jsonify(value):
     """Convert provider search responses to JSON-safe values."""
     if value is None:
@@ -824,6 +1221,175 @@ def _api_jsonify(value):
     except Exception:
         return str(value)
 
+
+
+
+@login_not_required
+@csrf_exempt
+@require_POST
+def mobile_media_add(request):
+    """Add a provider media item to the authenticated user's library."""
+    try:
+        auth_result = _get_authenticated_api_user(request)
+
+        if isinstance(auth_result, JsonResponse):
+            return auth_result
+
+        user = auth_result
+
+        payload, payload_error = _api_request_payload(request)
+
+        if payload_error:
+            return payload_error
+
+        media_id = str(payload.get("media_id", "")).strip()
+        source = str(payload.get("source", "")).strip()
+        media_type = str(payload.get("media_type", payload.get("type", ""))).strip()
+        season_number = payload.get("season_number") or None
+        status = payload.get("status") or Status.PLANNING.value
+
+        if not media_id:
+            return JsonResponse(
+                {"detail": "Informe o media_id."},
+                status=400,
+            )
+
+        if not source:
+            return JsonResponse(
+                {"detail": "Informe o source."},
+                status=400,
+            )
+
+        if media_type not in MediaTypes.values:
+            return JsonResponse(
+                {"detail": "Tipo de mídia inválido."},
+                status=400,
+            )
+
+        if media_type in [MediaTypes.SEASON.value, MediaTypes.EPISODE.value]:
+            return JsonResponse(
+                {
+                    "detail": "Adicionar temporadas e episódios pelo app ainda não está disponível.",
+                },
+                status=400,
+            )
+
+        if status not in Status.values:
+            status = Status.PLANNING.value
+
+        try:
+            metadata = provider_services.get_media_metadata(
+                media_type,
+                media_id,
+                source,
+                [season_number],
+            )
+        except Exception:
+            logger.exception(
+                "Erro ao buscar metadata para adicionar mídia mobile: media_type=%s media_id=%s source=%s",
+                media_type,
+                media_id,
+                source,
+            )
+            metadata = {
+                "title": payload.get("title", ""),
+                "image": payload.get("image", ""),
+            }
+
+        title = metadata.get("title") or payload.get("title") or ""
+        image = metadata.get("image") or payload.get("image") or ""
+
+        item, _ = Item.objects.get_or_create(
+            media_id=media_id,
+            source=source,
+            media_type=media_type,
+            season_number=season_number,
+            defaults={
+                "title": title,
+                "image": image,
+            },
+        )
+
+        model = apps.get_model(app_label="app", model_name=media_type)
+
+        existing_media = model.objects.filter(
+            item=item,
+            user=user,
+        ).first()
+
+        if existing_media:
+            return JsonResponse(
+                {
+                    "created": False,
+                    "already_exists": True,
+                    "media": _serialize_media(existing_media),
+                },
+                status=200,
+            )
+
+        instance = model(
+            item=item,
+            user=user,
+        )
+
+        if hasattr(instance, "status"):
+            instance.status = status
+
+        if hasattr(instance, "score"):
+            instance.score = None
+
+        if hasattr(instance, "notes"):
+            instance.notes = ""
+
+        if hasattr(instance, "progress"):
+            instance.progress = 0
+
+        try:
+            instance.save()
+        except IntegrityError:
+            existing_media = model.objects.filter(
+                item=item,
+                user=user,
+            ).first()
+
+            if existing_media:
+                return JsonResponse(
+                    {
+                        "created": False,
+                        "already_exists": True,
+                        "media": _serialize_media(existing_media),
+                    },
+                    status=200,
+                )
+
+            raise
+
+        logger.info(
+            "%s added from mobile API by user %s.",
+            instance,
+            user.username,
+        )
+
+        return JsonResponse(
+            {
+                "created": True,
+                "already_exists": False,
+                "media": _serialize_media(instance),
+            },
+            status=201,
+        )
+
+    except Exception as exc:
+        logger.exception("Erro inesperado ao adicionar mídia mobile.")
+
+        return JsonResponse(
+            {
+                "detail": "Erro ao adicionar mídia.",
+                "error_type": exc.__class__.__name__,
+                "error": str(exc),
+            },
+            status=500,
+        )
 
 
 @login_not_required
