@@ -5,6 +5,8 @@ from api import views
 app_name = "api"
 
 urlpatterns = [
+    path("lists/", views.mobile_lists, name="mobile_lists"),
+    path("lists/<int:list_id>/", views.mobile_list_detail, name="mobile_list_detail"),
     path("mobile/health/", views.mobile_health, name="mobile_health"),
     path("search/", views.mobile_search, name="mobile_search"),
     path("media/add/", views.mobile_media_add, name="mobile_media_add"),
