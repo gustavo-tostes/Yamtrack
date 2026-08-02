@@ -489,6 +489,153 @@ def media_detail(request, media_type, instance_id):
     )
 
 
+
+
+def _api_safe_get(obj, attr, default=None):
+    try:
+        value = getattr(obj, attr)
+    except Exception:
+        return default
+
+    if value is None:
+        return default
+
+    return value
+
+
+def _api_json_value(value):
+    if value is None:
+        return None
+
+    if isinstance(value, (str, int, float, bool)):
+        return value
+
+    if hasattr(value, "isoformat"):
+        return value.isoformat()
+
+    try:
+        return float(value)
+    except Exception:
+        return str(value)
+
+
+def _mobile_status_label(status, fallback=""):
+    if status == Status.PLANNING.value or status == "Planning":
+        return "Em breve"
+
+    return STATUS_LABELS.get(status, fallback or status or "")
+
+
+def _serialize_media_detail(media):
+    """Serialize a single media item safely for the mobile detail screen."""
+    media_type = _api_safe_get(media, "media_type", "")
+    status = _api_safe_get(media, "status", "")
+
+    next_event = _api_safe_get(media, "next_event", None)
+
+    try:
+        serialized_next_event = _serialize_event(next_event) if next_event else None
+    except Exception:
+        serialized_next_event = None
+
+    return {
+        "id": _api_json_value(_api_safe_get(media, "id")),
+        "media_id": _api_json_value(_api_safe_get(media, "media_id", "")),
+        "source": _api_json_value(_api_safe_get(media, "source", "")),
+        "media_type": _api_json_value(media_type),
+        "media_type_label": MEDIA_TYPE_LABELS.get(media_type, media_type),
+        "title": _api_json_value(_api_safe_get(media, "title", "")),
+        "image": _api_json_value(_api_safe_get(media, "image", "")),
+        "season_number": _api_json_value(_api_safe_get(media, "season_number", None)),
+        "episode_number": _api_json_value(_api_safe_get(media, "episode_number", None)),
+        "status": _api_json_value(status),
+        "status_label": _mobile_status_label(status),
+        "score": _api_json_value(_api_safe_get(media, "score", None)),
+        "progress": _api_json_value(_api_safe_get(media, "progress", None)),
+        "formatted_progress": _api_json_value(_api_safe_get(media, "formatted_progress", "")),
+        "max_progress": _api_json_value(_api_safe_get(media, "max_progress", None)),
+        "progress_percent": _api_json_value(_api_safe_get(media, "progress_percent", None)),
+        "start_date": _api_json_value(_api_safe_get(media, "start_date", None)),
+        "end_date": _api_json_value(_api_safe_get(media, "end_date", None)),
+        "progressed_at": _api_json_value(_api_safe_get(media, "progressed_at", None)),
+        "last_watched": _api_json_value(_api_safe_get(media, "last_watched", "")),
+        "next_episode_number": _api_json_value(_api_safe_get(media, "next_episode_number", None)),
+        "next_episode_title": _api_json_value(_api_safe_get(media, "next_episode_title", "")),
+        "next_event": serialized_next_event,
+    }
+
+
+@login_not_required
+@require_GET
+def media_detail(request, media_type, instance_id):
+    """Return details for a single media item."""
+    try:
+        user, error_response = _get_authenticated_api_user(request)
+
+        if error_response:
+            return error_response
+
+        if media_type not in MediaTypes.values:
+            return JsonResponse(
+                {"detail": "Tipo de mídia inválido."},
+                status=400,
+            )
+
+        try:
+            media = BasicMedia.objects.get_media_prefetch(
+                user=user,
+                media_type=media_type,
+                instance_id=instance_id,
+            )
+        except Exception as exc:
+            error_name = exc.__class__.__name__
+
+            if "DoesNotExist" in error_name:
+                return JsonResponse(
+                    {"detail": "Mídia não encontrada."},
+                    status=404,
+                )
+
+            logger.exception(
+                "Erro ao buscar detalhe da mídia mobile: media_type=%s instance_id=%s user=%s",
+                media_type,
+                instance_id,
+                user.id,
+            )
+
+            return JsonResponse(
+                {
+                    "detail": "Erro ao buscar mídia.",
+                    "error_type": error_name,
+                    "error": str(exc),
+                },
+                status=500,
+            )
+
+        return JsonResponse(
+            {
+                "media": _serialize_media_detail(media),
+            },
+            status=200,
+        )
+
+    except Exception as exc:
+        logger.exception(
+            "Erro inesperado no endpoint media_detail mobile: media_type=%s instance_id=%s",
+            media_type,
+            instance_id,
+        )
+
+        return JsonResponse(
+            {
+                "detail": "Erro inesperado no detalhe da mídia.",
+                "error_type": exc.__class__.__name__,
+                "error": str(exc),
+            },
+            status=500,
+        )
+
+
 @login_not_required
 @csrf_exempt
 @require_POST
