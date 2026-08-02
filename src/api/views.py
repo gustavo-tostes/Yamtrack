@@ -282,6 +282,19 @@ def login(request):
     )
 
 
+
+@login_not_required
+@require_GET
+def mobile_health(request):
+    return JsonResponse(
+        {
+            "ok": True,
+            "version": "mobile-detail-debug-2026-08-02",
+        },
+        status=200,
+    )
+
+
 @login_not_required
 @require_GET
 def me(request):
@@ -429,6 +442,19 @@ def _serialize_media_detail(media):
     }
 
 
+
+@login_not_required
+@require_GET
+def mobile_health(request):
+    return JsonResponse(
+        {
+            "ok": True,
+            "version": "mobile-detail-debug-2026-08-02",
+        },
+        status=200,
+    )
+
+
 @login_not_required
 @require_GET
 def media_detail(request, media_type, instance_id):
@@ -563,6 +589,19 @@ def _serialize_media_detail(media):
         "next_episode_title": _api_json_value(_api_safe_get(media, "next_episode_title", "")),
         "next_event": serialized_next_event,
     }
+
+
+
+@login_not_required
+@require_GET
+def mobile_health(request):
+    return JsonResponse(
+        {
+            "ok": True,
+            "version": "mobile-detail-debug-2026-08-02",
+        },
+        status=200,
+    )
 
 
 @login_not_required
