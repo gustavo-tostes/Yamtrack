@@ -1,6 +1,6 @@
 from django.urls import path
 
-from api import views
+from api import mobile_lists, views
 
 app_name = "api"
 
@@ -8,6 +8,7 @@ urlpatterns = [
     path("mobile/health/", views.mobile_health, name="mobile_health"),
     path("search/", views.mobile_search, name="mobile_search"),
     path("media/add/", views.mobile_media_add, name="mobile_media_add"),
+    path("lists/", mobile_lists.mobile_lists, name="mobile_lists"),
     path("auth/login/", views.login, name="login"),
     path("auth/logout/", views.logout, name="logout"),
     path("me/", views.me, name="me"),
