@@ -1,6 +1,14 @@
-from allauth.account.decorators import login_not_required
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
+
+def login_not_required(view_func):
+    """Mark this API view as public for login-required middleware.
+
+    Authentication is still handled manually through the Authorization header.
+    """
+    view_func.login_required = False
+    return view_func
+
 
 from api.views import _get_authenticated_api_user
 from lists.models import CustomList
