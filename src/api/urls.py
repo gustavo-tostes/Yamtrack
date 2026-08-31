@@ -1,6 +1,11 @@
 from django.urls import path
 
-from api import mobile_calendar, mobile_lists, views
+from api import (
+    mobile_calendar,
+    mobile_lists,
+    mobile_media,
+    views,
+)
 
 app_name = "api"
 
@@ -61,12 +66,31 @@ urlpatterns = [
         name="home_next_up",
     ),
     path(
-        "media/<str:media_type>/<int:instance_id>/",
-        views.media_detail,
+        (
+            "media/provider/"
+            "<str:source>/"
+            "<str:media_type>/"
+            "<str:media_id>/"
+        ),
+        mobile_media.mobile_provider_detail,
+        name="mobile_provider_detail",
+    ),
+    path(
+        (
+            "media/"
+            "<str:media_type>/"
+            "<int:instance_id>/"
+        ),
+        mobile_media.mobile_media_detail,
         name="media_detail",
     ),
     path(
-        "media/<str:media_type>/<int:instance_id>/progress/",
+        (
+            "media/"
+            "<str:media_type>/"
+            "<int:instance_id>/"
+            "progress/"
+        ),
         views.media_progress,
         name="media_progress",
     ),
