@@ -1,6 +1,7 @@
 from django.urls import path
 
 from api import (
+    mobile_account,
     mobile_calendar,
     mobile_lists,
     mobile_media,
@@ -59,6 +60,21 @@ urlpatterns = [
         "me/",
         views.me,
         name="me",
+    ),
+    path(
+        "account/",
+        mobile_account.mobile_account,
+        name="mobile_account",
+    ),
+    path(
+        "account/privacy/",
+        mobile_account.mobile_profile_privacy,
+        name="mobile_profile_privacy",
+    ),
+    path(
+        "account/password/",
+        mobile_account.mobile_change_password,
+        name="mobile_change_password",
     ),
     path(
         "home/next-up/",
