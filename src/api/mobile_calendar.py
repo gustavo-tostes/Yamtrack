@@ -38,7 +38,6 @@ def _get_authenticated_user(request):
 
 
 def _parse_month_year(request):
-    """Resolve the requested calendar month and year."""
     month = request.GET.get("month")
     year = request.GET.get("year")
 
