@@ -20,6 +20,23 @@ def login_not_required(view_func):
     return view_func
 
 
+def _get_authenticated_user(request):
+    auth_result = _get_authenticated_api_user(request)
+
+    if isinstance(auth_result, JsonResponse):
+        return None, auth_result
+
+    if auth_result is None:
+        return None, JsonResponse(
+            {
+                "detail": "Autenticação necessária.",
+            },
+            status=401,
+        )
+
+    return auth_result, None
+
+
 def _parse_month_year(request):
     """Resolve the requested calendar month and year."""
     month = request.GET.get("month")
@@ -40,12 +57,12 @@ def _parse_month_year(request):
             raise ValueError
 
         return month, year
+
     except (TypeError, ValueError):
         return None
 
 
 def _get_month_range(month, year):
-    """Return the first and last dates of the requested month."""
     first_day = date(year, month, 1)
 
     if month == 12:
@@ -59,7 +76,6 @@ def _get_month_range(month, year):
 
 
 def _serialize_media_item(item):
-    """Serialize the media item associated with an event."""
     return {
         "id": item.id,
         "media_id": str(item.media_id),
@@ -72,7 +88,6 @@ def _serialize_media_item(item):
 
 
 def _serialize_event(event):
-    """Serialize an Event for the mobile application."""
     local_datetime = timezone.localtime(event.datetime)
 
     return {
@@ -95,13 +110,10 @@ def _serialize_event(event):
 @login_not_required
 @require_GET
 def mobile_calendar(request):
-    """Return calendar events for the authenticated mobile user."""
-    auth_result = _get_authenticated_api_user(request)
+    user, error_response = _get_authenticated_user(request)
 
-    if isinstance(auth_result, JsonResponse):
-        return auth_result
-
-    user = auth_result
+    if error_response:
+        return error_response
 
     parsed_date = _parse_month_year(request)
 
@@ -117,7 +129,10 @@ def mobile_calendar(request):
     month, year = parsed_date
 
     try:
-        first_day, last_day = _get_month_range(month, year)
+        first_day, last_day = _get_month_range(
+            month,
+            year,
+        )
     except ValueError:
         return JsonResponse(
             {
@@ -161,13 +176,10 @@ def mobile_calendar(request):
 @csrf_exempt
 @require_POST
 def mobile_calendar_reload(request):
-    """Queue a calendar refresh for the authenticated mobile user."""
-    auth_result = _get_authenticated_api_user(request)
+    user, error_response = _get_authenticated_user(request)
 
-    if isinstance(auth_result, JsonResponse):
-        return auth_result
-
-    user = auth_result
+    if error_response:
+        return error_response
 
     task = tasks.reload_calendar.delay(user)
 
