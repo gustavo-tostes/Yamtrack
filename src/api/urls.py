@@ -3,6 +3,7 @@ from django.urls import path
 from api import (
     mobile_account,
     mobile_calendar,
+    mobile_episode,
     mobile_lists,
     mobile_media,
     mobile_series,
@@ -90,6 +91,19 @@ urlpatterns = [
         ),
         mobile_series.mobile_series_detail,
         name="mobile_series_detail",
+    ),
+    path(
+        (
+            "media/series/"
+            "<str:source>/"
+            "<str:media_id>/"
+            "season/"
+            "<int:season_number>/"
+            "episode/"
+            "<int:episode_number>/"
+        ),
+        mobile_episode.mobile_episode_detail,
+        name="mobile_episode_detail",
     ),
     path(
         (
