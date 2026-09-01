@@ -227,6 +227,101 @@ def _create_custom_list(request, user):
     )
 
 
+def _update_custom_list(request, custom_list, user):
+    if not custom_list.user_can_edit(user):
+        return JsonResponse(
+            {
+                "success": False,
+                "detail": "Você não tem permissão para editar esta lista.",
+            },
+            status=403,
+        )
+
+    payload = _get_request_json(request)
+
+    if payload is None:
+        return JsonResponse(
+            {
+                "success": False,
+                "detail": "JSON inválido.",
+            },
+            status=400,
+        )
+
+    if not isinstance(payload, dict):
+        return JsonResponse(
+            {
+                "success": False,
+                "detail": "Os dados enviados são inválidos.",
+            },
+            status=400,
+        )
+
+    name = str(
+        payload.get(
+            "name",
+            custom_list.name,
+        )
+    ).strip()
+
+    description_value = payload.get(
+        "description",
+        custom_list.description,
+    )
+
+    if description_value is None:
+        description_value = ""
+
+    description = str(
+        description_value
+    ).strip()
+
+    if not name:
+        return JsonResponse(
+            {
+                "success": False,
+                "detail": "O nome da lista é obrigatório.",
+            },
+            status=400,
+        )
+
+    if len(name) > 255:
+        return JsonResponse(
+            {
+                "success": False,
+                "detail": "O nome da lista deve ter no máximo 255 caracteres.",
+            },
+            status=400,
+        )
+
+    update_fields = []
+
+    if custom_list.name != name:
+        custom_list.name = name
+        update_fields.append("name")
+
+    if custom_list.description != description:
+        custom_list.description = description
+        update_fields.append("description")
+
+    if update_fields:
+        custom_list.save(
+            update_fields=update_fields,
+        )
+
+    return JsonResponse(
+        {
+            "success": True,
+            "message": "Lista atualizada com sucesso.",
+            "list": _serialize_custom_list_detail(
+                custom_list,
+                user,
+            ),
+        },
+        status=200,
+    )
+
+
 def _delete_custom_list(custom_list, user):
     if not custom_list.user_can_delete(user):
         return JsonResponse(
@@ -289,7 +384,7 @@ def mobile_lists(request):
 
 @login_not_required
 @csrf_exempt
-@require_http_methods(["GET", "DELETE"])
+@require_http_methods(["GET", "PATCH", "DELETE"])
 def mobile_list_detail(request, list_id):
     user, error_response = _get_authenticated_user(request)
 
@@ -309,6 +404,13 @@ def mobile_list_detail(request, list_id):
                 "detail": "Lista não encontrada.",
             },
             status=404,
+        )
+
+    if request.method == "PATCH":
+        return _update_custom_list(
+            request,
+            custom_list,
+            user,
         )
 
     if request.method == "DELETE":
