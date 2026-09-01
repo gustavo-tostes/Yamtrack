@@ -7,6 +7,7 @@ from api import (
     mobile_lists,
     mobile_media,
     mobile_series,
+    mobile_work,
     views,
 )
 
@@ -104,6 +105,16 @@ urlpatterns = [
         ),
         mobile_episode.mobile_episode_detail,
         name="mobile_episode_detail",
+    ),
+    path(
+        (
+            "media/work/"
+            "<str:source>/"
+            "<str:media_type>/"
+            "<str:media_id>/"
+        ),
+        mobile_work.mobile_work_detail,
+        name="mobile_work_detail",
     ),
     path(
         (
