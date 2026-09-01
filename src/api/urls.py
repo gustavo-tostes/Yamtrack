@@ -6,6 +6,8 @@ from api import (
     mobile_episode,
     mobile_lists,
     mobile_media,
+    mobile_progress,
+    mobile_search,
     mobile_series,
     mobile_work,
     views,
@@ -21,7 +23,7 @@ urlpatterns = [
     ),
     path(
         "search/",
-        views.mobile_search,
+        mobile_search.mobile_search,
         name="mobile_search",
     ),
     path(
@@ -142,7 +144,7 @@ urlpatterns = [
             "<int:instance_id>/"
             "progress/"
         ),
-        views.media_progress,
+        mobile_progress.mobile_media_progress,
         name="media_progress",
     ),
 ]
