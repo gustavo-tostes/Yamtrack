@@ -3,7 +3,7 @@ import json
 from django.apps import apps
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_GET, require_http_methods
+from django.views.decorators.http import require_http_methods
 
 
 def login_not_required(view_func):
@@ -227,6 +227,34 @@ def _create_custom_list(request, user):
     )
 
 
+def _delete_custom_list(custom_list, user):
+    if not custom_list.user_can_delete(user):
+        return JsonResponse(
+            {
+                "success": False,
+                "detail": "Você não tem permissão para excluir esta lista.",
+            },
+            status=403,
+        )
+
+    list_id = custom_list.id
+    list_name = custom_list.name
+
+    custom_list.delete()
+
+    return JsonResponse(
+        {
+            "success": True,
+            "message": "Lista excluída com sucesso.",
+            "deleted_list": {
+                "id": list_id,
+                "name": list_name,
+            },
+        },
+        status=200,
+    )
+
+
 @login_not_required
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
@@ -260,7 +288,8 @@ def mobile_lists(request):
 
 
 @login_not_required
-@require_GET
+@csrf_exempt
+@require_http_methods(["GET", "DELETE"])
 def mobile_list_detail(request, list_id):
     user, error_response = _get_authenticated_user(request)
 
@@ -280,6 +309,12 @@ def mobile_list_detail(request, list_id):
                 "detail": "Lista não encontrada.",
             },
             status=404,
+        )
+
+    if request.method == "DELETE":
+        return _delete_custom_list(
+            custom_list,
+            user,
         )
 
     return JsonResponse(
