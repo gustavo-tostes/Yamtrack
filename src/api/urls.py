@@ -5,6 +5,7 @@ from api import (
     mobile_calendar,
     mobile_lists,
     mobile_media,
+    mobile_series,
     views,
 )
 
@@ -80,6 +81,15 @@ urlpatterns = [
         "home/next-up/",
         views.home_next_up,
         name="home_next_up",
+    ),
+    path(
+        (
+            "media/series/"
+            "<str:source>/"
+            "<str:media_id>/"
+        ),
+        mobile_series.mobile_series_detail,
+        name="mobile_series_detail",
     ),
     path(
         (
