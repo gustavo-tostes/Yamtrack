@@ -76,6 +76,7 @@ def _normalize_text(value):
         "",
         "No synopsis available.",
         "No description available.",
+        "Sinopse não disponível.",
     }:
         return ""
 
@@ -90,6 +91,19 @@ def _iso_datetime(value):
         return value.isoformat()
 
     return str(value)
+
+
+def _safe_int(value):
+    if (
+        value is None
+        or isinstance(value, bool)
+    ):
+        return None
+
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
 
 
 def _get_tracked_media(
@@ -119,6 +133,7 @@ def _get_tracked_media(
             )
             .first()
         )
+
     except Exception:
         logger.exception(
             (
@@ -254,6 +269,7 @@ def _serialize_tracking(
                 tracked_media
             )
         )
+
     except Exception:
         logger.exception(
             (
@@ -305,6 +321,109 @@ def _serialize_tracking(
     )
 
 
+def _get_status_label(
+    media_type,
+    status,
+):
+    if status is None:
+        return None
+
+    if (
+        media_type
+        == MediaTypes.BOOK.value
+    ):
+        labels = {
+            Status.PLANNING.value: (
+                "Quero ler"
+            ),
+            Status.IN_PROGRESS.value: (
+                "Lendo"
+            ),
+            Status.COMPLETED.value: (
+                "Concluído"
+            ),
+            Status.PAUSED.value: (
+                "Pausado"
+            ),
+            Status.DROPPED.value: (
+                "Abandonado"
+            ),
+        }
+
+        return labels.get(
+            status,
+            status,
+        )
+
+    if (
+        media_type
+        == MediaTypes.MOVIE.value
+        and status
+        == Status.COMPLETED.value
+    ):
+        return "Assistido"
+
+    return status
+
+
+def _get_progress_values(
+    metadata,
+    tracked_media,
+    media_type,
+):
+    progress = 0
+
+    if tracked_media is not None:
+        progress = (
+            _safe_int(
+                getattr(
+                    tracked_media,
+                    "progress",
+                    0,
+                )
+            )
+            or 0
+        )
+
+    max_progress = None
+
+    if (
+        media_type
+        != MediaTypes.MOVIE.value
+    ):
+        max_progress = (
+            _safe_int(
+                metadata.get(
+                    "max_progress"
+                )
+            )
+        )
+
+    progress_percent = None
+
+    if (
+        max_progress is not None
+        and max_progress > 0
+    ):
+        progress_percent = round(
+            min(
+                (
+                    progress
+                    / max_progress
+                )
+                * 100,
+                100,
+            ),
+            1,
+        )
+
+    return (
+        progress,
+        max_progress,
+        progress_percent,
+    )
+
+
 def _build_work_payload(
     metadata,
     tracked_media,
@@ -337,6 +456,16 @@ def _build_work_payload(
         == MediaTypes.MOVIE.value
         and status
         == Status.COMPLETED.value
+    )
+
+    (
+        progress,
+        max_progress,
+        progress_percent,
+    ) = _get_progress_values(
+        metadata,
+        tracked_media,
+        media_type,
     )
 
     return {
@@ -471,6 +600,20 @@ def _build_work_payload(
             is not None
         ),
         "tracking": tracking,
+        "status": status,
+        "status_label": (
+            _get_status_label(
+                media_type,
+                status,
+            )
+        ),
+        "progress": progress,
+        "max_progress": (
+            max_progress
+        ),
+        "progress_percent": (
+            progress_percent
+        ),
         "watched": watched,
         "watched_at": (
             _iso_datetime(
@@ -488,6 +631,12 @@ def _build_work_payload(
         "can_toggle_watched": (
             media_type
             == MediaTypes.MOVIE.value
+            and tracked_media
+            is not None
+        ),
+        "can_update_progress": (
+            media_type
+            == MediaTypes.BOOK.value
             and tracked_media
             is not None
         ),
@@ -537,6 +686,244 @@ def _update_movie_watched(
     tracked_movie.save()
 
 
+def _update_book_progress(
+    tracked_book,
+    progress,
+    max_progress,
+):
+    now = (
+        timezone.now()
+        .replace(
+            second=0,
+            microsecond=0,
+        )
+    )
+
+    normalized_progress = max(
+        progress,
+        0,
+    )
+
+    if (
+        max_progress is not None
+        and max_progress > 0
+    ):
+        normalized_progress = min(
+            normalized_progress,
+            max_progress,
+        )
+
+    old_status = getattr(
+        tracked_book,
+        "status",
+        None,
+    )
+
+    if normalized_progress == 0:
+        next_status = (
+            Status.PLANNING.value
+        )
+
+    elif (
+        max_progress is not None
+        and max_progress > 0
+        and normalized_progress
+        >= max_progress
+    ):
+        next_status = (
+            Status.COMPLETED.value
+        )
+
+    else:
+        next_status = (
+            Status.IN_PROGRESS.value
+        )
+
+    tracked_book.progress = (
+        normalized_progress
+    )
+
+    tracked_book.status = (
+        next_status
+    )
+
+    if (
+        next_status
+        == Status.PLANNING.value
+    ):
+        tracked_book.start_date = None
+        tracked_book.end_date = None
+
+    elif (
+        next_status
+        == Status.IN_PROGRESS.value
+    ):
+        if (
+            tracked_book.start_date
+            is None
+        ):
+            tracked_book.start_date = (
+                now
+            )
+
+        tracked_book.end_date = None
+
+    elif (
+        next_status
+        == Status.COMPLETED.value
+    ):
+        if (
+            tracked_book.start_date
+            is None
+        ):
+            tracked_book.start_date = (
+                now
+            )
+
+        if (
+            old_status
+            != Status.COMPLETED.value
+            or tracked_book.end_date
+            is None
+        ):
+            tracked_book.end_date = (
+                now
+            )
+
+    tracked_book.save()
+
+    return normalized_progress
+
+
+def _handle_movie_update(
+    data,
+    tracked_media,
+):
+    watched = data.get(
+        "watched"
+    )
+
+    if not isinstance(
+        watched,
+        bool,
+    ):
+        return None, JsonResponse(
+            {
+                "detail": (
+                    "watched deve ser "
+                    "true ou false."
+                ),
+            },
+            status=400,
+        )
+
+    _update_movie_watched(
+        tracked_media,
+        watched,
+    )
+
+    message = (
+        "Filme marcado "
+        "como assistido."
+        if watched
+        else (
+            "Filme marcado "
+            "como não assistido."
+        )
+    )
+
+    return message, None
+
+
+def _handle_book_update(
+    data,
+    tracked_media,
+    metadata,
+):
+    progress = data.get(
+        "progress"
+    )
+
+    if (
+        isinstance(
+            progress,
+            bool,
+        )
+        or not isinstance(
+            progress,
+            int,
+        )
+    ):
+        return None, JsonResponse(
+            {
+                "detail": (
+                    "progress deve ser "
+                    "um número inteiro."
+                ),
+            },
+            status=400,
+        )
+
+    if progress < 0:
+        return None, JsonResponse(
+            {
+                "detail": (
+                    "progress não pode "
+                    "ser negativo."
+                ),
+            },
+            status=400,
+        )
+
+    max_progress = (
+        _safe_int(
+            metadata.get(
+                "max_progress"
+            )
+        )
+    )
+
+    normalized_progress = (
+        _update_book_progress(
+            tracked_media,
+            progress,
+            max_progress,
+        )
+    )
+
+    if (
+        max_progress is not None
+        and max_progress > 0
+        and normalized_progress
+        >= max_progress
+    ):
+        message = (
+            "Livro marcado "
+            "como concluído."
+        )
+
+    elif normalized_progress == 0:
+        message = (
+            "Livro movido para "
+            "Quero ler."
+        )
+
+    elif normalized_progress == 1:
+        message = (
+            "Progresso atualizado "
+            "para 1 página."
+        )
+
+    else:
+        message = (
+            "Progresso atualizado "
+            f"para {normalized_progress} "
+            "páginas."
+        )
+
+    return message, None
+
+
 @login_not_required
 @csrf_exempt
 @require_http_methods(
@@ -580,6 +967,7 @@ def mobile_work_detail(
                 source,
             )
         )
+
     except Exception as exc:
         logger.exception(
             (
@@ -621,31 +1009,46 @@ def mobile_work_detail(
     if request.method == "POST":
         if (
             media_type
-            != MediaTypes.MOVIE.value
+            not in {
+                MediaTypes.MOVIE.value,
+                MediaTypes.BOOK.value,
+            }
         ):
             return JsonResponse(
                 {
                     "detail": (
-                        "A alteração de "
-                        "status ainda não "
-                        "está disponível "
-                        "para este tipo "
-                        "de mídia."
+                        "A alteração "
+                        "ainda não está "
+                        "disponível para "
+                        "este tipo de mídia."
                     ),
                 },
                 status=400,
             )
 
         if tracked_media is None:
+            if (
+                media_type
+                == MediaTypes.MOVIE.value
+            ):
+                detail = (
+                    "Adicione este filme "
+                    "à sua biblioteca "
+                    "antes de registrar "
+                    "como assistido."
+                )
+
+            else:
+                detail = (
+                    "Adicione este livro "
+                    "à sua biblioteca "
+                    "antes de atualizar "
+                    "o progresso."
+                )
+
             return JsonResponse(
                 {
-                    "detail": (
-                        "Adicione este "
-                        "filme à sua "
-                        "biblioteca antes "
-                        "de registrar "
-                        "como assistido."
-                    ),
+                    "detail": detail,
                 },
                 status=409,
             )
@@ -665,37 +1068,42 @@ def mobile_work_detail(
                 status=400,
             )
 
-        watched = data.get(
-            "watched"
-        )
-
-        if not isinstance(
-            watched,
-            bool,
-        ):
-            return JsonResponse(
-                {
-                    "detail": (
-                        "watched deve ser "
-                        "true ou false."
-                    ),
-                },
-                status=400,
-            )
-
         try:
-            _update_movie_watched(
-                tracked_media,
-                watched,
-            )
+            if (
+                media_type
+                == MediaTypes.MOVIE.value
+            ):
+                (
+                    message,
+                    update_error,
+                ) = _handle_movie_update(
+                    data,
+                    tracked_media,
+                )
+
+            else:
+                (
+                    message,
+                    update_error,
+                ) = _handle_book_update(
+                    data,
+                    tracked_media,
+                    metadata,
+                )
+
+            if update_error:
+                return update_error
+
         except Exception as exc:
             logger.exception(
                 (
                     "Erro ao atualizar "
-                    "filme: "
+                    "obra: "
+                    "media_type=%s "
                     "media_id=%s "
                     "user=%s"
                 ),
+                media_type,
                 media_id,
                 user.id,
             )
@@ -705,7 +1113,7 @@ def mobile_work_detail(
                     "detail": (
                         "Não foi possível "
                         "atualizar este "
-                        "filme."
+                        "conteúdo."
                     ),
                     "error_type": (
                         exc.__class__.__name__
@@ -738,16 +1146,7 @@ def mobile_work_detail(
         return JsonResponse(
             {
                 "success": True,
-                "message": (
-                    "Filme marcado "
-                    "como assistido."
-                    if watched
-                    else (
-                        "Filme marcado "
-                        "como não "
-                        "assistido."
-                    )
-                ),
+                "message": message,
                 "media": (
                     _api_jsonify(
                         payload
