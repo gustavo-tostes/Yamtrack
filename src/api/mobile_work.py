@@ -1,6 +1,7 @@
 import logging
 import os
 import re
+import unicodedata
 
 import requests
 from bs4 import BeautifulSoup
@@ -157,103 +158,435 @@ def _clean_external_description(value):
     return " ".join(clean.split())
 
 
-def _google_books_description(query):
-    """Return the first Portuguese Google Books description for a query."""
-    api_key = os.getenv("GOOGLE_BOOKS_API_KEY", "").strip()
+def _normalize_compare_text(value):
+    """Normalize text for loose title/author comparisons."""
+    raw = str(value or "")
+    normalized = unicodedata.normalize("NFKD", raw)
+    normalized = "".join(
+        char
+        for char in normalized
+        if not unicodedata.combining(char)
+    )
+    normalized = normalized.lower()
+    normalized = re.sub(r"[^a-z0-9]+", " ", normalized)
+    return " ".join(normalized.split())
 
-    # Google requires an application identifier for public-data requests.
-    # We keep the integration disabled until a server-side key is configured.
+
+def _looks_portuguese(text):
+    """Best-effort fallback when Google omits a language field."""
+    normalized = _normalize_compare_text(text)
+    words = set(normalized.split())
+
+    portuguese_markers = {
+        "ainda",
+        "assim",
+        "como",
+        "com",
+        "da",
+        "das",
+        "de",
+        "do",
+        "dos",
+        "ela",
+        "ele",
+        "em",
+        "entre",
+        "esta",
+        "este",
+        "mais",
+        "mas",
+        "na",
+        "nas",
+        "no",
+        "nos",
+        "não",
+        "nao",
+        "para",
+        "pela",
+        "pelo",
+        "por",
+        "que",
+        "se",
+        "sem",
+        "sua",
+        "seu",
+        "uma",
+        "um",
+    }
+
+    return len(words & portuguese_markers) >= 4
+
+
+def _google_books_candidate_score(
+    volume_info,
+    target_title,
+    target_authors,
+):
+    """Score how likely a Google Books volume is the PT-BR edition we want."""
+    description = _clean_external_description(
+        volume_info.get("description")
+    )
+    if not description:
+        return None
+
+    language = str(
+        volume_info.get("language")
+        or ""
+    ).lower()
+
+    is_portuguese = (
+        language.startswith("pt")
+        or (
+            not language
+            and _looks_portuguese(description)
+        )
+    )
+
+    if not is_portuguese:
+        return None
+
+    score = 0
+
+    if language.startswith("pt"):
+        score += 40
+
+    wanted_title = _normalize_compare_text(
+        target_title
+    )
+    candidate_title = _normalize_compare_text(
+        volume_info.get("title")
+    )
+
+    if wanted_title and candidate_title:
+        if candidate_title == wanted_title:
+            score += 120
+        elif (
+            wanted_title in candidate_title
+            or candidate_title in wanted_title
+        ):
+            score += 80
+        else:
+            wanted_words = set(
+                wanted_title.split()
+            )
+            candidate_words = set(
+                candidate_title.split()
+            )
+            overlap = len(
+                wanted_words & candidate_words
+            )
+            score += min(
+                overlap * 15,
+                60,
+            )
+
+    candidate_authors = [
+        _normalize_compare_text(author)
+        for author in (
+            volume_info.get("authors")
+            or []
+        )
+        if author
+    ]
+
+    for target_author in (
+        target_authors
+        or []
+    ):
+        wanted_author = (
+            _normalize_compare_text(
+                target_author
+            )
+        )
+        if not wanted_author:
+            continue
+
+        if any(
+            candidate == wanted_author
+            for candidate in candidate_authors
+        ):
+            score += 70
+            break
+
+        if any(
+            wanted_author in candidate
+            or candidate in wanted_author
+            for candidate in candidate_authors
+        ):
+            score += 45
+            break
+
+    score += min(
+        len(description) // 150,
+        15,
+    )
+
+    return score, description
+
+
+def _google_books_description(
+    query,
+    *,
+    target_title,
+    target_authors,
+    lang_restrict,
+):
+    """Return the best Portuguese Google Books description for a query."""
+    api_key = os.getenv(
+        "GOOGLE_BOOKS_API_KEY",
+        "",
+    ).strip()
+
     if not api_key:
+        logger.warning(
+            "GOOGLE_BOOKS_API_KEY não está disponível "
+            "no processo do Yamtrack."
+        )
         return ""
 
     params = {
         "q": query,
-        "langRestrict": "pt",
         "printType": "books",
         "orderBy": "relevance",
-        "maxResults": 10,
+        "maxResults": 40,
         "key": api_key,
     }
+
+    if lang_restrict:
+        params["langRestrict"] = (
+            lang_restrict
+        )
 
     try:
         response = requests.get(
             GOOGLE_BOOKS_URL,
             params=params,
             timeout=GOOGLE_BOOKS_TIMEOUT,
-            headers={"User-Agent": "FlexiHub/1.0"},
+            headers={
+                "User-Agent": (
+                    "FlexiHub/1.0"
+                )
+            },
         )
         response.raise_for_status()
         payload = response.json()
-    except (requests.RequestException, ValueError):
+
+    except (
+        requests.RequestException,
+        ValueError,
+    ):
         logger.warning(
-            "Falha ao consultar sinopse em português no Google Books.",
+            "Falha ao consultar sinopse "
+            "em português no Google Books. "
+            "query=%s lang=%s",
+            query,
+            lang_restrict or "all",
             exc_info=True,
         )
         return ""
 
-    for item in payload.get("items", []):
-        volume_info = item.get("volumeInfo") or {}
-        language = str(volume_info.get("language") or "").lower()
+    items = payload.get("items", [])
 
-        if language and not language.startswith("pt"):
+    logger.info(
+        "Google Books retornou %s item(ns): "
+        "query=%s lang=%s",
+        len(items),
+        query,
+        lang_restrict or "all",
+    )
+
+    best_score = None
+    best_description = ""
+
+    for item in items:
+        volume_info = (
+            item.get("volumeInfo")
+            or {}
+        )
+
+        candidate = (
+            _google_books_candidate_score(
+                volume_info,
+                target_title,
+                target_authors,
+            )
+        )
+
+        if candidate is None:
             continue
 
-        description = _clean_external_description(
-            volume_info.get("description")
+        score, description = (
+            candidate
         )
-        if description:
-            return description
 
-    return ""
+        if (
+            best_score is None
+            or score > best_score
+        ):
+            best_score = score
+            best_description = (
+                description
+            )
+
+    return best_description
 
 
-def _portuguese_book_synopsis(metadata, source, media_id):
+def _portuguese_book_synopsis(
+    metadata,
+    source,
+    media_id,
+):
     """Prefer an official Portuguese description from Google Books.
 
-    The selected provider remains the source for the rest of the metadata.
-    Google Books is used only as a localization fallback for synopsis text.
+    OpenLibrary/Hardcover remain the main metadata provider.
+    Google Books is consulted only to localize the synopsis.
     """
-    if not os.getenv("GOOGLE_BOOKS_API_KEY", "").strip():
+    api_key = os.getenv(
+        "GOOGLE_BOOKS_API_KEY",
+        "",
+    ).strip()
+
+    if not api_key:
+        logger.warning(
+            "Sinopse PT-BR não consultada: "
+            "GOOGLE_BOOKS_API_KEY ausente."
+        )
         return ""
 
+    # v2 intentionally invalidates any previous negative cache
+    # generated by the first lookup strategy.
     cache_key = (
-        "mobile_book_synopsis_pt_v1_"
+        "mobile_book_synopsis_pt_v2_"
         f"{source}_{media_id}"
     )
-    cached = cache.get(cache_key)
 
-    if isinstance(cached, dict) and "synopsis" in cached:
-        return cached.get("synopsis") or ""
+    cached = cache.get(
+        cache_key
+    )
+
+    if (
+        isinstance(cached, dict)
+        and "synopsis" in cached
+    ):
+        return (
+            cached.get("synopsis")
+            or ""
+        )
+
+    title = str(
+        metadata.get("title")
+        or ""
+    ).strip()
+
+    authors = _book_authors(
+        metadata
+    )
+    isbns = _book_isbns(
+        metadata
+    )
 
     queries = []
-    isbns = _book_isbns(metadata)
 
-    if isbns:
-        queries.append(f"isbn:{isbns[0]}")
-
-    title = str(metadata.get("title") or "").strip()
-    authors = _book_authors(metadata)
+    # Try all provider ISBNs, not only the first one.
+    for isbn in isbns[:4]:
+        query = f"isbn:{isbn}"
+        if query not in queries:
+            queries.append(query)
 
     if title:
-        safe_title = title.replace('"', " ").strip()
-        title_query = f'intitle:"{safe_title}"'
+        safe_title = (
+            title
+            .replace('"', " ")
+            .strip()
+        )
 
         if authors:
-            safe_author = authors[0].replace('"', " ").strip()
-            if safe_author:
-                title_query += f' inauthor:"{safe_author}"'
+            safe_author = (
+                authors[0]
+                .replace('"', " ")
+                .strip()
+            )
 
-        if title_query not in queries:
-            queries.append(title_query)
+            if safe_author:
+                queries.extend(
+                    [
+                        (
+                            f'intitle:"{safe_title}" '
+                            f'inauthor:"{safe_author}"'
+                        ),
+                        (
+                            f'"{safe_title}" '
+                            f'"{safe_author}"'
+                        ),
+                        (
+                            f"{safe_title} "
+                            f"{safe_author}"
+                        ),
+                    ]
+                )
+
+        queries.extend(
+            [
+                f'intitle:"{safe_title}"',
+                f'"{safe_title}"',
+                safe_title,
+            ]
+        )
+
+    # Preserve order while removing duplicates.
+    queries = list(
+        dict.fromkeys(
+            query
+            for query in queries
+            if query.strip()
+        )
+    )
 
     for query in queries:
-        synopsis = _google_books_description(query)
+        # First ask Google to restrict to Portuguese.
+        synopsis = (
+            _google_books_description(
+                query,
+                target_title=title,
+                target_authors=authors,
+                lang_restrict="pt",
+            )
+        )
+
+        # Some valid PT-BR editions are not returned consistently
+        # when langRestrict is used. Retry broadly, then filter
+        # candidates ourselves by language/content.
+        if not synopsis:
+            synopsis = (
+                _google_books_description(
+                    query,
+                    target_title=title,
+                    target_authors=authors,
+                    lang_restrict=None,
+                )
+            )
+
         if synopsis:
             cache.set(
                 cache_key,
-                {"synopsis": synopsis},
+                {
+                    "synopsis": (
+                        synopsis
+                    )
+                },
                 GOOGLE_BOOKS_SUCCESS_TTL,
             )
+
+            logger.info(
+                "Sinopse PT-BR encontrada "
+                "no Google Books: "
+                "source=%s media_id=%s "
+                "query=%s",
+                source,
+                media_id,
+                query,
+            )
+
             return synopsis
 
     cache.set(
@@ -261,8 +594,19 @@ def _portuguese_book_synopsis(metadata, source, media_id):
         {"synopsis": ""},
         GOOGLE_BOOKS_MISS_TTL,
     )
-    return ""
 
+    logger.info(
+        "Nenhuma sinopse PT-BR "
+        "encontrada no Google Books: "
+        "source=%s media_id=%s "
+        "title=%s queries=%s",
+        source,
+        media_id,
+        title,
+        queries,
+    )
+
+    return ""
 
 def _get_work_synopsis(metadata, source, media_type, media_id):
     original = _normalize_text(
