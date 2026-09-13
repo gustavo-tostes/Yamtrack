@@ -9,6 +9,7 @@ from api import (
     mobile_progress,
     mobile_search,
     mobile_series,
+    mobile_tracking,
     mobile_work,
     views,
 )
@@ -117,6 +118,15 @@ urlpatterns = [
         ),
         mobile_work.mobile_work_detail,
         name="mobile_work_detail",
+    ),
+    path(
+        (
+            "media/tracking/"
+            "<str:media_type>/"
+            "<int:instance_id>/"
+        ),
+        mobile_tracking.mobile_tracking_detail,
+        name="mobile_tracking_detail",
     ),
     path(
         (
