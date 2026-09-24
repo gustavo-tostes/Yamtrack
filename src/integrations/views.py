@@ -372,6 +372,41 @@ def import_yamtrack(request):
 
 
 @require_POST
+def import_tvtime(request):
+    """View for importing media data from a TV Time GDPR ZIP."""
+    file = request.FILES.get("tvtime_zip")
+
+    if not file:
+        messages.error(request, "Selecione o arquivo ZIP exportado pelo TV Time.")
+        return redirect("import_data")
+
+    if not file.name.lower().endswith(".zip"):
+        messages.error(
+            request,
+            "O arquivo do TV Time precisa estar no formato ZIP.",
+        )
+        return redirect("import_data")
+
+    mode = request.POST.get("mode", "new")
+
+    if mode not in {"new", "overwrite"}:
+        messages.error(request, "Modo de importação inválido.")
+        return redirect("import_data")
+
+    tasks.import_tvtime.delay(
+        file=file,
+        user_id=request.user.id,
+        mode=mode,
+    )
+
+    messages.info(
+        request,
+        "A importação do TV Time foi adicionada à fila.",
+    )
+    return redirect("import_data")
+
+
+@require_POST
 def import_hltb(request):
     """View for importing game date from HowLongToBeat."""
     file = request.FILES.get("hltb_csv")
