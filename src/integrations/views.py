@@ -3,6 +3,7 @@
 import json
 import logging
 import secrets
+import zipfile
 from urllib.parse import urlencode
 
 from django.conf import settings
@@ -19,7 +20,7 @@ from django.views.decorators.http import require_GET, require_POST
 import users
 from app import helpers as app_helpers
 from integrations import exports, tasks
-from integrations.imports import anilist, helpers, simkl, trakt
+from integrations.imports import anilist, helpers, simkl, trakt, tvtime
 from integrations.webhooks import emby, jellyfin, plex
 
 logger = logging.getLogger(__name__)
@@ -387,17 +388,76 @@ def import_tvtime(request):
         )
         return redirect("import_data")
 
-    mode = request.POST.get("mode", "new")
+    if request.POST.get("frequency", "once") != "once":
+        messages.error(
+            request,
+            "A importação do TV Time está disponível apenas como importação única.",
+        )
+        return redirect("import_data")
 
+    mode = request.POST.get("mode", "new")
     if mode not in {"new", "overwrite"}:
         messages.error(request, "Modo de importação inválido.")
         return redirect("import_data")
 
-    tasks.import_tvtime.delay(
-        file=file,
-        user_id=request.user.id,
-        mode=mode,
+    max_upload_bytes = tvtime.MAX_UPLOAD_BYTES
+    if getattr(file, "size", 0) > max_upload_bytes:
+        messages.error(
+            request,
+            "O arquivo ZIP do TV Time ultrapassa o limite de 25 MB.",
+        )
+        return redirect("import_data")
+
+    imports_dir = settings.BASE_DIR / "db" / "imports"
+    imports_dir.mkdir(parents=True, exist_ok=True)
+
+    file_path = imports_dir / (
+        f"tvtime-{request.user.id}-{secrets.token_urlsafe(16)}.zip"
     )
+
+    try:
+        written = 0
+        with file_path.open("wb") as destination:
+            for chunk in file.chunks():
+                written += len(chunk)
+                if written > max_upload_bytes:
+                    raise ValueError("TV Time ZIP exceeds the upload size limit.")
+                destination.write(chunk)
+
+        if written == 0:
+            raise ValueError("TV Time ZIP is empty.")
+
+        if not zipfile.is_zipfile(file_path):
+            raise ValueError("The uploaded file is not a valid ZIP archive.")
+
+        tasks.import_tvtime.delay(
+            file_path=str(file_path),
+            user_id=request.user.id,
+            mode=mode,
+        )
+    except ValueError as exc:
+        file_path.unlink(missing_ok=True)
+        logger.warning(
+            "Rejected TV Time import for user %s: %s",
+            request.user.id,
+            exc,
+        )
+        messages.error(
+            request,
+            "O arquivo enviado não é um ZIP válido do TV Time ou excede o limite permitido.",
+        )
+        return redirect("import_data")
+    except Exception:
+        file_path.unlink(missing_ok=True)
+        logger.exception(
+            "Could not queue TV Time import for user %s",
+            request.user.id,
+        )
+        messages.error(
+            request,
+            "Não foi possível adicionar a importação do TV Time à fila.",
+        )
+        return redirect("import_data")
 
     messages.info(
         request,

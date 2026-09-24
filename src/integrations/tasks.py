@@ -1,6 +1,8 @@
 import logging
+from pathlib import Path
 
 from celery import shared_task
+from django.conf import settings
 from django.contrib.auth import get_user_model
 
 import events
@@ -133,14 +135,35 @@ def import_yamtrack(file, user_id, mode):
 
 
 @shared_task(name="Import from TV Time")
-def import_tvtime(file, user_id, mode):
+def import_tvtime(file_path, user_id, mode):
     """Celery task for importing media data from a TV Time GDPR ZIP."""
-    return import_media(tvtime.importer, file, user_id, mode)
+    imports_dir = (settings.BASE_DIR / "db" / "imports").resolve()
+    path = Path(file_path).resolve()
+
+    if path.parent != imports_dir:
+        raise ValueError("Invalid TV Time import file path.")
+
+    try:
+        zip_bytes = path.read_bytes()
+        return import_media(
+            tvtime.importer,
+            zip_bytes,
+            user_id,
+            mode,
+        )
+    finally:
+        try:
+            path.unlink(missing_ok=True)
+        except OSError:
+            logger.exception(
+                "Could not remove temporary TV Time import file: %s",
+                path,
+            )
 
 
 @shared_task(name="Import from HowLongToBeat")
 def import_hltb(file, user_id, mode):
-    """Celery task for importing media data from HowLongToBeat."""
+    """Celery task for importing game data from HowLongToBeat."""
     return import_media(hltb.importer, file, user_id, mode)
 
 

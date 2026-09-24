@@ -646,6 +646,35 @@
         </div>
 
         <div class="yamtrack-import-source-card p-4">
+          <div class="yamtrack-import-source-title">{% source_display "tvtime" %}</div>
+
+          <p class="yamtrack-import-source-help"
+             x-text="importFrequency === 'once' ? 'Importe séries, temporadas, episódios e filmes a partir do arquivo ZIP de dados do TV Time.' : 'Uploads do TV Time não estão disponíveis para importações periódicas.'">
+          </p>
+
+          <form method="post"
+                action="{% url 'import_tvtime' %}"
+                enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="frequency" x-model="importFrequency">
+            <input type="hidden" name="time" x-model="importTime">
+            <input type="hidden" name="mode" x-model="importMode">
+
+            <label class="yamtrack-import-button w-full"
+                   :class="importFrequency === 'once' ? '' : 'yamtrack-import-button-disabled'"
+                   :disabled="importFrequency !== 'once'">
+              <input name="tvtime_zip"
+                     accept=".zip,application/zip"
+                     class="hidden"
+                     type="file"
+                     :disabled="importFrequency !== 'once'"
+                     @change="importFrequency === 'once' && $el.form.submit()">
+              Selecionar arquivo ZIP
+            </label>
+          </form>
+        </div>
+
+        <div class="yamtrack-import-source-card p-4">
           <div class="yamtrack-import-source-title">{% source_display "hltb" %}</div>
           <p class="yamtrack-import-source-help"
              x-text="importFrequency === 'once' ? 'Importe jogos.' : 'Uploads de arquivo não estão disponíveis para importações periódicas.'">

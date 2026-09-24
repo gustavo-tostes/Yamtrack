@@ -655,6 +655,7 @@ class User(AbstractUser):
             "anilist": "Import from AniList",
             "kitsu": "Import from Kitsu",
             "yamtrack": "Import from Yamtrack",
+            "tvtime": "Import from TV Time",
             "hltb": "Import from HowLongToBeat",
             "steam": "Import from Steam",
             "imdb": "Import from IMDB",
