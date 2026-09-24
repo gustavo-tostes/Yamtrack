@@ -134,8 +134,8 @@ def import_yamtrack(file, user_id, mode):
     return import_media(yamtrack.importer, file, user_id, mode)
 
 
-@shared_task(name="Import from TV Time")
-def import_tvtime(file_path, user_id, mode):
+@shared_task(bind=True, name="Import from TV Time")
+def import_tvtime(self, file_path, user_id, mode):
     """Celery task for importing media data from a TV Time GDPR ZIP."""
     imports_dir = (settings.BASE_DIR / "db" / "imports").resolve()
     path = Path(file_path).resolve()
@@ -143,14 +143,18 @@ def import_tvtime(file_path, user_id, mode):
     if path.parent != imports_dir:
         raise ValueError("Invalid TV Time import file path.")
 
+    def report_progress(percent):
+        """Persist the current TV Time import percentage in the task result."""
+        progress = max(0, min(99, int(percent)))
+        self.update_state(
+            state="STARTED",
+            meta={"progress": progress},
+        )
+
+    report_progress(1)
+
     try:
         zip_bytes = path.read_bytes()
-        return import_media(
-            tvtime.importer,
-            zip_bytes,
-            user_id,
-            mode,
-        )
     finally:
         try:
             path.unlink(missing_ok=True)
@@ -159,6 +163,16 @@ def import_tvtime(file_path, user_id, mode):
                 "Could not remove temporary TV Time import file: %s",
                 path,
             )
+
+    report_progress(2)
+
+    return import_media(
+        tvtime.importer,
+        zip_bytes,
+        user_id,
+        mode,
+        progress_callback=report_progress,
+    )
 
 
 @shared_task(name="Import from HowLongToBeat")

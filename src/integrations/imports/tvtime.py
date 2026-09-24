@@ -25,7 +25,7 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass
 from difflib import SequenceMatcher
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from django.conf import settings
 
@@ -75,6 +75,52 @@ CSV_FIELDS = [
     "created_at",
     "progressed_at",
 ]
+
+ProgressCallback = Callable[[int], None]
+
+
+class _ProgressReporter:
+    """Emit monotonic integer progress updates without duplicate writes."""
+
+    def __init__(self, callback: ProgressCallback | None):
+        self.callback = callback
+        self.last_value = -1
+
+    def update(self, percent: int) -> None:
+        if self.callback is None:
+            return
+
+        value = max(0, min(99, int(percent)))
+        if value <= self.last_value:
+            return
+
+        self.last_value = value
+        try:
+            self.callback(value)
+        except Exception:
+            logger.exception(
+                "Could not update TV Time import progress to %s%%.",
+                value,
+            )
+
+
+def _stage_progress(
+    callback: ProgressCallback | None,
+    start: int,
+    end: int,
+    index: int,
+    total: int,
+) -> None:
+    """Map work completed in a stage to an overall percentage."""
+    if callback is None:
+        return
+    if total <= 0:
+        callback(end)
+        return
+
+    completed = max(0, min(index, total))
+    percent = start + ((end - start) * completed // total)
+    callback(percent)
 
 
 def _validate_archive(archive: zipfile.ZipFile) -> None:
@@ -566,7 +612,11 @@ def row_template(**values: Any) -> dict[str, Any]:
     return row
 
 
-def convert(parsed: ParsedArchive, tmdb: TmdbClient) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+def convert(
+    parsed: ParsedArchive,
+    tmdb: TmdbClient,
+    progress_callback: ProgressCallback | None = None,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     warnings: list[str] = []
     rows_tv: list[dict[str, Any]] = []
     rows_seasons: list[dict[str, Any]] = []
@@ -588,6 +638,8 @@ def convert(parsed: ParsedArchive, tmdb: TmdbClient) -> tuple[list[dict[str, Any
     # TVDB season/episode numbering because numbering can differ between TVDB
     # and TMDB (especially specials, split/combined episodes, and older shows).
     logger.info(f"Resolving {len(all_series_ids)} TV series through TMDB...")
+    if not all_series_ids:
+        _stage_progress(progress_callback, 5, 15, 0, 0)
     for index, tvdb_id in enumerate(all_series_ids, 1):
         found_series: dict[str, Any] | None = None
         mapped_tmdb_id: int | None = None
@@ -628,6 +680,13 @@ def convert(parsed: ParsedArchive, tmdb: TmdbClient) -> tuple[list[dict[str, Any
                 f"  [{index}/{len(all_series_ids)}] NOT FOUND TVDB "
                 f"{tvdb_id} {fallback_name}"
             )
+            _stage_progress(
+                progress_callback,
+                5,
+                15,
+                index,
+                len(all_series_ids),
+            )
             continue
 
         detail = tmdb.tv_detail(mapped_tmdb_id)
@@ -651,6 +710,13 @@ def convert(parsed: ParsedArchive, tmdb: TmdbClient) -> tuple[list[dict[str, Any
             f"TMDB {mapped_tmdb_id}: {series_map[tvdb_id]['title']} "
             f"({mapping_label})"
         )
+        _stage_progress(
+            progress_callback,
+            5,
+            15,
+            index,
+            len(all_series_ids),
+        )
 
     # Resolve every watched episode by its TVDB episode ID. The TV Time export
     # contains episode_id/ep_id values, and TMDB's /find endpoint accepts TVDB
@@ -658,6 +724,8 @@ def convert(parsed: ParsedArchive, tmdb: TmdbClient) -> tuple[list[dict[str, Any
     # different season/episode numbering.
     total_events = len(parsed.episode_events)
     logger.info(f"Resolving {total_events} episode watch events by TVDB episode ID...")
+    if total_events == 0:
+        _stage_progress(progress_callback, 15, 75, 0, 0)
     resolved_events_by_series: dict[str, list[dict[str, Any]]] = defaultdict(list)
     exact_episode_matches = 0
     numbering_fallbacks = 0
@@ -673,6 +741,13 @@ def convert(parsed: ParsedArchive, tmdb: TmdbClient) -> tuple[list[dict[str, Any
                     f"  Episodes {index}/{total_events} | exact={exact_episode_matches} "
                     f"fallback={numbering_fallbacks} unresolved={unresolved_episode_ids}"
                 )
+            _stage_progress(
+                progress_callback,
+                15,
+                75,
+                index,
+                total_events,
+            )
             continue
 
         tmdb_id = int(mapping["tmdb_id"])
@@ -740,12 +815,28 @@ def convert(parsed: ParsedArchive, tmdb: TmdbClient) -> tuple[list[dict[str, Any
                 f"  Episodes {index}/{total_events} | exact={exact_episode_matches} "
                 f"fallback={numbering_fallbacks} unresolved={unresolved_episode_ids}"
             )
+        _stage_progress(
+            progress_callback,
+            15,
+            75,
+            index,
+            total_events,
+        )
 
     today = dt.date.today()
 
-    for tvdb_id in all_series_ids:
+    if not all_series_ids:
+        _stage_progress(progress_callback, 75, 92, 0, 0)
+    for series_index, tvdb_id in enumerate(all_series_ids, 1):
         mapping = series_map.get(tvdb_id)
         if not mapping:
+            _stage_progress(
+                progress_callback,
+                75,
+                92,
+                series_index,
+                len(all_series_ids),
+            )
             continue
 
         tmdb_id = int(mapping["tmdb_id"])
@@ -1044,6 +1135,13 @@ def convert(parsed: ParsedArchive, tmdb: TmdbClient) -> tuple[list[dict[str, Any
                 "completed_regular_seasons": sorted(completed_regular_seasons),
             }
         )
+        _stage_progress(
+            progress_callback,
+            75,
+            92,
+            series_index,
+            len(all_series_ids),
+        )
 
     status_counts = Counter(
         item["import_status"] for item in series_status_details
@@ -1063,6 +1161,8 @@ def convert(parsed: ParsedArchive, tmdb: TmdbClient) -> tuple[list[dict[str, Any
     logger.info(f"  Planning:    {status_counts.get('Planning', 0)}")
 
     logger.info(f"Resolving {len(parsed.movie_events)} movie watch events through TMDB...")
+    if not parsed.movie_events:
+        _stage_progress(progress_callback, 92, 96, 0, 0)
     movie_mapping_cache: dict[tuple[str, int | None], dict[str, Any] | None] = {}
     for index, event in enumerate(parsed.movie_events, 1):
         key = (normalize_text(event.title), event.release_year)
@@ -1076,6 +1176,13 @@ def convert(parsed: ParsedArchive, tmdb: TmdbClient) -> tuple[list[dict[str, Any
                 + ": not confidently matched in TMDB."
             )
             logger.info(f"  [{index}/{len(parsed.movie_events)}] NOT FOUND: {event.title}")
+            _stage_progress(
+                progress_callback,
+                92,
+                96,
+                index,
+                len(parsed.movie_events),
+            )
             continue
 
         movie_id = int(movie["id"])
@@ -1098,6 +1205,13 @@ def convert(parsed: ParsedArchive, tmdb: TmdbClient) -> tuple[list[dict[str, Any
             )
         )
         logger.info(f"  [{index}/{len(parsed.movie_events)}] TMDB {movie_id}: {movie_title}")
+        _stage_progress(
+            progress_callback,
+            92,
+            96,
+            index,
+            len(parsed.movie_events),
+        )
 
     tmdb.save_cache()
     output_rows = rows_tv + rows_seasons + rows_episodes + rows_movies
@@ -1131,9 +1245,13 @@ def convert(parsed: ParsedArchive, tmdb: TmdbClient) -> tuple[list[dict[str, Any
     return output_rows, report
 
 
-def importer(file, user, mode):
+def importer(file, user, mode, progress_callback: ProgressCallback | None = None):
     """Import a TV Time GDPR ZIP directly into FlexiHub."""
+    progress = _ProgressReporter(progress_callback)
+    progress.update(3)
+
     zip_bytes = _read_uploaded_zip(file)
+    progress.update(4)
 
     try:
         parsed = parse_archive(zip_bytes)
@@ -1146,6 +1264,8 @@ def importer(file, user, mode):
     except (RuntimeError, ValueError, UnicodeError) as exc:
         raise MediaImportError(str(exc)) from exc
 
+    progress.update(5)
+
     api_key = str(getattr(settings, "TMDB_API", "") or "").strip()
     if not api_key:
         raise MediaImportError(
@@ -1154,7 +1274,11 @@ def importer(file, user, mode):
 
     tmdb = TmdbClient(api_key)
     try:
-        rows, report = convert(parsed, tmdb)
+        rows, report = convert(
+            parsed,
+            tmdb,
+            progress_callback=progress.update,
+        )
     except MediaImportError:
         raise
     except Exception as exc:
@@ -1162,6 +1286,8 @@ def importer(file, user, mode):
         raise MediaImportError(
             "Could not convert the TV Time export. Please try again or review the import logs."
         ) from exc
+
+    progress.update(97)
 
     logger.info(
         "TV Time conversion for user %s produced %s rows: %s series, %s seasons, "
@@ -1176,7 +1302,10 @@ def importer(file, user, mode):
     )
 
     csv_file = _build_flexihub_csv(rows)
+    progress.update(98)
+
     imported_counts, yamtrack_warnings = yamtrack.importer(csv_file, user, mode)
+    progress.update(99)
 
     warning_parts = _conversion_warnings(report)
     if yamtrack_warnings:

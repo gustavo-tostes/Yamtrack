@@ -38,7 +38,7 @@ SOURCES_CONFIG = {
     },
     "tvtime": {
         "name": "TV Time",
-        "badge": "TV",
+        "logo": static("img/tvtime-logo.png"),
     },
     "hltb": {
         "name": "HowLongToBeat",
@@ -61,32 +61,18 @@ SOURCES_CONFIG = {
 
 @register.simple_tag
 def source_display(source_name):
-    """Generate HTML display for a media source with logo or badge and name."""
+    """Generate HTML display for a media source with logo and name."""
     info = SOURCES_CONFIG.get(source_name)
     if not info:
         return ""
 
-    if info.get("logo"):
-        html = f"""
-            <div class="flex items-center">
-                <img alt="{info["name"]}"
-                     class="w-6 h-6 mr-2"
-                     src="{info["logo"]}">
-                <h4 class="font-medium">{info["name"]}</h4>
-            </div>
-        """
-    else:
-        html = f"""
-            <div class="flex items-center">
-                <span
-                    class="w-6 h-6 mr-2 inline-flex items-center justify-center
-                           rounded-md bg-indigo-500/20 text-indigo-200
-                           text-[9px] font-black border border-indigo-400/25"
-                    aria-hidden="true">
-                    {info.get("badge", "?")}
-                </span>
-                <h4 class="font-medium">{info["name"]}</h4>
-            </div>
-        """
+    html = f"""
+        <div class="flex items-center">
+            <img alt="{info["name"]}"
+                 class="w-6 h-6 mr-2 object-contain"
+                 src="{info["logo"]}">
+            <h4 class="font-medium">{info["name"]}</h4>
+        </div>
+    """
 
     return format_html(html)

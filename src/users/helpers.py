@@ -10,6 +10,8 @@ import integrations
 
 def process_task_result(task):
     """Process task result based on status and format appropriately."""
+    task.progress = None
+
     if task.status == "FAILURE":
         result_json = json.loads(task.result)
         if result_json["exc_type"] == "MediaImportError":
@@ -19,7 +21,17 @@ def process_task_result(task):
             task.summary = "Unexpected error occurred while processing the task."
             task.errors = task.traceback
     elif task.status == "STARTED":
-        task.summary = "This task is currently running."
+        try:
+            result_json = json.loads(task.result or "{}")
+        except (TypeError, json.JSONDecodeError):
+            result_json = {}
+
+        if isinstance(result_json, dict):
+            progress = result_json.get("progress")
+            if isinstance(progress, (int, float)):
+                task.progress = max(0, min(99, int(progress)))
+
+        task.summary = None
         task.errors = None
     elif task.status == "SUCCESS":
         result_json = json.loads(task.result)
@@ -37,6 +49,12 @@ def process_task_result(task):
             task.errors = None
     elif task.status == "PENDING":
         task.summary = "This task has been queued and is waiting to run."
+        task.errors = None
+    elif task.status == "REVOKED":
+        task.summary = "Importação cancelada."
+        task.errors = None
+    else:
+        task.summary = None
         task.errors = None
 
     return task
